@@ -1,23 +1,26 @@
-from flask import redirect, request, session, url_for
-from models.user_model import UserModel
+from flask import redirect, request, session, url_for, jsonify
+from functools import wraps
+from users.models.user_model import UserModel
 
-from entities.user import User
+from users.entities.user import User
 
 
- 
 def login_required(function):
+    @wraps(function)
     def wrapper(*args, **kwargs):
         if 'name' not in session:
-            return redirect('/auth/login')
+            error_message = "Necesitas iniciar sesión para acceder a esta ruta."
+            return jsonify({'error': error_message}), 401
         return function(*args, **kwargs)
     return wrapper
+
 
 
 def role_required(role:str):
     def decorator(function):
         def wrapper(*args, **kwargs):
             if 'name' not in session or session['role'] != role.upper():
-                return redirect('/auth/login')
+                return {}, 500 # Redirige a la página de inicio de sesión
             return function(*args, **kwargs)
         return wrapper
     return decorator

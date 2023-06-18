@@ -1,9 +1,9 @@
 from flask import Blueprint, send_from_directory, request, redirect, url_for, jsonify
 from flask import session, make_response
-from controllers.auth.login import login_user, login_required
-from controllers.auth.signup import signup_user
+from .controllers.login import login_user, login_required
+from .controllers.signup import signup_user
 
-from entities.user import User
+from users.entities.user import User
 
 
 
@@ -19,11 +19,12 @@ def login():
     # Loggin user. Get true or false depending on whether login is made successfully
     logged_in_user: User = login_user(email, password)
         
-    # Create status dict and return data depends of logged_in boolean
-    status: dict
     if(logged_in_user != None):
         return {
-            "message": "User logged in successfully"
+            "id": logged_in_user.id,
+            "role": logged_in_user.role.value,
+            "name": logged_in_user.name,
+            "email": logged_in_user.email,
         }, 200
     else:
         return jsonify({
@@ -53,7 +54,10 @@ def signup():
 
     if signed_up_user != None:
         return jsonify({
-            "message": "User signed up in successfully"
+            "id": signed_up_user.id,
+            "role": signed_up_user.role.value,
+            "name": data['name'],
+            "email": signed_up_user.email,
         }), 200
     else:
         return jsonify({
@@ -66,22 +70,22 @@ def logout():
     # Clear the session data
     session.clear()
         
-    response = make_response(redirect('/'))
-    response.set_cookie('session', expires=0)
-    
-    return redirect('/')
+    return {"message": "Se ha cerrado sesión correctamente"}, 200
 
 
 
 @login_required
 @auth_bp.get('/session')
 def get_session():
-    session_data: dict[str, str, str] = {}
+    session_data: dict[int, str, str, str] = {}
     
     if 'username' in session:
-        session_data['role'] = session['role']
-        session_data['name'] = session['name']
-        session_data['email'] = session['email']
+        session_data = {
+            "id": session['id'],
+            "role": session['role'],
+            "name": session['name'],
+            "email": session['email']
+        }
     else:
         return jsonify({"ERROR": "There is no session active"}), 500
     

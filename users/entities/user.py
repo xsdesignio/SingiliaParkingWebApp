@@ -2,9 +2,9 @@ import datetime
 from enum import Enum
 
 class UserRole(Enum):
-    ADMIN = 1
-    MANAGER = 2
-    EMPLOYEE = 3
+    ADMIN = "ADMIN"
+    MANAGER = "MANAGER"
+    EMPLOYEE = "EMPLOYEE"
 
     @classmethod
     def get_enum_value(cls, enum_member_name: str):
@@ -12,7 +12,7 @@ class UserRole(Enum):
             if member.name == enum_member_name.upper():
                 return member
         raise ValueError(f"No enum member with name '{enum_member_name}' found.")
-
+    
 
 class User:
     id: int
@@ -34,7 +34,7 @@ class User:
             created_at = datetime.datetime.now()
 
 
-    def to_JSON(self):
+    def to_json(self):
         return {
             'id': self.id,
             'role': self.role.name,

@@ -1,9 +1,9 @@
 from enum import Enum
-from entities.user import User, UserRole
+from users.entities.user import User, UserRole
 from psycopg2 import connect, extras
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from .db_connection import get_connection
+from database.db_connection import get_connection
 
 
 class UserModel:
@@ -12,12 +12,26 @@ class UserModel:
     def get_user(cls, id) -> User:
         result: dict
         try:
+            
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
 
-            cursor.execute('SELECT * FROM users WHERE id = %s', (id,))
+            cursor.execute('SELECT * FROM users WHERE id = %s;', (id,))
 
             result = cursor.fetchone()
+            
+            if result != None:
+                user_role: UserRole = UserRole.get_enum_value(result['role'])
+                user: User = User(
+                    id=result['id'], 
+                    role=user_role, 
+                    name=result['name'], 
+                    email=result['email'], 
+                    password=result['password'],
+                    created_at=result['created_at']
+                )
+                return user
+            
             conn.close()
         except Exception as e:
             print('An error occurred accessing the database')
@@ -46,20 +60,20 @@ class UserModel:
         try:
             conn =  get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-
-            cursor.execute('SELECT * FROM users WHERE email=%s', (email,))
+            cursor.execute('SELECT * FROM users WHERE email=%s;', (email,))
             result = cursor.fetchone()
 
             conn.close()
+
         except Exception as e:
             print('An error occurred accessing the database')
             print(e)
             return None
         
 
-
         if result != None and check_password_hash(result['password'], password):
             user_role: UserRole = UserRole.get_enum_value(result['role'])
+            
             user: User = User(
                 id=result['id'], 
                 role=user_role, 
@@ -68,6 +82,7 @@ class UserModel:
                 password=result['password'],
                 created_at=result['created_at']
             )
+            
             return user
         else:
             return None

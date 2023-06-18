@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
-from models.user_model import UserModel
-from controllers.auth.login import role_required
+from users.models.user_model import UserModel
+from auth.controllers.login import role_required
 
 users_bp = Blueprint('users', __name__, url_prefix='/users')
 
@@ -11,7 +11,7 @@ users_bp = Blueprint('users', __name__, url_prefix='/users')
 def get_user(id):
     user = UserModel.get_user(id)
     if user != None:
-        return jsonify(user.to_JSON())
+        return jsonify(user.to_json())
     else:
         return {'message': 'Ha ocurrido un error obteniendo el usuario.'}, 500
 
@@ -34,7 +34,7 @@ def update_user():
     updated_user = UserModel.update_user(new_user_data)
     
     if update_user != None:
-        return jsonify(updated_user.to_JSON()), 200
+        return jsonify(updated_user.to_json()), 200
     else:
         return {'message': 'Ha ocurrido un error actualizando el usuario.'}, 500
 
@@ -46,6 +46,6 @@ def create_user():
     user = UserModel.create_user(user_data['role'], user_data['name'], user_data['email'], user_data['password'])
     
     if update_user != None:
-        return jsonify(user.to_JSON()), 200
+        return jsonify(user.to_json()), 200
     else:
         return {'message': 'Ha ocurrido un error creando el usuario.'}, 500

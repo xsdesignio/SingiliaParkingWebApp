@@ -1,13 +1,14 @@
 from flask import Flask
 from flask_cors import CORS
 
-from api.auth_blueprint import auth_bp
-from api.users_blueprint import users_bp
-from api.tickets_blueprint import tickets_bp
+from auth.auth_blueprint import auth_bp
+from users.users_blueprint import users_bp
+from tickets.tickets_blueprint import tickets_bp
+from bulletins.bulletins_blueprint import bulletins_bp
 
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": "exp://192.168.1.39:19000"}})
+cors = CORS(app, resources={r"/*": {"origins": "exp://192.168.1.36:19000"}})
 
 app.secret_key = 'tu_clave_secreta_aqui'
 
@@ -17,6 +18,7 @@ port = '5432'
 app.register_blueprint(auth_bp, url_prefix ='/auth')
 app.register_blueprint(tickets_bp, url_prefix ='/tickets')
 app.register_blueprint(users_bp, url_prefix ='/users')
+app.register_blueprint(bulletins_bp, url_prefix="/bulletins")
 
 
 @app.get('/')
@@ -27,4 +29,4 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run(host='192.168.1.39', port=5000)
+    app.run(host='192.168.1.35',port=5000)

@@ -2,7 +2,7 @@ from psycopg2 import connect
 import unittest
 import json
 from app import app
-from models.user_model import UserModel
+from users.models.user_model import UserModel
 
 dbname = 'parkingcontroldb'
 dbuser = 'pablo'
@@ -81,7 +81,9 @@ class TestAuth(unittest.TestCase):
             self.assertEqual(session['email'], 'example2@gmail.com')
 
         
-        self.client.get('http://localhost:5000/auth/logout')
+        response = self.client.get('http://localhost:5000/auth/logout')
+
+        self.assertEqual(response.status_code, 200)
 
         with self.client.session_transaction() as session:
 
