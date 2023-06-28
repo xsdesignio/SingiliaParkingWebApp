@@ -60,5 +60,19 @@ def create_bulletin():
         return {'message': 'El boletín no pudo ser creado.'}, 500
 
 
+@bulletins_bp.post('/pay/<id>')
+@login_required
+def pay_bulletin(id: int):
+    try:
+        bulletin_id = int(id)
+
+        if(BulletinModel.get_bulletin(bulletin_id) == None):
+            return jsonify({'message': "El boletín que se ha intentado pagar no existe"}), 400
+        
+        BulletinModel.pay_bulletin(bulletin_id)
+
+        return jsonify({'message': 'El boletín ha sido pagado con éxito'}), 200
+    except Exception as e:
+        return jsonify({'message': e.__str__()}), 400
 
 

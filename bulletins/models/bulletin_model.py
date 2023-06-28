@@ -18,8 +18,6 @@ class BulletinModel:
             result = cursor.fetchall()
             conn.close()
         except Exception as exception:
-            print('An error occurred accessing the database')
-            print(exception)
             return None
         return result
 
@@ -54,8 +52,6 @@ class BulletinModel:
                 result["created_at"])
             conn.close()
         except Exception as exception:
-            print('An error occurred accessing the database')
-            print(exception)
             return None
         
         return bulletin
@@ -118,8 +114,6 @@ class BulletinModel:
             conn.close()
 
         except Exception as exception:
-            print('An error occurred accessing the database')
-            print(exception)
             return None
         
         return bulletin
@@ -141,8 +135,6 @@ class BulletinModel:
             conn.commit()
             conn.close()
         except Exception as exception:
-            print('An error occurred accessing the database')
-            print(exception)
             return None
 
         return deleted_bulletin
@@ -151,48 +143,50 @@ class BulletinModel:
 
     @classmethod
     def pay_bulletin(cls, bulletin_id:int) -> Bulletin:
+        updated_bulletin: Bulletin
         
-        bulletin: Bulletin
+        conn = get_connection()
+        cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
 
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
 
-            query = '''
-                UPDATE bulletins SET paid = true
-                WHERE id = %s
-                RETURNING *
-            '''
+        bulletin: Bulletin = cls.get_bulletin(bulletin_id)
 
-            cursor.execute(query, (bulletin_id, ))
-            result = cursor.fetchone()
+        if bulletin.paid:
+            raise Exception("El boletín introducido ya ha sido pagado")
 
-            # Creating bulletin object from database bulletin data
-            responsible: User = UserModel.get_user(result["responsible_id"])
-            bulletin = Bulletin(
-                result["id"],
-                responsible, 
-                result["location"], 
-                result["registration"], 
-                result["duration"], 
-                result["price"], 
-                result["paid"], 
-                result["brand"], 
-                result["model"], 
-                result["signature"], 
-                result["created_at"])
 
-            conn.commit()
-            cursor.close()
-            conn.close()
+        query = '''
+            UPDATE bulletins SET paid = true
+            WHERE id = %s
+            RETURNING *
+        '''
 
-        except Exception as exception:
-            print('An error occurred accessing the database')
-            print(exception)
-            return None
+        cursor.execute(query, (bulletin_id, ))
+        result = cursor.fetchone()
+
+        # Creating bulletin object from database bulletin data
+        responsible: User = UserModel.get_user(result["responsible_id"])
+        updated_bulletin = Bulletin(
+            result["id"],
+            responsible, 
+            result["location"], 
+            result["registration"], 
+            result["duration"], 
+            result["price"], 
+            result["paid"], 
+            result["brand"], 
+            result["model"], 
+            result["signature"], 
+            result["created_at"])
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        
+        
+        return updated_bulletin
         
 
-        return bulletin
 
 
     

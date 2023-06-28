@@ -27,7 +27,7 @@ def get_tickets():
     if tickets_json != None:
         return jsonify(tickets_json), 200
     else:
-        return {'message': 'Ha ocurrido un error obteniendo los tickets, initéntelo de nuevo más tarde'}, 500
+        return jsonify({'message': 'Ha ocurrido un error obteniendo los tickets, initéntelo de nuevo más tarde'}), 500
 
 
  
@@ -46,7 +46,7 @@ def create_ticket():
             ticket_json['zone_id'],
             ticket_json['created_at'])
     except Exception as e:
-        return {'message': 'El ticket no pudo ser creado.'}, 400
+        return jsonify({'message': 'El ticket no pudo ser creado.'}), 400
 
 
     if ticket != None:
@@ -57,16 +57,19 @@ def create_ticket():
 
 
 
-
-
-""" 
-@tickets_bp.create('/create-tickets-bunch')
+@tickets_bp.post('/pay/<id>')
 @login_required
-def create_tickets_bunch():
-    ticket_json = request.get_json()
-    ticket = TicketModel.create_tickets_bunch(ticket_json['author'], ticket_json['zone'], datetime.datetime.now)
-    if ticket != None:
-        return ticket, 200
-    else:
-        return {'message': 'El ticket no pudo ser creado.'}, 500
-"""
+def pay_ticket(id: int):
+    try:
+        ticket_id = int(id)
+
+        if(TicketModel.get_ticket(ticket_id) == None):
+            return jsonify({'message': "El ticket no existe"}), 400
+         
+        TicketModel.pay_ticket(ticket_id)
+        return jsonify({'message': 'El ticket ha sido pagado con éxito'}), 200
+    except Exception as e:
+        return jsonify({'message': e.__str__()}), 400
+
+
+

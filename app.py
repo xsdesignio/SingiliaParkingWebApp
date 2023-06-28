@@ -8,7 +8,7 @@ from bulletins.bulletins_blueprint import bulletins_bp
 
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": "exp://192.168.1.36:19000"}})
+cors = CORS(app, resources={r"/*": {"origins": "exp://192.168.0.96:19000"}})
 
 app.secret_key = 'tu_clave_secreta_aqui'
 
@@ -29,4 +29,4 @@ def home():
 
 
 if __name__ == "__main__":
-    app.run(host='192.168.1.35',port=5000)
+    app.run(host='0.0.0.0',port=5000)

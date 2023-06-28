@@ -20,8 +20,6 @@ class TicketModel:
             result = cursor.fetchall()
             conn.close()
         except Exception as exception:
-            print('An error occurred accessing the database')
-            print(exception)
             return None
         return result
 
@@ -56,8 +54,6 @@ class TicketModel:
             
             conn.close()
         except Exception as exception:
-            print('An error occurred accessing the database')
-            print(exception)
             return None
         
         return ticket
@@ -98,7 +94,8 @@ class TicketModel:
             responsible: User = UserModel.get_user(responsible_id)
             zone: Zone = ZoneModel.get_zone(result["zone_id"])
             ticket: Ticket = Ticket(
-                result["id"], responsible, 
+                result["id"], 
+                responsible, 
                 result["duration"], 
                 result["price"], 
                 result["registration"], 
@@ -107,12 +104,10 @@ class TicketModel:
                 result["created_at"])
             
             conn.commit()
-            cursor.close()
+            
             conn.close()
 
         except Exception as exception:
-            print('An error occurred accessing the database')
-            print(exception)
             return None
         
         return ticket
@@ -134,47 +129,55 @@ class TicketModel:
             conn.commit()
             conn.close()
         except Exception as exception:
-            print('An error occurred accessing the database')
-            print(exception)
             return None
 
         return deleted_ticket
 
 
-
     @classmethod
-    def pay_ticket(cls, ticket_id:int) -> Ticket:
+    def pay_ticket(cls, ticket_id: int) -> Ticket:
+        updated_ticket: Ticket
+
+        conn = get_connection()
+        cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+
+        ticket: Ticket = cls.get_ticket(ticket_id)
+
+        if ticket.paid:
+            raise Exception("El ticket introducido ya ha sido pagado")
+
+        query = '''
+            UPDATE tickets SET paid = true
+            WHERE id = %s
+            RETURNING *
+        '''
+
+
+        cursor.execute(query, (ticket_id,))
+        result = cursor.fetchone()
+
+        # Creating ticket object from database ticket data
+        responsible = UserModel.get_user(result["responsible_id"])
+
+        zone = ZoneModel.get_zone(result["zone_id"])
+            
+        updated_ticket = Ticket(
+            result["id"], 
+            responsible, 
+            result["duration"], 
+            result["price"], 
+            result["registration"], 
+            result["paid"], 
+            zone, 
+            result["created_at"])
+
+        conn.commit()
+            
+        conn.close()
         
-        ticket: Ticket
 
-        try:
-            conn = get_connection()
-            cursor = conn.cursor()
+        return updated_ticket
 
-            query = '''
-                UPDATE tickets SET paid = true
-                WHERE id = %s
-                RETURNING *
-            '''
-
-            cursor.execute(query, (ticket_id, ))
-            result = cursor.fetchone()
-
-            # Creating ticket object from database ticket data
-            responsible: User = UserModel.get_user(result["responsible_id"])
-            zone: Zone = ZoneModel.get_zone(result["zone_id"])
-            ticket: Ticket = Ticket(responsible, result["price"], result["registration"], result["paid"], zone, result["created_at"])
-
-            conn.commit()
-            cursor.close()
-            conn.close()
-        except Exception as exception:
-            print('An error occurred accessing the database')
-            print(exception)
-            return None
-        
-
-        return ticket
 
 
     
