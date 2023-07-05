@@ -2,8 +2,6 @@ from datetime import datetime
 from decimal import Decimal
 from users.entities.user import User
 
-from .zone import Zone
-
 
 class Ticket:
     id: int
@@ -12,7 +10,7 @@ class Ticket:
     price: Decimal
     registration: str
     paid: bool
-    zone: Zone
+    location: str
     created_at: datetime #  hour, minute, second, microsecond and timezone info as datetime params
 
     def __init__(self, 
@@ -22,7 +20,7 @@ class Ticket:
                  price:float, 
                  registration:str,
                  paid:bool,
-                 zone: Zone, 
+                 location: str, 
                  created_at:datetime):
         self.id = id
         self.responsible = responsible
@@ -30,7 +28,7 @@ class Ticket:
         self.registration = registration
         self.price = Decimal(price)
         self.paid = paid
-        self.zone = zone
+        self.location = location
         self.created_at = created_at
     
 
@@ -42,7 +40,7 @@ class Ticket:
             'price': self.price,
             'registration': self.registration,
             'paid': self.paid,
-            'zone': self.zone.name,
+            'location': self.location,
             'created_at': self.created_at.strftime("%Y-%m-%d %H:%M")
         }
     

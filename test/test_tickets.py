@@ -21,6 +21,7 @@ class TestTickets(unittest.TestCase):
         cursor = conn.cursor()
 
         cursor.execute("DELETE FROM tickets WHERE registration = '4567-ABG'")
+        cursor.execute("DELETE FROM tickets WHERE registration = '4567-SQW'")
         cursor.execute("DELETE FROM users WHERE name = 'test'")
 
         conn.commit()
@@ -51,13 +52,11 @@ class TestTickets(unittest.TestCase):
         created_at = datetime.now().strftime("%Y-%m-%d %H:%M")
 
         ticket_data = {
-            'responsible_id': signedup_user["id"],
             'registration': '4567-ABG',
             'duration': 30,
             'price': 0.90,
             'paid': True,
-            'zone_id': 1,
-            'created_at': created_at
+            'location': 'La Moraleda',
         }
         
         headers = {
@@ -65,8 +64,9 @@ class TestTickets(unittest.TestCase):
         }
         
         
+
+        # Creating the ticket without the responsible_id and created_at
         response = self.client.post('http://localhost:5000/tickets/create', data=json.dumps(ticket_data), headers=headers, follow_redirects=True)
-        
         
         self.assertEqual(response.status_code, 200)
         
@@ -80,12 +80,45 @@ class TestTickets(unittest.TestCase):
         self.assertEqual(ticket.duration, 30)
         self.assertEqual(ticket.price, Decimal('0.90'))
         self.assertEqual(ticket.paid, True)
-        self.assertEqual(ticket.zone.id, 1)
+        self.assertEqual(ticket.location, "La Moraleda")
         self.assertEqual(ticket.created_at.strftime("%Y-%m-%d %H:%M"), created_at)
 
         self.client.get('http://localhost:5000/auth/logout/', headers=headers, follow_redirects=True)
 
 
+        # Creating the ticket giving the responsible_id and created_at
+
+        ticket_data_2 = {
+            'responsible_id': signedup_user["id"],
+            'registration': '4567-SQW',
+            'duration': 60,
+            'price': 1.20,
+            'paid': False,
+            'location': 'La Moraleda',
+            'created_at': created_at
+        }
+
+        response_2 = self.client.post('http://localhost:5000/tickets/create', data=json.dumps(ticket_data_2), headers=headers, follow_redirects=True)
+        
+        self.assertEqual(response.status_code, 200)
+        
+        response_data = json.loads(response_2.data)
+        id = response_data["id"]
+
+        ticket: Ticket = TicketModel.get_ticket(id)
+
+        self.assertIsNotNone(ticket)
+        self.assertEqual(ticket.registration, "4567-SQW")
+        self.assertEqual(ticket.duration, 60)
+        self.assertEqual(ticket.price, Decimal('1.20'))
+        self.assertEqual(ticket.paid, False)
+        self.assertEqual(ticket.location, "La Moraleda")
+        self.assertEqual(ticket.created_at.strftime("%Y-%m-%d %H:%M"), created_at)
+
+        self.client.get('http://localhost:5000/auth/logout/', headers=headers, follow_redirects=True)
+
+
+        
 
 
     def test_create_incorrect_ticket(self):
@@ -150,7 +183,7 @@ class TestTickets(unittest.TestCase):
             'duration': 30,
             'price': 0.90,
             'paid': True,
-            'zone_id': 1,
+            'location': 'La Moraleda',
             'created_at': created_at
         }
         headers = {
@@ -188,7 +221,7 @@ class TestTickets(unittest.TestCase):
             'duration': 30,
             'price': 0.90,
             'paid': False,
-            'zone_id': 1,
+            'location': 'La Moraleda',
             'created_at': created_at
         }
         headers = {
@@ -249,7 +282,7 @@ class TestTickets(unittest.TestCase):
             'duration': 30,
             'price': 0.90,
             'paid': True,
-            'zone_id': 1,
+            'location': 'La Moraleda',
             'created_at': created_at
         }
         headers = {

@@ -1,13 +1,13 @@
 import datetime
 from users.entities.user import User
 from tickets.entities.ticket import Ticket
-from tickets.entities.zone import Zone
 from psycopg2 import extras
 
 from users.models.user_model import UserModel
-from tickets.models.zone_model import ZoneModel
 
 from database.db_connection import get_connection
+
+
 
 class TicketModel:
     @classmethod
@@ -39,7 +39,6 @@ class TicketModel:
 
             # Creating ticket object from database ticket data
             responsible: User = UserModel.get_user(result["responsible_id"])
-            zone: Zone = ZoneModel.get_zone(result["zone_id"])
             
             
             ticket: Ticket = Ticket(
@@ -49,7 +48,7 @@ class TicketModel:
                 result["price"], 
                 result["registration"], 
                 result["paid"], 
-                zone, 
+                result["location"], 
                 result["created_at"])
             
             conn.close()
@@ -66,7 +65,7 @@ class TicketModel:
                       registration:str, 
                       price: float, 
                       paid: bool,
-                      zone_id: int,
+                      location: str,
                       created_at: datetime.datetime) -> Ticket:
         
         """Returns the created Ticket if is successfully created."""
@@ -78,12 +77,12 @@ class TicketModel:
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
 
             query = '''
-                INSERT INTO tickets(responsible_id, duration, registration, price, paid, zone_id, created_at) 
+                INSERT INTO tickets(responsible_id, duration, registration, price, paid, location, created_at) 
                 VALUES(%s, %s, %s, %s, %s, %s, %s ) 
                 RETURNING *
             '''
 
-            values = (responsible_id, duration, registration, price, paid,  zone_id, created_at)
+            values = (responsible_id, duration, registration, price, paid, location, created_at)
             
             cursor.execute(query, values)
 
@@ -92,7 +91,7 @@ class TicketModel:
 
             # Creating ticket object from database ticket data
             responsible: User = UserModel.get_user(responsible_id)
-            zone: Zone = ZoneModel.get_zone(result["zone_id"])
+            
             ticket: Ticket = Ticket(
                 result["id"], 
                 responsible, 
@@ -100,7 +99,7 @@ class TicketModel:
                 result["price"], 
                 result["registration"], 
                 result["paid"], 
-                zone, 
+                result["location"], 
                 result["created_at"])
             
             conn.commit()
@@ -159,7 +158,6 @@ class TicketModel:
         # Creating ticket object from database ticket data
         responsible = UserModel.get_user(result["responsible_id"])
 
-        zone = ZoneModel.get_zone(result["zone_id"])
             
         updated_ticket = Ticket(
             result["id"], 
@@ -168,7 +166,7 @@ class TicketModel:
             result["price"], 
             result["registration"], 
             result["paid"], 
-            zone, 
+            result["location"],
             result["created_at"])
 
         conn.commit()

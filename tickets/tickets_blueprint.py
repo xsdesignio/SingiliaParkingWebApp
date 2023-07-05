@@ -36,15 +36,20 @@ def get_tickets():
 def create_ticket():
     ticket_json = request.get_json()
     ticket: Ticket
+
+    responsible_id = ticket_json.get('responsible_id', session["id"])
+
+    created_at = ticket_json.get('created_at', datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+
     try:
         ticket = TicketModel.create_ticket(
-            ticket_json['responsible_id'] or session["id"], 
+            responsible_id, 
             ticket_json['duration'], 
             ticket_json['registration'], 
             ticket_json['price'], 
             ticket_json["paid"], 
-            ticket_json['zone_id'],
-            ticket_json['created_at'])
+            ticket_json['location'],
+            created_at)
     except Exception as e:
         return jsonify({'message': 'El ticket no pudo ser creado.'}), 400
 
