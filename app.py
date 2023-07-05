@@ -8,7 +8,7 @@ from bulletins.bulletins_blueprint import bulletins_bp
 
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": "exp://192.168.0.96:19000"}})
+cors = CORS(app, resources={r"/*": {"origins": "exp://192.168.0.24:19000"}})
 
 app.secret_key = 'tu_clave_secreta_aqui'
 

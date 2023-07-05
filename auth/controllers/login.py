@@ -36,6 +36,7 @@ def login_user(email, password) -> bool:
     user: User = UserModel.get_validated_user(email, password)
 
     if user != None:
+        session['id'] = user.id
         session['role'] = user.role.name
         session['email'] = user.email
         session['name'] = user.name

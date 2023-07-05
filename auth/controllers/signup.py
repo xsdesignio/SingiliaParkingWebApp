@@ -24,6 +24,7 @@ def signup_user(role:str, name: str, email: str, password: str) -> User:
         return None
     
     # Adding user to server session
+    session['id'] = user_stored.id
     session['role'] = role
     session['name'] = name
     session['email'] = email

@@ -59,6 +59,7 @@ class TestTickets(unittest.TestCase):
             'zone_id': 1,
             'created_at': created_at
         }
+        
         headers = {
             'Content-Type': 'application/json'
         }

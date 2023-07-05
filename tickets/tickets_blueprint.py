@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from auth.controllers.login import login_required
 
 from .models.ticket_model import TicketModel
@@ -38,7 +38,7 @@ def create_ticket():
     ticket: Ticket
     try:
         ticket = TicketModel.create_ticket(
-            ticket_json['responsible_id'], 
+            ticket_json['responsible_id'] or session["id"], 
             ticket_json['duration'], 
             ticket_json['registration'], 
             ticket_json['price'], 
