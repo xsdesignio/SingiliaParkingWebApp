@@ -28,8 +28,8 @@ CREATE TABLE bulletins(
     registration VARCHAR(60) NOT NULL,
     price DECIMAL NOT NULL,
     paid BOOLEAN NOT NULL DEFAULT false,
-    brand VARCHAR(60), /* added */
-    model VARCHAR(60), /* added */
-    signature VARCHAR(80) NOT NULL, /* added */
+    brand VARCHAR(60), 
+    model VARCHAR(60), 
+    color VARCHAR(80), 
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

@@ -23,6 +23,7 @@ class TicketModel:
             return None
         return result
 
+
     @classmethod
     def get_ticket(cls, id:int) -> Ticket:
         """
@@ -53,6 +54,7 @@ class TicketModel:
             
             conn.close()
         except Exception as exception:
+            print(exception)
             return None
         
         return ticket
@@ -107,6 +109,7 @@ class TicketModel:
             conn.close()
 
         except Exception as exception:
+            print(exception)
             return None
         
         return ticket
@@ -128,6 +131,7 @@ class TicketModel:
             conn.commit()
             conn.close()
         except Exception as exception:
+            print(exception)
             return None
 
         return deleted_ticket
@@ -137,44 +141,49 @@ class TicketModel:
     def pay_ticket(cls, ticket_id: int) -> Ticket:
         updated_ticket: Ticket
 
-        conn = get_connection()
-        cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+        try:
+            conn = get_connection()
+            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
 
-        ticket: Ticket = cls.get_ticket(ticket_id)
+            ticket: Ticket = cls.get_ticket(ticket_id)
 
-        if ticket.paid:
-            raise Exception("El ticket introducido ya ha sido pagado")
+            if ticket.paid:
+                raise Exception("El ticket introducido ya ha sido pagado")
 
-        query = '''
-            UPDATE tickets SET paid = true
-            WHERE id = %s
-            RETURNING *
-        '''
+            query = '''
+                UPDATE tickets SET paid = true
+                WHERE id = %s
+                RETURNING *
+            '''
 
 
-        cursor.execute(query, (ticket_id,))
-        result = cursor.fetchone()
+            cursor.execute(query, (ticket_id,))
+            result = cursor.fetchone()
 
-        # Creating ticket object from database ticket data
-        responsible = UserModel.get_user(result["responsible_id"])
+            # Creating ticket object from database ticket data
+            responsible = UserModel.get_user(result["responsible_id"])
 
+                
+            updated_ticket = Ticket(
+                result["id"], 
+                responsible, 
+                result["duration"], 
+                result["price"], 
+                result["registration"], 
+                result["paid"], 
+                result["location"],
+                result["created_at"])
+
+            conn.commit()
+                
+            conn.close()
             
-        updated_ticket = Ticket(
-            result["id"], 
-            responsible, 
-            result["duration"], 
-            result["price"], 
-            result["registration"], 
-            result["paid"], 
-            result["location"],
-            result["created_at"])
 
-        conn.commit()
-            
-        conn.close()
+            return updated_ticket
         
-
-        return updated_ticket
+        except Exception as exception:
+            print(exception)
+            return None
 
 
 

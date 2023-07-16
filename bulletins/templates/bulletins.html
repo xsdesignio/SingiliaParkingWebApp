@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %} Boletines {% endblock %}
+
+{% block content %}
+    <h1>Administración de boletines</h1>
+    <article class="filter-options">
+        
+        <form action="/summary" method="post">
+
+            <label for="start_date">Fecha de inicio</label>
+            <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
+            <label for="end_date">Fecha de fin</label>
+            <input type="date" name="end_date" id="end_date" value="{{ end_date }}">
+            <input type="submit" value="Filtrar">
+
+        </form>
+
+    </article>
+    {# PAGE DATA #}
+    <section>
+        <article>
+            <h2>Resumen de tickets impresos</h2>
+            <div class="char">
+                <canvas id="bulletins-chart"></canvas>
+                <p id="tickets-amount"></p>
+            </div>
+        </article>
+
+        <article>
+            <h2>Resumen de boletines impresos</h2>
+            <div class="char">
+                <canvas id="bulletins-chart"></canvas>
+                <p id="tickets-amount">
+                    {%if bulletins %}
+                        {{ bulletins|length }}
+                    {% else %}
+                        0
+                    {% endif %}
+                </p>
+            </div>
+        </article>
+
+        <section>
+            <h2>Boletines impresos</h2>
+            {% if bulletins %}
+                {% for bulletin in bulletins%}
+                    <article>
+                        <h3>{{ bulletin.responsible }}</h3>
+                        <h3>{{ bulletin.duration }}</h3>
+                        <h3>{{ bulletin.price }}</h3>
+                        <h3>{{ bulletin.date }}</h3>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <p>No hay boletines impresos</p>
+            {% endif %}
+        </section>
+    </section>
+{% endblock %}

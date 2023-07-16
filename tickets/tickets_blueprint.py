@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, render_template, request, jsonify, session
 from auth.controllers.login import login_required
 
 from .models.ticket_model import TicketModel
@@ -6,7 +6,17 @@ from .entities.ticket import Ticket
 import datetime
 
 
-tickets_bp = Blueprint('tickets', __name__, url_prefix='/tickets')
+tickets_bp = Blueprint('tickets', __name__, url_prefix='/tickets', template_folder='./templates')
+
+
+@tickets_bp.get('/')
+@login_required
+def tickets_page():
+
+    tickets = TicketModel.get_tickets()
+
+    return render_template('tickets.html', tickets=tickets)
+
 
 
 
@@ -68,14 +78,21 @@ def pay_ticket(id: int):
     try:
         ticket_id = int(id)
 
-        if(TicketModel.get_ticket(ticket_id) == None):
+        ticket = TicketModel.get_ticket(ticket_id)
+
+        if(ticket == None):
             return jsonify({'message': "El ticket no existe"}), 400
+        
+        if(ticket.paid == True):
+            return jsonify({'message': "El ticket introducido ya ha sido pagado"}), 400
          
         TicketModel.pay_ticket(ticket_id)
+
         return jsonify({'message': 'El ticket ha sido pagado con éxito'}), 200
     
-    except Exception as e:
-        return jsonify({'message': e.__str__()}), 400
+    except Exception as exception:
+        print(exception)
+        return jsonify({'message': exception.__str__()}), 400
 
 
 

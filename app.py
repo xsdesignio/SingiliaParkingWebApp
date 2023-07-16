@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flask_cors import CORS
+from auth.controllers.login import login_required
 
 from auth.auth_blueprint import auth_bp
 from users.users_blueprint import users_bp
@@ -25,6 +26,7 @@ app.register_blueprint(bulletins_bp, url_prefix="/bulletins")
 
 
 @app.get('/')
+@login_required
 def home():
     return render_template('index.html')
 

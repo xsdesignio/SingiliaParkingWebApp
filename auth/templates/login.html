@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Auth</title>
+        <link href="{{ url_for('static', filename='/css/style.css')}}" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <!-- Create a html body for a login page with a fake form in the center and a button that calls a javascript function in order to convert the data into a json and sent it to server -->
+        <div class="login-container">
+            <div class="login">
+                <div class="img-container">
+                    <img class="img-logo" src="{{ url_for('static', filename='/assets/icons/logo.png')}}" alt="">
+                </div>
+
+                <h1>Inicio de sesión</h1>
+                <form id="login-form" action="javascript:login()">
+                    <input type="text" name="email" placeholder="Email" required="required" />
+                    <input type="password" name="password" placeholder="Contraseña" required="required" />
+                    <button type="submit">Entrar</button>
+                </form>
+            </div>
+        </div>
+        <source>
+            <script src="{{ url_for('static', filename='/js/session.js') }}"></script>
+        </source>
+
+    </body>
+
+        
+</html>
+ 

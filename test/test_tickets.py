@@ -9,6 +9,7 @@ from app import app
 from tickets.models.ticket_model import TicketModel
 from tickets.entities.ticket import Ticket
 
+
 from database.db_connection import get_connection
 
 class TestTickets(unittest.TestCase):
@@ -191,8 +192,7 @@ class TestTickets(unittest.TestCase):
         }
         
         response = self.client.post('http://localhost:5000/tickets/create', data=json.dumps(ticket_data), headers=headers, follow_redirects=True)
-        self.assertEqual(response.status_code, 401)
-        
+        self.assertEqual(response.history[0].status_code, 308)
 
 
     def test_pay_ticket(self):

@@ -1,4 +1,4 @@
-from flask import Blueprint, send_from_directory, request, redirect, url_for, jsonify
+from flask import Blueprint, render_template, send_from_directory, request, redirect, url_for, jsonify
 from flask import session, make_response
 from .controllers.login import login_user, login_required
 from .controllers.signup import signup_user
@@ -7,7 +7,15 @@ from users.entities.user import User
 
 
 
-auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
+auth_bp = Blueprint('auth', __name__, url_prefix='/auth', template_folder='./templates')
+
+
+@auth_bp.get('/login')
+def login_page():
+    """Login page"""
+    if 'id' in session:
+        return redirect('/')
+    return render_template('login.html')
 
 
 @auth_bp.post('/login')
@@ -80,7 +88,7 @@ def logout():
     """Logout user by clearing session"""
     session.clear()
         
-    return {"message": "Se ha cerrado sesión correctamente"}, 200
+    return {"message": "Se ha cerrado sesion correctamente"}, 200
 
 
 

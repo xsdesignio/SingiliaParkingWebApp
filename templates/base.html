@@ -15,10 +15,19 @@
             </header>
             <nav class="menu">
                 <ul>
-                    <li><a class="selected" href="/">Resumen</a></li>
-                    <li><a href="tickets/">Tickets</a></li>
-                    <li><a href="bulletins/">Boletines</a></li>
-                    <li><a href="users/">Usuarios</a></li>
+                    <li>
+                        <a class="{{ 'selected' if request.path == '/' else '' }}" href="/">Resumen</a>
+                    </li>
+                    <li>
+                        <a class="{{ 'selected' if request.path == '/tickets/' else '' }}" href="/tickets/">Tickets</a>
+                    </li>
+                    <li>
+                        <a class="{{ 'selected' if request.path == '/bulletins/' else '' }}" href="/bulletins/">Boletines</a>
+                    </li>
+                    <li>
+                        <a class="{{ 'selected' if request.path == '/users/' else '' }}" href="/users/">Usuarios</a>
+                    </li>
+
                 </ul>
             </nav>
             <main class="content">

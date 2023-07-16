@@ -1,8 +1,10 @@
+from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 from users.entities.user import User
 
 
+@dataclass
 class Ticket:
     id: int
     responsible: User
@@ -13,23 +15,9 @@ class Ticket:
     location: str
     created_at: datetime #  hour, minute, second, microsecond and timezone info as datetime params
 
-    def __init__(self, 
-                 id: int,
-                 responsible:User, 
-                 duration: int, 
-                 price:float, 
-                 registration:str,
-                 paid:bool,
-                 location: str, 
-                 created_at:datetime):
-        self.id = id
-        self.responsible = responsible
-        self.duration = duration #minutes
-        self.registration = registration
-        self.price = Decimal(price)
-        self.paid = paid
-        self.location = location
-        self.created_at = created_at
+    def __post_init__(self):
+        if not isinstance(self.price, Decimal):
+            self.price = Decimal(self.price)
     
 
     def to_json(self):

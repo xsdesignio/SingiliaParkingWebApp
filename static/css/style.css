@@ -1,4 +1,20 @@
 
+/* export const colors = {
+    "primary": "#1E88E5",
+    "white": "#ffffff",
+    "black": "#000000",
+    "dark_green": "#35523e",
+    "green": "#60826a",
+    "light_green": "#d4faec",
+    "light_green_selected": "#95e8c9",
+    "dark_blue": "darkblue",
+    "green_button": "#559f97",
+    "background": "#FFFFFF",
+    "button_selected": "#95e8c9",
+    "button_unselected": "#e0e0e0",
+    "error_color": "red",
+} */
+
 /* Añade los estilos para index.html utilizando un grid donde el header esté arriba, el menu a la izquierda y el contenido en el espacio sobrante, teniendo en cuenta que este es scrolleable (no la pagina, el header y menu deben de estar estáticos) */
 * {
   margin: 0;
@@ -71,22 +87,15 @@ main {
   border-right: #35523e5a 1px solid;
 }
 
+article {
+  margin: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 2px 2px 20px 2px #35523e5a;
+  background-color: white;
+  width: fit-content;
+}
 
-/* export const colors = {
-    "primary": "#1E88E5",
-    "white": "#ffffff",
-    "black": "#000000",
-    "dark_green": "#35523e",
-    "green": "#60826a",
-    "light_green": "#d4faec",
-    "light_green_selected": "#95e8c9",
-    "dark_blue": "darkblue",
-    "green_button": "#559f97",
-    "background": "#FFFFFF",
-    "button_selected": "#95e8c9",
-    "button_unselected": "#e0e0e0",
-    "error_color": "red",
-} */
 
 .img-logo {
   width: 50px;
@@ -96,27 +105,6 @@ main {
 }
 
 
-
-/* Styles for login page */
-/* Create css to style the next html code, creating an smooth shadow on the login containter, centering it and all elements and showing the image on top of the form (out of it). Don't add styles to the body:
-<body>
-        <!-- Create a html body for a login page with a fake form in the center and a button that calls a javascript function in order to convert the data into a json and sent it to server -->
-        <div class="login-container">
-            <div class="login">
-                <div class="img-logo">
-                    <img src="../assets/icons/logo.png" alt="">
-                </div>
-                <h1>Inicio de sesión</h1>
-                <form id="login-form" action="javascript:login()">
-                    <input type="text" name="username" placeholder="Usuario" required="required" />
-                    <input type="password" name="password" placeholder="Contraseña" required="required" />
-                    <button type="submit" class="btn btn-primary btn-block btn-large">Entrar</button>
-                </form>
-            </div>
-        </div>
-        
-</body> 
-*/
 .login-container {
   display: grid;
   place-items: center;

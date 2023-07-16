@@ -9,8 +9,8 @@ def login_required(function):
     @wraps(function)
     def wrapper(*args, **kwargs):
         if 'name' not in session:
-            error_message = "Necesitas iniciar sesión para acceder a esta ruta."
-            return jsonify({'error': error_message}), 401
+            redirect_url = url_for('auth.login_page')
+            return redirect(redirect_url)
         return function(*args, **kwargs)
     return wrapper
 

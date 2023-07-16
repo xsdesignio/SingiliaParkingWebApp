@@ -28,6 +28,7 @@ class BulletinModel:
             Returns None if the bulletin id doesn't exists
         """
         bulletin: Bulletin
+
         try:
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
@@ -46,11 +47,14 @@ class BulletinModel:
                 result["duration"], 
                 result["price"], 
                 result["paid"], 
-                result["brand"], 
-                result["model"], 
-                result["signature"], 
-                result["created_at"])
+                result["created_at"],
+                result.get("brand"), 
+                result.get("model"), 
+                result.get("color") 
+            )
+
             conn.close()
+
         except Exception as exception:
             return None
         
@@ -59,16 +63,17 @@ class BulletinModel:
 
     @classmethod
     def create_bulletin(self, 
-                 responsible_id: int, 
-                 location: str,
-                 registration: str,
-                 duration: int,
-                 price: float,
-                 paid: bool,
-                 brand: str,
-                 model: str,
-                 signature: str,
-                 created_at:datetime.datetime) -> Bulletin:
+                responsible_id: int, 
+                location: str,
+                registration: str,
+                duration: int,
+                price: float,
+                paid: bool,
+                created_at:datetime.datetime,
+                brand: str = None,
+                model: str = None,
+                color: str = None
+            ) -> Bulletin:
         
         """Returns the created Bulletin if is successfully created."""
 
@@ -80,12 +85,12 @@ class BulletinModel:
 
             query = '''
                 INSERT INTO bulletins(responsible_id, location, registration, duration,
-                    price, paid, brand, model, signature, created_at) 
+                    price, paid, brand, model, color, created_at) 
                 VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
                 RETURNING *
             '''
 
-            values = (responsible_id, location, registration, duration, price, paid, brand, model, signature, created_at)
+            values = (responsible_id, location, registration, duration, price, paid, brand, model, color, created_at)
             
             cursor.execute(query, values)
 
@@ -103,10 +108,11 @@ class BulletinModel:
                 result["duration"], 
                 result["price"], 
                 result["paid"], 
-                result["brand"], 
-                result["model"], 
-                result["signature"], 
-                result["created_at"])
+                result["created_at"],
+                result.get("brand"), 
+                result.get("model"), 
+                result.get("color")
+            )
 
             
             conn.commit()
@@ -114,6 +120,7 @@ class BulletinModel:
             conn.close()
 
         except Exception as exception:
+            print(exception)
             return None
         
         return bulletin
@@ -174,10 +181,11 @@ class BulletinModel:
             result["duration"], 
             result["price"], 
             result["paid"], 
-            result["brand"], 
-            result["model"], 
-            result["signature"], 
-            result["created_at"])
+            result["created_at"],
+            result.get("brand"), 
+            result.get("model"), 
+            result.get("color"), 
+        )
         conn.commit()
         cursor.close()
         conn.close()

@@ -1,8 +1,18 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, render_template, request, jsonify
 from users.models.user_model import UserModel
 from auth.controllers.login import role_required
 
-users_bp = Blueprint('users', __name__, url_prefix='/users')
+
+
+
+users_bp = Blueprint('users', __name__, url_prefix='/users', template_folder='./templates')
+
+
+
+@role_required('ADMIN')
+@users_bp.get('/')
+def users_page():
+    return render_template('users.html')
 
 
 
