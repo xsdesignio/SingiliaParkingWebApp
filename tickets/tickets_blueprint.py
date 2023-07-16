@@ -73,6 +73,7 @@ def pay_ticket(id: int):
          
         TicketModel.pay_ticket(ticket_id)
         return jsonify({'message': 'El ticket ha sido pagado con éxito'}), 200
+    
     except Exception as e:
         return jsonify({'message': e.__str__()}), 400
 

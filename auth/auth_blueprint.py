@@ -12,6 +12,11 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 @auth_bp.post('/login')
 def login():
+    """Login user by a json request and return user data if login is successful
+    
+    Return: user data
+    """
+    
     data = request.get_json()
     email = data['email']
     password = data['password']
@@ -34,6 +39,11 @@ def login():
 
 @auth_bp.post('/signup')
 def signup():
+    """Signup user by a json request and return user data if signup is successful
+
+    Return: user data
+    """
+
     data = request.get_json()
 
     role = data['role']
@@ -67,7 +77,7 @@ def signup():
 
 @auth_bp.get('/logout')
 def logout():
-    # Clear the session data
+    """Logout user by clearing session"""
     session.clear()
         
     return {"message": "Se ha cerrado sesión correctamente"}, 200
@@ -77,6 +87,11 @@ def logout():
 @login_required
 @auth_bp.get('/session')
 def get_session():
+    """
+    Get session data
+
+    Return: session data (user info)
+    """
     session_data: dict[int, str, str, str] = {}
     
     if 'username' in session:

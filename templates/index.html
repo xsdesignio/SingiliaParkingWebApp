@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %} Resumen {% endblock %}
+
+{% block content %}
+    <h1>Resumen</h1>
+    <article class="filter-options">
+        {# Create a form where the user can choose the start date and the end date for the data that will be shown below of it #}
+        <form action="/summary" method="post">
+            <label for="start_date">Fecha de inicio</label>
+            <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
+            <label for="end_date">Fecha de fin</label>
+            <input type="date" name="end_date" id="end_date" value="{{ end_date }}">
+            <input type="submit" value="Filtrar">
+        </form>
+    </article>
+    {# PAGE DATA #}
+    <section>
+        <article>
+            <h2>Resumen de tickets impresos</h2>
+            <div class="char">
+                <canvas id="bulletins-chart"></canvas>
+                <p id="tickets-amount"></p>
+            </div>
+        </article>
+
+        <article>
+            <h2>Resumen de boletines impresos</h2>
+            <div class="char">
+                <canvas id="bulletins-chart"></canvas>
+                <p id="tickets-amount"></p>
+            </div>
+        </article>
+    </section>
+{% endblock %}

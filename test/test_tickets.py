@@ -168,7 +168,7 @@ class TestTickets(unittest.TestCase):
         headers = {
             'Content-Type': 'application/json'
         }
-            
+        
         signup_request = self.client.post('http://localhost:5000/auth/signup', data=json.dumps(signup_data), headers=headers)
 
         signedup_user = json.loads(signup_request.data)

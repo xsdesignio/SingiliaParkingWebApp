@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_cors import CORS
 
 from auth.auth_blueprint import auth_bp
@@ -7,10 +7,11 @@ from tickets.tickets_blueprint import tickets_bp
 from bulletins.bulletins_blueprint import bulletins_bp
 
 
-app = Flask(__name__)
-# cors = CORS(app, resources={r"/*": {"origins": "exp://192.168.0.24:19000"}})
+app = Flask(__name__, static_folder='static', template_folder='templates')
 
-cors = CORS(app, resources={r"/*": {"origins": "exp://192.168.0.24:19000"}})
+
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
+
 
 app.secret_key = 'tu_clave_secreta_aqui'
 
@@ -25,7 +26,7 @@ app.register_blueprint(bulletins_bp, url_prefix="/bulletins")
 
 @app.get('/')
 def home():
-    return f'<h1>Result should be 2 -> result:</h1>'
+    return render_template('index.html')
 
 
 

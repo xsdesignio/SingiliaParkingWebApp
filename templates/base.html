@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            {% block title %} Home {% endblock %} - Sigilia Barba
+        </title>
+        <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <!-- Create the structure for a dashboard where there is header on top, a menu on left and the current information or page on the rest of the window -->
+        <div class="container">
+            <header class="header">
+                <img class="img-logo" src="{{ url_for('static', filename='/assets/icons/logo.png') }}" alt="">
+            </header>
+            <nav class="menu">
+                <ul>
+                    <li><a class="selected" href="/">Resumen</a></li>
+                    <li><a href="tickets/">Tickets</a></li>
+                    <li><a href="bulletins/">Boletines</a></li>
+                    <li><a href="users/">Usuarios</a></li>
+                </ul>
+            </nav>
+            <main class="content">
+                {% block content %}
+                    <span>Recuerda recargar la página si quieres ver los resultados actualizados</span>
+
+                    <h2>Resumen</h2>
+                    <p>This is the home page</p>
+                {% endblock %}
+            </main>
+        
+    </body>
+</html>
