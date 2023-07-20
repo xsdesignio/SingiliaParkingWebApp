@@ -22,6 +22,84 @@ class TicketModel:
         except Exception as exception:
             return None
         return result
+    
+    @classmethod
+    def get_tickets_by_filter(cls, start_date: datetime.datetime = None, end_date: datetime.datetime = None, location: str = None) -> list[dict]:
+        result: list[dict]
+        
+        try:
+            conn = get_connection()
+            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+
+            # Build the SQL query dynamically based on the provided parameters
+            query = 'SELECT * FROM tickets WHERE created_at BETWEEN %s AND %s'
+            params = [start_date, end_date]
+
+            if location:
+                query += ' AND location = %s'
+                params.append(location)
+
+            cursor.execute(query, params)
+            result = cursor.fetchall()
+            conn.close()
+        except Exception as exception:
+            return None
+        return result
+    
+
+    @classmethod
+    def count_all_tickets_variables_by_filter(cls, start_date: datetime.datetime = None, end_date: datetime.datetime = None, location: str = None):
+        """Return a dictionary with the variables and their count"""
+        paid_by_card = cls.count_tickets_variable_by_filter(start_date, end_date, location, 'paid', True)
+        paid_by_cash = cls.count_tickets_variable_by_filter(start_date, end_date, location, 'paid', False)
+        duration_of_30 = cls.count_tickets_variable_by_filter(start_date, end_date, location, 'duration', 30)
+        duration_of_60 = cls.count_tickets_variable_by_filter(start_date, end_date, location, 'duration', 60)
+        duration_of_90 = cls.count_tickets_variable_by_filter(start_date, end_date, location, 'duration', 90)
+        duration_of_120 = cls.count_tickets_variable_by_filter(start_date, end_date, location, 'duration', 120)
+
+        tickets_amount_by_data = {
+            "paid_by_card": paid_by_card,
+            "paid_by_cash": paid_by_cash,
+            "duration_of_30": duration_of_30,
+            "duration_of_60": duration_of_60,
+            "duration_of_90": duration_of_90,
+            "duration_of_120": duration_of_120,
+        }
+
+        return tickets_amount_by_data
+    
+
+    @classmethod
+    def count_tickets_variable_by_filter(cls, start_date: datetime.datetime = None, end_date: datetime.datetime = None, location: str = None, variable: str = None, value = None):
+        count: int
+        
+        try:
+            conn = get_connection()
+            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+
+            # Build the SQL query dynamically based on the provided parameters
+            query = 'SELECT COUNT(*) AS count FROM tickets WHERE created_at BETWEEN %s AND %s'
+            
+            params = [start_date, end_date]
+            if location:
+                query += ' AND location = %s'
+                params.append(location)
+            
+            query += f' AND {variable} = %s'
+
+            params.append(value)
+
+            
+            cursor.execute(query, params)
+            result = cursor.fetchone()
+            
+            count = result["count"]
+
+            conn.close()
+            
+        except Exception as exception:
+            return None
+        return count
 
 
     @classmethod

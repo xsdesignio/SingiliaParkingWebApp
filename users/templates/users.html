@@ -5,33 +5,29 @@
 {% block content %}
 
     <h1>Administración de usuarios</h1>
-    <article class="filter-options">
-        
-        <form action="/summary" method="post">
-            <label for="start_date">Fecha de inicio</label>
-            <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
-            <label for="end_date">Fecha de fin</label>
-            <input type="date" name="end_date" id="end_date" value="{{ end_date }}">
-            <input type="submit" value="Filtrar">
-        </form>
-    </article>
+
+    <section class="two-columns-grid">
+        <article>
+            <a href="/users/create" class="default-button">Crear Usuario</a>
+        </article>
+        <article>
+            Cantidad de usuarios: <strong>{{ users|length }}</strong>
+        </article>
+    </section>
 
     {# PAGE DATA #}
     <section>
-        <article>
-            <h2>Resumen de tickets impresos</h2>
-            <div class="char">
-                <canvas id="users-chart"></canvas>
-                <p id="users-amount"></p>
-            </div>
+        <h2>Usuarios Actuales</h2>
+        
+        <article class="users-cards">
+            {% for user in users %}
+                <div class="user-card">
+                    <p>{{ user.name }}</p>
+                    <p>{{ user.email }}</p>
+                    <a href="/users/{{ user.id }}" class="default-button">Editar</a>
+                </div>
+            {% endfor %}
         </article>
 
-        <article>
-            <h2>Resumen de boletines impresos</h2>
-            <div class="char">
-                <canvas id="users-chart"></canvas>
-                <p id="users-amount"></p>
-            </div>
-        </article>
     </section>
 {% endblock %}

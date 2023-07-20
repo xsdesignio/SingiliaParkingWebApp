@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %} Usuarios {% endblock %}
+
+{% block content %}
+
+    <h1>Administración de usuarios</h1>
+
+    <section>
+        <div class="form-wrapper">
+            <h2>Crear usuario</h2>
+            <form action="/users/create-user" method="post" class="general-form">
+                <div>
+                    <label for="name">Nombre</label>
+                    <br/>
+                    <input type="text" name="name" id="name" required>
+                </div>
+                <div>
+                    <label for="email">Email</label>
+                    <br/>
+                    <input type="email" name="email" id="email" required>
+                </div>
+                <div>
+                    <label for="password">Contraseña</label>
+                    <br/>
+                    <input type="text" name="password" id="password" required>
+    
+                </div>
+                <div>
+                    <label for="role">Rol</label>
+                    <br/>
+                    <select name="role" id="role">
+                        <option value="admin">Administrador</option>
+                        <option value="user">Empleado</option>
+                    </select>
+                </div>
+                
+                <input class="default-button" type="submit" value="Crear">
+            </form>
+        </div>
+
+    </section>
+{% endblock %}

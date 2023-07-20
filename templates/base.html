@@ -6,6 +6,8 @@
             {% block title %} Home {% endblock %} - Sigilia Barba
         </title>
         <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
+        
+        <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
     </head>
     <body>
         <!-- Create the structure for a dashboard where there is header on top, a menu on left and the current information or page on the rest of the window -->
@@ -19,13 +21,13 @@
                         <a class="{{ 'selected' if request.path == '/' else '' }}" href="/">Resumen</a>
                     </li>
                     <li>
-                        <a class="{{ 'selected' if request.path == '/tickets/' else '' }}" href="/tickets/">Tickets</a>
+                        <a class="{{ 'selected' if '/tickets/' in request.path else '' }}" href="/tickets/">Tickets</a>
                     </li>
                     <li>
-                        <a class="{{ 'selected' if request.path == '/bulletins/' else '' }}" href="/bulletins/">Boletines</a>
+                        <a class="{{ 'selected' if '/bulletins/' in request.path  else '' }}" href="/bulletins/">Boletines</a>
                     </li>
                     <li>
-                        <a class="{{ 'selected' if request.path == '/users/' else '' }}" href="/users/">Usuarios</a>
+                        <a class="{{ 'selected' if '/users/' in request.path else '' }}" href="/users/">Usuarios</a>
                     </li>
 
                 </ul>

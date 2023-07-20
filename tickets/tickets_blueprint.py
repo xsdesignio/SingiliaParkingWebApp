@@ -3,7 +3,7 @@ from auth.controllers.login import login_required
 
 from .models.ticket_model import TicketModel
 from .entities.ticket import Ticket
-import datetime
+from datetime import datetime, timedelta
 
 
 tickets_bp = Blueprint('tickets', __name__, url_prefix='/tickets', template_folder='./templates')
@@ -12,11 +12,32 @@ tickets_bp = Blueprint('tickets', __name__, url_prefix='/tickets', template_fold
 @tickets_bp.get('/')
 @login_required
 def tickets_page():
+    """ Returns the tickets filtered by date or by location. Filters are optional and can be combined. They are obtained by get arguments."""
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    location = request.args.get('location')
 
-    tickets = TicketModel.get_tickets()
+    if end_date is not None and end_date != '':
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+    else:
+        end_date = datetime.now()
 
-    return render_template('tickets.html', tickets=tickets)
+    if start_date is not None and start_date != '':
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    else:
+        start_date = datetime.now() - timedelta(days=30)
 
+    if location == 'all':
+        location = None
+
+    tickets = TicketModel.get_tickets_by_filter(start_date, end_date, location)
+
+    count_all_tickets = TicketModel.count_all_tickets_variables_by_filter(start_date, end_date, location)
+
+    start_date = start_date.strftime('%Y-%m-%d')
+    end_date = end_date.strftime('%Y-%m-%d')
+
+    return render_template('tickets.html', tickets=tickets, start_date=start_date, end_date=end_date, location=location, tickets_data = count_all_tickets)
 
 
 

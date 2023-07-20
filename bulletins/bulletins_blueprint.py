@@ -4,6 +4,7 @@ from auth.controllers.login import login_required
 from .models.bulletin_model import BulletinModel
 from .entities.bulletin import Bulletin
 
+from datetime import datetime, timedelta
 
 
 bulletins_bp = Blueprint('bulletins', __name__, url_prefix='/bulletins', template_folder='./templates')
@@ -13,10 +14,33 @@ bulletins_bp = Blueprint('bulletins', __name__, url_prefix='/bulletins', templat
 @bulletins_bp.get('/')
 @login_required
 def bulletins_page():
+    """ Returns the bulletins filtered by date or by location. Filters are optional and can be combined. They are obtained by get arguments."""
+    
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
+    location = request.args.get('location')
 
-    bulletins = BulletinModel.get_bulletins()
+    if end_date is not None and end_date != '':
+        end_date = datetime.strptime(end_date, '%Y-%m-%d')
+    else:
+        end_date = datetime.now()
 
-    return render_template('bulletins.html', bulletins=bulletins)
+    if start_date is not None and start_date != '':
+        start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    else:
+        start_date = datetime.now() - timedelta(days=30)
+
+    if location == 'all':
+        location = None
+
+    bulletins = BulletinModel.get_bulletins_by_filter(start_date, end_date, location)
+
+    count_all_bulletins = BulletinModel.count_all_bulletins_variables_by_filter(start_date, end_date, location)
+
+    start_date = start_date.strftime('%Y-%m-%d')
+    end_date = end_date.strftime('%Y-%m-%d')
+
+    return render_template('bulletins.html', bulletins=bulletins, start_date=start_date, end_date=end_date, location=location, bulletins_data = count_all_bulletins)
 
 
 
