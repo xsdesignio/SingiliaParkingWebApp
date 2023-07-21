@@ -6,6 +6,7 @@ from auth.auth_blueprint import auth_bp
 from users.users_blueprint import users_bp
 from tickets.tickets_blueprint import tickets_bp
 from bulletins.bulletins_blueprint import bulletins_bp
+from zones.zones_blueprint import zones_bp
 
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
@@ -23,6 +24,7 @@ app.register_blueprint(auth_bp, url_prefix ='/auth')
 app.register_blueprint(tickets_bp, url_prefix ='/tickets')
 app.register_blueprint(users_bp, url_prefix ='/users')
 app.register_blueprint(bulletins_bp, url_prefix="/bulletins")
+app.register_blueprint(zones_bp, url_prefix="/zones")
 
 
 @app.get('/')
