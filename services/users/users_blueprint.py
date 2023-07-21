@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for
-from users.models.user_model import UserModel
+from .models.user_model import UserModel
 from auth.controllers.login import role_required
 
 

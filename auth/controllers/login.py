@@ -1,8 +1,8 @@
 from flask import redirect, request, session, url_for, jsonify
 from functools import wraps
-from users.models.user_model import UserModel
+from services.users.models.user_model import UserModel
 
-from users.entities.user import User
+from services.users.entities.user import User
 
 
 def login_required(function):

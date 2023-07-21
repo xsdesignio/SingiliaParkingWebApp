@@ -1,7 +1,7 @@
 from flask import session
 
-from users.models.user_model import UserModel
-from users.entities.user import User
+from services.users.models.user_model import UserModel
+from services.users.entities.user import User
 
 
 def signup_user(role:str, name: str, email: str, password: str) -> User:

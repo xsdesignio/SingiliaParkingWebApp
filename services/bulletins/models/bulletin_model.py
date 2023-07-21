@@ -1,9 +1,9 @@
 import datetime
-from users.entities.user import User
+from services.users.entities.user import User
 from ..entities.bulletin import Bulletin
 from psycopg2 import extras
 
-from users.models.user_model import UserModel
+from services.users.models.user_model import UserModel
 
 from database.db_connection import get_connection
 

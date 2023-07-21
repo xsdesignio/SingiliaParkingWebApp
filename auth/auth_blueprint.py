@@ -3,7 +3,7 @@ from flask import session, make_response
 from .controllers.login import login_user, login_required
 from .controllers.signup import signup_user
 
-from users.entities.user import User
+from services.users.entities.user import User
 
 
 

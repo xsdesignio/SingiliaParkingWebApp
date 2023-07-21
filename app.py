@@ -3,10 +3,10 @@ from flask_cors import CORS
 from auth.controllers.login import login_required
 
 from auth.auth_blueprint import auth_bp
-from users.users_blueprint import users_bp
-from tickets.tickets_blueprint import tickets_bp
-from bulletins.bulletins_blueprint import bulletins_bp
-from zones.zones_blueprint import zones_bp
+from services.users.users_blueprint import users_bp
+from services.tickets.tickets_blueprint import tickets_bp
+from services.bulletins.bulletins_blueprint import bulletins_bp
+from services.zones.zones_blueprint import zones_bp
 
 
 app = Flask(__name__, static_folder='static', template_folder='templates')

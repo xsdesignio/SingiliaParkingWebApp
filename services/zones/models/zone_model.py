@@ -1,7 +1,7 @@
 from psycopg2 import extras
 from database.db_connection import get_connection
 
-from zones.entities.zone import Zone
+from services.zones.entities.zone import Zone
 
 
 class ZoneModel:

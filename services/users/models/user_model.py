@@ -1,10 +1,9 @@
-from enum import Enum
-from users.entities.user import User, UserRole
-from psycopg2 import connect, extras
+
+from psycopg2 import extras
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database.db_connection import get_connection
-
+from ..entities.user import User, UserRole
 
 class UserModel:
 

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from datetime import datetime
 from decimal import Decimal
-from users.entities.user import User
+from services.users.entities.user import User
 
 
 

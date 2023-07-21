@@ -1,9 +1,9 @@
 import datetime
-from users.entities.user import User
-from tickets.entities.ticket import Ticket
+from services.users.entities.user import User
+from services.tickets.entities.ticket import Ticket
 from psycopg2 import extras
 
-from users.models.user_model import UserModel
+from services.users.models.user_model import UserModel
 
 from database.db_connection import get_connection
 
