@@ -6,8 +6,8 @@ import json
 from psycopg2 import connect
 
 from app import app
-from tickets.models.ticket_model import TicketModel
-from tickets.entities.ticket import Ticket
+from services.tickets.models.ticket_model import TicketModel
+from services.tickets.entities.ticket import Ticket
 
 
 from database.db_connection import get_connection

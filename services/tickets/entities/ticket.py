@@ -2,20 +2,23 @@ from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 from services.users.entities.user import User
-
+from services.zones.entities.zone import Zone
+from services.utils.payment_methods import PaymentMethod
 
 @dataclass
 class Ticket:
     id: int
     responsible: User
+    zone: Zone
     duration: int # in minutes
-    price: Decimal
     registration: str
-    paid: bool
-    location: str
-    created_at: datetime #  hour, minute, second, microsecond and timezone info as datetime params
+    price: Decimal
+    payment_method: PaymentMethod = PaymentMethod.CASH
+    paid: bool = True
+    created_at: datetime = datetime.now() 
 
     def __post_init__(self):
+        """This code is executed after the object is created and ensures that the price is a Decimal object."""
         if not isinstance(self.price, Decimal):
             self.price = Decimal(self.price)
     
@@ -24,11 +27,12 @@ class Ticket:
         return {
             'id': self.id,
             'responsible': self.responsible.name,
+            'zone': self.zone.name,
             'duration': self.duration,
-            'price': self.price,
             'registration': self.registration,
+            'price': self.price,
+            'payment_method': self.payment_method.value,
             'paid': self.paid,
-            'location': self.location,
             'created_at': self.created_at.strftime("%Y-%m-%d %H:%M")
         }
     

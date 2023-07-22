@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import datetime
 from enum import Enum
 
@@ -14,25 +15,14 @@ class UserRole(Enum):
         raise ValueError(f"No enum member with name '{enum_member_name}' found.")
     
 
+@dataclass
 class User:
     id: int
     role: UserRole
     name: str
     email: str
     password: str
-    created_at: datetime
-
-    def __init__(self, id: int, role:UserRole, name:str, email:str, password:str, created_at: datetime) -> None:
-        self.id = id
-        self.role = role
-        self.name = name
-        self.email = email
-        self.password = password 
-        if created_at:
-            self.created_at = created_at
-        else:
-            created_at = datetime.datetime.now()
-
+    created_at: datetime = datetime.datetime.now()
 
     def to_json(self):
         return {

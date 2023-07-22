@@ -4,6 +4,9 @@ from ..entities.bulletin import Bulletin
 from psycopg2 import extras
 
 from services.users.models.user_model import UserModel
+from services.zones.models.zone_model import ZoneModel
+from services.zones.entities.zone import Zone
+from services.utils.payment_methods import PaymentMethod
 
 from database.db_connection import get_connection
 
@@ -38,19 +41,22 @@ class BulletinModel:
 
             # Creating bulletins object from database bulletins data
             responsible: User = UserModel.get_user(result["responsible_id"])
+            zone: Zone = ZoneModel.get_zone(result["zone_id"])
+            payment_method: PaymentMethod = PaymentMethod(result["payment_method"])
             
             bulletin: bulletin = Bulletin(
-                result["id"],
-                responsible, 
-                result["location"], 
-                result["registration"], 
-                result["duration"], 
-                result["price"], 
-                result["paid"], 
-                result["created_at"],
-                result.get("brand"), 
-                result.get("model"), 
-                result.get("color") 
+                id = result["id"],
+                responsible = responsible, 
+                zone = zone, 
+                duration = result["duration"], 
+                registration = result["registration"], 
+                price = result["price"], 
+                payment_method= payment_method,
+                paid = result["paid"], 
+                created_a = result["created_at"],
+                brand = result.get("brand"), 
+                model = result.get("model"), 
+                color = result.get("color") 
             )
 
             conn.close()
@@ -85,32 +91,9 @@ class BulletinModel:
             return None
         return result
     
-
-    @classmethod
-    def count_all_bulletins_variables_by_filter(cls, start_date: datetime.datetime = None, end_date: datetime.datetime = None, location: str = None):
-        """Return a dictionary with the variables and their count"""
-
-        paid_by_card = cls.count_bulletins_variable_by_filter(start_date, end_date, location, 'paid', True)
-        paid_by_cash = cls.count_bulletins_variable_by_filter(start_date, end_date, location, 'paid', False)
-        duration_of_30 = cls.count_bulletins_variable_by_filter(start_date, end_date, location, 'duration', 30)
-        duration_of_60 = cls.count_bulletins_variable_by_filter(start_date, end_date, location, 'duration', 60)
-        duration_of_90 = cls.count_bulletins_variable_by_filter(start_date, end_date, location, 'duration', 90)
-        duration_of_120 = cls.count_bulletins_variable_by_filter(start_date, end_date, location, 'duration', 120)
-
-        tickets_amount_by_data = {
-            "paid_by_card": paid_by_card,
-            "paid_by_cash": paid_by_cash,
-            "duration_of_30": duration_of_30,
-            "duration_of_60": duration_of_60,
-            "duration_of_90": duration_of_90,
-            "duration_of_120": duration_of_120,
-        }
-
-        return tickets_amount_by_data
     
-
     @classmethod
-    def count_bulletins_variable_by_filter(cls, start_date: datetime.datetime = None, end_date: datetime.datetime = None, location: str = None, variable: str = None, value = None):
+    def count_bulletins_by_attribute(cls, attribute: str, value, start_date: datetime.datetime = None, end_date: datetime.datetime = None, zone: Zone = None):
         count: int
         
         try:
@@ -121,11 +104,11 @@ class BulletinModel:
             query = 'SELECT COUNT(*) AS count FROM bulletins WHERE created_at BETWEEN %s AND %s'
             
             params = [start_date, end_date]
-            if location:
-                query += ' AND location = %s'
-                params.append(location)
+            if zone:
+                query += ' AND zone_id = %s'
+                params.append(zone.id)
             
-            query += f' AND {variable} = %s'
+            query += f' AND {attribute} = %s'
 
             params.append(value)
 
@@ -145,13 +128,14 @@ class BulletinModel:
 
     @classmethod
     def create_bulletin(self, 
-                responsible_id: int, 
-                location: str,
-                registration: str,
+                responsible: User, 
+                zone: Zone,
                 duration: int,
+                registration: str,
                 price: float,
+                payment_method: PaymentMethod,
                 paid: bool,
-                created_at:datetime.datetime,
+                created_at:datetime.datetime = datetime.datetime.now(),
                 brand: str = None,
                 model: str = None,
                 color: str = None
@@ -166,13 +150,13 @@ class BulletinModel:
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
 
             query = '''
-                INSERT INTO bulletins(responsible_id, location, registration, duration,
-                    price, paid, brand, model, color, created_at) 
-                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
+                INSERT INTO bulletins(responsible_id, zone_id, duration, registration,
+                    price, payment_method_id, paid, brand, model, color, created_at) 
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
                 RETURNING *
             '''
 
-            values = (responsible_id, location, registration, duration, price, paid, brand, model, color, created_at)
+            values = (responsible.id, zone.id, duration, registration, price, payment_method.value, paid, brand, model, color, created_at)
             
             cursor.execute(query, values)
 
@@ -180,20 +164,22 @@ class BulletinModel:
             result = cursor.fetchone()
 
             # Creating bulletin object from database bulletin data
-            responsible: User = UserModel.get_user(responsible_id)
+            payment_method: PaymentMethod = PaymentMethod(result["payment_method"])
+
 
             bulletin: bulletin = Bulletin(
-                result["id"],
-                responsible, 
-                result["location"], 
-                result["registration"], 
-                result["duration"], 
-                result["price"], 
-                result["paid"], 
-                result["created_at"],
-                result.get("brand"), 
-                result.get("model"), 
-                result.get("color")
+                id = result["id"],
+                responsible = responsible, 
+                zone = zone, 
+                duration = result["duration"], 
+                registration = result["registration"], 
+                price = result["price"], 
+                payment_method= payment_method.value,
+                paid = result["paid"], 
+                created_a = result["created_at"],
+                brand = result.get("brand"), 
+                model = result.get("model"), 
+                color = result.get("color") 
             )
 
             
@@ -255,24 +241,27 @@ class BulletinModel:
 
         # Creating bulletin object from database bulletin data
         responsible: User = UserModel.get_user(result["responsible_id"])
-        updated_bulletin = Bulletin(
-            result["id"],
-            responsible, 
-            result["location"], 
-            result["registration"], 
-            result["duration"], 
-            result["price"], 
-            result["paid"], 
-            result["created_at"],
-            result.get("brand"), 
-            result.get("model"), 
-            result.get("color"), 
+        zone: Zone = ZoneModel.get_zone(result["zone_id"])
+        payment_method: PaymentMethod = PaymentMethod(result["payment_method"])
+
+
+        bulletin: updated_bulletin = Bulletin(
+            id = result["id"],
+            responsible = responsible, 
+            zone = zone, 
+            duration = result["duration"], 
+            registration = result["registration"], 
+            price = result["price"], 
+            payment_method= payment_method,
+            paid = result["paid"], 
+            created_a = result["created_at"],
+            brand = result.get("brand"), 
+            model = result.get("model"), 
+            color = result.get("color") 
         )
         conn.commit()
         cursor.close()
         conn.close()
-
-        
         
         return updated_bulletin
         

@@ -4,8 +4,8 @@ from datetime import datetime
 import json
 
 from app import app
-from bulletins.models.bulletin_model import BulletinModel
-from bulletins.entities.bulletin import Bulletin
+from services.bulletins.models.bulletin_model import BulletinModel
+from services.bulletins.entities.bulletin import Bulletin
 
 from database.db_connection import get_connection
 

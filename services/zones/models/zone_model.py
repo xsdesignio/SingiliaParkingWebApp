@@ -19,3 +19,29 @@ class ZoneModel:
             print(exception)
             return None
         return result
+    
+    @classmethod
+    def create_zone(cls, name) -> bool:
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute('INSERT INTO zones (name) VALUES (%s)', (name))
+            conn.commit()
+            conn.close()
+        except Exception as exception:
+            print(exception)
+            return False
+        return True
+    
+    @classmethod
+    def delete_zone(cls, id) -> bool:
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute('DELETE FROM zones WHERE id = %s', (id))
+            conn.commit()
+            conn.close()
+        except Exception as exception:
+            print(exception)
+            return False
+        return True

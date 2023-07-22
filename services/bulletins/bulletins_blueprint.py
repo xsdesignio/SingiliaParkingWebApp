@@ -3,6 +3,12 @@ from auth.controllers.login import login_required
 
 from .models.bulletin_model import BulletinModel
 from .entities.bulletin import Bulletin
+from .controller.bulletins_controller import get_bulletins_attributes_counter
+
+from services.users.models.user_model import UserModel
+from services.utils.payment_methods import PaymentMethod
+
+from services.zones.entities.zone import Zone
 
 from datetime import datetime, timedelta
 
@@ -18,7 +24,7 @@ def bulletins_page():
     
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
-    location = request.args.get('location')
+    request_zone = request.args.get('zone')
 
     if end_date is not None and end_date != '':
         end_date = datetime.strptime(end_date, '%Y-%m-%d')
@@ -32,10 +38,15 @@ def bulletins_page():
 
     if location == 'all':
         location = None
+        
 
-    bulletins = BulletinModel.get_bulletins_by_filter(start_date, end_date, location)
 
-    count_all_bulletins = BulletinModel.count_all_bulletins_variables_by_filter(start_date, end_date, location)
+    zone: Zone = Zone.get_zone_by_name(request_zone)
+    bulletins = BulletinModel.get_bulletins_by_filter(start_date, end_date, zone)
+
+
+
+    count_all_bulletins = BulletinModel.get_bulletins_attributes_counter(start_date, end_date, zone)
 
     start_date = start_date.strftime('%Y-%m-%d')
     end_date = end_date.strftime('%Y-%m-%d')
@@ -69,18 +80,25 @@ def get_bulletins():
 def create_bulletin():
     bulletin_json = request.get_json()
     bulletin: Bulletin
+
+    responsible = UserModel.get_user(bulletin_json['responsible_id'])
+    zone = Zone.get_zone(bulletin_json["zone_id"])
+    payment_method = PaymentMethod(bulletin_json["payment_method"])
+
+
     try:
         bulletin = BulletinModel.create_bulletin(
-            bulletin_json['responsible_id'], 
-            bulletin_json["location"], 
-            bulletin_json['registration'], 
-            bulletin_json['duration'], 
-            bulletin_json['price'],  
-            bulletin_json['paid'],  
-            bulletin_json['created_at'],
-            bulletin_json.get("brand"), 
-            bulletin_json.get("model"), 
-            bulletin_json.get("color"),)
+            responsible = responsible, 
+            zone = zone, 
+            duration = bulletin_json['duration'], 
+            registration = bulletin_json['registration'], 
+            price = bulletin_json['price'],  
+            payment_method = payment_method,
+            paid = bulletin_json['paid'],  
+            created_at = bulletin_json['created_at'] or None,
+            brand = bulletin_json.get("brand"), 
+            model = bulletin_json.get("model"), 
+            color = bulletin_json.get("color"),)
         
     except Exception as exception:
         print(exception)

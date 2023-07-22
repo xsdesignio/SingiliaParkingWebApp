@@ -2,7 +2,7 @@ from psycopg2 import connect
 import unittest
 import json
 from app import app
-from users.models.user_model import UserModel
+from services.users.models.user_model import UserModel
 
 dbname = 'parkingcontroldb'
 dbuser = 'pablo'
