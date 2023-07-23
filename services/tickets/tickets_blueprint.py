@@ -5,6 +5,8 @@ from .models.ticket_model import TicketModel
 from .entities.ticket import Ticket
 from datetime import datetime, timedelta
 
+from .controllers.ticket_controller import get_tickets_attributes_count
+
 
 tickets_bp = Blueprint('tickets', __name__, url_prefix='/tickets', template_folder='./templates')
 
@@ -12,10 +14,10 @@ tickets_bp = Blueprint('tickets', __name__, url_prefix='/tickets', template_fold
 @tickets_bp.get('/')
 @login_required
 def tickets_page():
-    """ Returns the tickets filtered by date or by location. Filters are optional and can be combined. They are obtained by get arguments."""
+    """ Returns the tickets filtered by date or by zone. Filters are optional and can be combined. They are obtained by get arguments."""
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
-    location = request.args.get('location')
+    zone = request.args.get('zone')
 
     if end_date is not None and end_date != '':
         end_date = datetime.strptime(end_date, '%Y-%m-%d')
@@ -27,17 +29,17 @@ def tickets_page():
     else:
         start_date = datetime.now() - timedelta(days=30)
 
-    if location == 'all':
-        location = None
+    if zone == 'all':
+        zone = None
 
-    tickets = TicketModel.get_tickets_by_filter(start_date, end_date, location)
+    tickets = TicketModel.get_tickets_by_filter(start_date, end_date, zone)
 
-    count_all_tickets = TicketModel.count_all_tickets_variables_by_filter(start_date, end_date, location)
+    all_tickets_count = get_tickets_attributes_count(start_date, end_date, zone)
 
     start_date = start_date.strftime('%Y-%m-%d')
     end_date = end_date.strftime('%Y-%m-%d')
 
-    return render_template('tickets.html', tickets=tickets, start_date=start_date, end_date=end_date, location=location, tickets_data = count_all_tickets)
+    return render_template('tickets.html', tickets = tickets, start_date = start_date, end_date = end_date, zone = zone, tickets_data = all_tickets_count)
 
 
 
@@ -70,7 +72,7 @@ def create_ticket():
 
     responsible_id = ticket_json.get('responsible_id', session["id"])
 
-    created_at = ticket_json.get('created_at', datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+    created_at = ticket_json.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M"))
 
     try:
         ticket = TicketModel.create_ticket(

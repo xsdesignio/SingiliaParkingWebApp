@@ -192,7 +192,7 @@ a {
   display: block;
   width: fit-content;
   padding: 6px 12px;
-  margin: 20px;
+  margin: 8px;
   border-radius: 12px;
   border: 1px solid #35523e5a;
   background-color: #5cd6a9;
@@ -240,6 +240,14 @@ a {
   grid-template-columns: 1fr 1fr;
   justify-content: center;
   align-items: start;
+  gap: 20px;
+  width: 100%;
+}
+
+.two-columns-flex {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 20px;
   width: 100%;
 }
@@ -306,7 +314,7 @@ a {
   opacity: 1;
 }
 
-.users-cards {
+.cards {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -340,3 +348,14 @@ a {
   margin: 40px auto;
 }
 
+
+.zone-card {
+  display: grid;
+  place-items: center;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: rgb(224, 250, 215);
+  border: 1px solid #35523e5a;
+  width: 300px;
+}

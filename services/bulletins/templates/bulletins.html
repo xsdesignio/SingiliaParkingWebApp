@@ -4,7 +4,7 @@
 
 {% block content %}
     
-    <h1>Administración de Boletins</h1>
+    <h1>Administración de Boletines</h1>
     {# PAGE DATA #}
     <article>
         <p>Mostrando boletines creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
@@ -25,8 +25,8 @@
                     </div>
                     
                     <div class="input-container">
-                        <label for="location">Localización</label>
-                        <select name="location" id="location" value="{{ location }}">
+                        <label for="zone">Localización</label>
+                        <select name="zone" id="zone" value="{{ zone }}">
                             <option value="all">Todas</option>
                             <option value="parking">Plaza de Toros</option>
                             <option value="street">Plaza Castilla</option>
@@ -107,7 +107,7 @@
                                 </strong>
                             </p>
                             <p>Matrícula: <strong>{{ bulletin.registration }}</strong></p>
-                            <p>Localización: <strong>{{ bulletin.location }}</strong></p>
+                            <p>Localización: <strong>{{ bulletin.zone }}</strong></p>
                         </div>
                     </div>
                 {% endfor %}

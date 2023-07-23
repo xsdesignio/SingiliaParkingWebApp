@@ -4,6 +4,10 @@ from services.tickets.entities.ticket import Ticket
 from psycopg2 import extras
 
 from services.users.models.user_model import UserModel
+from services.zones.models.zone_model import ZoneModel
+from services.zones.entities.zone import Zone
+from services.utils.payment_methods import PaymentMethod
+
 
 from database.db_connection import get_connection
 
@@ -119,16 +123,19 @@ class TicketModel:
             # Creating ticket object from database ticket data
             responsible: User = UserModel.get_user(result["responsible_id"])
             
-            
-            ticket: Ticket = Ticket(
-                result["id"], 
-                responsible, 
-                result["duration"], 
-                result["price"], 
-                result["registration"], 
-                result["paid"], 
-                result["location"], 
-                result["created_at"])
+            zone: Zone = ZoneModel.get_zone_by_id(result["zone_id"])
+            payment_method: PaymentMethod = PaymentMethod.get_enum_value(result["payment_method"])
+
+            ticket = Ticket(
+                id = result["id"], 
+                responsible = responsible,
+                zone = zone,
+                duration = result["duration"], 
+                registration = result["registration"], 
+                price = result["price"], 
+                payment_method = payment_method, 
+                paid = result["paid"],
+                created_at = result["created_at"])
             
             conn.close()
         except Exception as exception:
@@ -140,13 +147,15 @@ class TicketModel:
 
     @classmethod
     def create_ticket(cls, 
-                      responsible_id: int, 
-                      duration: int, 
-                      registration:str, 
-                      price: float, 
-                      paid: bool,
-                      location: str,
-                      created_at: datetime.datetime) -> Ticket:
+                responsible: User, 
+                zone: Zone,
+                duration: int, 
+                registration:str, 
+                price: float, 
+                payment_method: PaymentMethod,
+                paid: bool,
+                created_at: datetime.datetime
+            ) -> Ticket:
         
         """Returns the created Ticket if is successfully created."""
 
@@ -157,12 +166,12 @@ class TicketModel:
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
 
             query = '''
-                INSERT INTO tickets(responsible_id, duration, registration, price, paid, location, created_at) 
-                VALUES(%s, %s, %s, %s, %s, %s, %s ) 
+                INSERT INTO tickets(responsible_id, zone_id, duration, registration, price, payment_method, paid, created_at) 
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s) 
                 RETURNING *
             '''
 
-            values = (responsible_id, duration, registration, price, paid, location, created_at)
+            values = (responsible.id, zone.id, duration, registration, price, payment_method, paid, created_at)
             
             cursor.execute(query, values)
 
@@ -170,17 +179,18 @@ class TicketModel:
             result = cursor.fetchone()
 
             # Creating ticket object from database ticket data
-            responsible: User = UserModel.get_user(responsible_id)
-            
+            payment_method: PaymentMethod = PaymentMethod.get_enum_value(result["payment_method"])
+
             ticket: Ticket = Ticket(
-                result["id"], 
-                responsible, 
-                result["duration"], 
-                result["price"], 
-                result["registration"], 
-                result["paid"], 
-                result["location"], 
-                result["created_at"])
+                id = result["id"], 
+                responsible = responsible,
+                zone = zone,
+                duration = result["duration"], 
+                registration = result["registration"], 
+                price = result["price"], 
+                payment_method = payment_method, 
+                paid = result["paid"],
+                created_at = result["created_at"])
             
             conn.commit()
             
@@ -239,21 +249,23 @@ class TicketModel:
             result = cursor.fetchone()
 
             # Creating ticket object from database ticket data
-            responsible = UserModel.get_user(result["responsible_id"])
+            responsible: User = UserModel.get_user(result["responsible_id"])
+            zone: Zone = ZoneModel.get_zone_by_id(result["zone_id"])
+            payment_method: PaymentMethod = PaymentMethod.get_enum_value(result["payment_method"])
 
-                
-            updated_ticket = Ticket(
-                result["id"], 
-                responsible, 
-                result["duration"], 
-                result["price"], 
-                result["registration"], 
-                result["paid"], 
-                result["location"],
-                result["created_at"])
-
+            ticket: Ticket = Ticket(
+                id = result["id"], 
+                responsible = responsible,
+                zone = zone,
+                duration = result["duration"], 
+                registration = result["registration"], 
+                price = result["price"], 
+                payment_method = payment_method, 
+                paid = result["paid"],
+                created_at = result["created_at"])
+            
             conn.commit()
-                
+
             conn.close()
             
 

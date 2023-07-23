@@ -6,12 +6,12 @@
 
     <h1>Administración de usuarios</h1>
 
-    <section class="two-columns-grid">
-        <article>
+    <section>
+        <article class="two-columns-flex">
+            <p>
+                Cantidad de usuarios: <strong>{{ users|length }}</strong>
+            </p>
             <a href="/users/create" class="default-button">Crear Usuario</a>
-        </article>
-        <article>
-            Cantidad de usuarios: <strong>{{ users|length }}</strong>
         </article>
     </section>
 
@@ -19,7 +19,7 @@
     <section>
         <h2>Usuarios Actuales</h2>
         
-        <article class="users-cards">
+        <article class="cards">
             {% for user in users %}
                 <div class="user-card">
                     <p>{{ user.name }}</p>

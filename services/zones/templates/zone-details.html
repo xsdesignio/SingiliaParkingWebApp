@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %} Zones {% endblock %}
+
+{% block content %}
+
+    <h1>{{ zone.name }}</h1>
+
+    <section>
+        <button class="default-button">Eliminar Usuario</button>
+        <article>
+            <h2>Información</h2>
+            <p>Nombre: <strong>{{ zone.name }}</strong></p>
+            <p>Responsables:</p>
+            <ul>
+                {% if users %}
+                    {% if users|length == 0 %}
+                        <li>No hay usuarios asignados</li>
+                    {% endif %}
+                    {% for user in users %}
+                        <li>{{ user.name }}</li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+            <a href="/" class="default-button">Asignar nuevo usuario</a>
+        </article>
+        <article>
+            <h2>Editar</h2>
+            <form action="/zones/{{ zone.id }}/edit" method="post" class="general-form">
+                <label for="name">Nombre</label>
+                <br/>
+                <input type="text" name="name" id="name" value="{{ zone.name }}" required>
+                <input class="default-button" type="submit" value="Actualizar">
+            </form>
+        </article>
+        <article>
+            Cantidad de tickets impresos: <strong>0</strong>
+        </article>
+    </section>
+
+    {# PAGE DATA #}
+    <section>
+        <!-- <h2>Tickets impresos por en esta zona</h2>
+        
+        <article class="users-cards">
+            {% for user in users %}
+                <div class="user-card">
+                    <p>{{ user.name }}</p>
+                    <p>{{ user.email }}</p>
+                </div>
+            {% endfor %}
+                <div class="user-card">
+                    <p>Prueba</p>
+                    <p>correo@prueba.com</p>
+                </div>
+                <div class="user-card">
+                    <p>Prueba</p>
+                    <p>correo@prueba.com</p>
+                </div>
+        </article> -->
+
+    </section>
+{% endblock %}

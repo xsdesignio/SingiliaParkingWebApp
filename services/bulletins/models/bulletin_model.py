@@ -24,6 +24,7 @@ class BulletinModel:
             return None
         return result
 
+
     @classmethod
     def get_bulletin(cls, id:int) -> Bulletin:
         """
@@ -66,7 +67,6 @@ class BulletinModel:
         
         return bulletin
     
-
 
     @classmethod
     def get_bulletins_by_filter(cls, start_date: datetime.datetime = None, end_date: datetime.datetime = None, location: str = None) -> list[dict]:
@@ -213,7 +213,6 @@ class BulletinModel:
             return None
 
         return deleted_bulletin
-
 
 
     @classmethod

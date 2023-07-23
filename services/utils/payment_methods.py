@@ -2,8 +2,9 @@ from enum import Enum
 
 
 class PaymentMethod(Enum):
-    CARD = "CREDIT_CARD"
+    CARD = "CARD"
     CASH = "CASH"
+
     @classmethod
     def get_enum_value(cls, enum_member_name: str):
         for member in cls:

@@ -3,12 +3,13 @@ from auth.controllers.login import login_required
 
 from .models.bulletin_model import BulletinModel
 from .entities.bulletin import Bulletin
-from .controller.bulletins_controller import get_bulletins_attributes_counter
+from .controller.bulletins_controller import get_bulletins_attributes_count
 
 from services.users.models.user_model import UserModel
 from services.utils.payment_methods import PaymentMethod
 
 from services.zones.entities.zone import Zone
+from services.zones.models.zone_model import ZoneModel
 
 from datetime import datetime, timedelta
 
@@ -20,7 +21,7 @@ bulletins_bp = Blueprint('bulletins', __name__, url_prefix='/bulletins', templat
 @bulletins_bp.get('/')
 @login_required
 def bulletins_page():
-    """ Returns the bulletins filtered by date or by location. Filters are optional and can be combined. They are obtained by get arguments."""
+    """ Returns the bulletins filtered by date or by zone. Filters are optional and can be combined. They are obtained by get arguments."""
     
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
@@ -36,22 +37,23 @@ def bulletins_page():
     else:
         start_date = datetime.now() - timedelta(days=30)
 
-    if location == 'all':
-        location = None
-        
 
+    # Obtaining introduced zone (either all or a specific zone)
+    zone: Zone
+    if request_zone == 'all':
+        zone = None
+    else:
+        zone = ZoneModel.get_zone_by_name(request_zone)
 
-    zone: Zone = Zone.get_zone_by_name(request_zone)
+    #obtaining data to show on the page
     bulletins = BulletinModel.get_bulletins_by_filter(start_date, end_date, zone)
 
-
-
-    count_all_bulletins = BulletinModel.get_bulletins_attributes_counter(start_date, end_date, zone)
+    count_all_bulletins = get_bulletins_attributes_count(start_date, end_date, zone)
 
     start_date = start_date.strftime('%Y-%m-%d')
     end_date = end_date.strftime('%Y-%m-%d')
 
-    return render_template('bulletins.html', bulletins=bulletins, start_date=start_date, end_date=end_date, location=location, bulletins_data = count_all_bulletins)
+    return render_template('bulletins.html', bulletins=bulletins, start_date=start_date, end_date=end_date, zone=request_zone, bulletins_data = count_all_bulletins)
 
 
 
@@ -68,6 +70,11 @@ def get_bulletin(id: int):
 @bulletins_bp.get('/get-bulletins')
 @login_required
 def get_bulletins():
+    """Get all bulletins
+    
+    Return: json string with all bulletins
+    """
+    
     bulletin_json = BulletinModel.get_bulletins()
     if bulletin_json != None:
         return jsonify(bulletin_json), 200
@@ -78,12 +85,33 @@ def get_bulletins():
 @bulletins_bp.post('/create/')
 @login_required
 def create_bulletin():
+    """Create a new bulletin on database from a json dict
+
+    Json arguments on request body:
+
+    responsible_id -- id of the user who created the bulletin
+    zone -- zone where the bulletin was created
+    duration -- duration of the bulletin in minutes
+    registration -- registration of the vehicle
+    price -- price of the bulletin
+    payment_method -- payment method of the bulletin
+    paid -- if the bulletin has been paid
+    created_at -- date when the bulletin was created
+    brand -- brand of the vehicle (Optional)
+    model -- model of the vehicle (Optional)
+    color -- color of the vehicle (Optional)
+
+    Return: json object string with the created bulletin
+    """
+
     bulletin_json = request.get_json()
     bulletin: Bulletin
 
     responsible = UserModel.get_user(bulletin_json['responsible_id'])
-    zone = Zone.get_zone(bulletin_json["zone_id"])
-    payment_method = PaymentMethod(bulletin_json["payment_method"])
+
+    zone: Zone = ZoneModel.get_zone_by_name(bulletin_json["zone"])
+
+    payment_method:PaymentMethod = PaymentMethod.get_enum_value(bulletin_json['payment_method'])
 
 
     try:
@@ -98,7 +126,8 @@ def create_bulletin():
             created_at = bulletin_json['created_at'] or None,
             brand = bulletin_json.get("brand"), 
             model = bulletin_json.get("model"), 
-            color = bulletin_json.get("color"),)
+            color = bulletin_json.get("color")
+        )
         
     except Exception as exception:
         print(exception)

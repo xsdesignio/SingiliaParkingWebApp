@@ -6,4 +6,4 @@ from services.users.entities.user import User
 class Zone:
     id: int
     name: str
-    responsibles: list[User]
+    responsibles: list[User] = None
