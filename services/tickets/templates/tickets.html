@@ -25,11 +25,14 @@
                     </div>
                     
                     <div class="input-container">
-                        <label for="zone">Localización</label>
+                        <label for="zone">Zona</label>
                         <select name="zone" id="zone" value="{{ zone }}">
                             <option value="all">Todas</option>
-                            <option value="parking">Plaza de Toros</option>
-                            <option value="street">Plaza Castilla</option>
+                            {% if available_zones %}
+                                {% for zone in available_zones %}
+                                    <option value="{{ zone.name }}">{{ zone.name }}</option>
+                                {% endfor %}
+                            {% endif %}
                         </select>
                     </div>
                     
@@ -53,11 +56,11 @@
                 </p>
                 <p id="tickets-amount">
                     <strong>Pagados con tarjeta: </strong>
-                    {{ tickets_data["paid_by_cart"]}}
+                    {{ tickets_data["paid_by_card"] }}
                 </p>
                 <p id="tickets-amount">
                     <strong>Pagados con efectivo: </strong>
-                    {{ tickets_data["paid_by_cash"]}}
+                    {{ tickets_data["paid_by_cash"] }}
                 </p>
 
                 <p id="tickets-amount">
@@ -67,22 +70,23 @@
 
                 <p id="tickets-amount">
                     <strong>Tickets de 60 minutos: </strong>
-                    {{ tickets_data["duration_of_60"]}}
+                    {{ tickets_data["duration_of_60"] }}
                 </p>
 
                 <p id="tickets-amount">
                     <strong>Tickets de 90 minutos: </strong>
-                    {{ tickets_data["duration_of_90"]}}
+                    {{ tickets_data["duration_of_90"] }}
                 </p>
 
                 <p id="tickets-amount">
                     <strong>Tickets de 120 minutos: </strong>
-                    {{ tickets_data["duration_of_120"]}}
+                    {{ tickets_data["duration_of_120"] }}
                 </p>
 
             </article>
         </div>
-
+    </section>
+    <section>
 
         <h2>Tickets</h2>
         <article class="tickets-record">
@@ -127,49 +131,3 @@
     </script>
 {% endblock %}
 
-
-
-    {# <script>
-        const canvas = document.getElementById('tickets-chart');
-        const ctx = canvas.getContext('2d');
-      
-        // Define chart data
-        const labels = ['Label 1', 'Label 2', 'Label 3']; // X-axis labels
-        const data = [10, 20, 30]; // Y-axis data values
-        const barColor = 'rgb(149, 232, 201)'; // Bar color
-      
-        // Set the canvas size
-        canvas.width = 300;
-        canvas.height = 200;
-      
-        // Calculate the dimensions for the chart
-        const chartWidth = canvas.width - 40; // Leave some space for labels
-        const chartHeight = canvas.height - 40; // Leave some space for labels
-      
-        // Calculate the width of each bar
-        const barWidth = chartWidth / data.length;
-      
-        // Find the maximum value in the data
-        const maxValue = Math.max(...data);
-      
-        // Set the font for labels
-        ctx.font = '12px Arial';
-      
-        // Draw the bars
-        data.forEach((value, index) => {
-          // Calculate the height of the bar
-          const barHeight = (value / maxValue) * chartHeight;
-      
-          // Calculate the position of the bar
-          const x = index * barWidth + 20;
-          const y = canvas.height - barHeight - 20;
-      
-          // Draw the bar
-          ctx.fillStyle = barColor;
-          ctx.fillRect(x, y, barWidth - 10, barHeight);
-      
-          // Draw the label
-          ctx.fillStyle = 'black';
-          ctx.fillText(labels[index], x, canvas.height - 5);
-        });
-    </script> #}

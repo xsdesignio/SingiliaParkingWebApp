@@ -60,8 +60,7 @@ def create_zone():
 
 
 @role_required('ADMIN')
-@zones_bp.post('/delete')
-def delete_zone():
-    id = request.form['id']
+@zones_bp.get('/delete/<id>')
+def delete_zone(id):
     ZoneModel.delete_zone(id)
     return redirect(url_for('zones.zones_page'))

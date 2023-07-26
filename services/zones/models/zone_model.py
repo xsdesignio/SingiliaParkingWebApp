@@ -16,44 +16,56 @@ class ZoneModel:
             result = cursor.fetchall()
             conn.close()
         except Exception as exception:
-            print(exception)
+            print("get_zones_list: ", exception)
             return None
         return result
     
     @classmethod
     def get_zone_by_name(cls, name) -> Zone:
-        result: Zone
+        zone: Zone
         try:
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cursor.execute('SELECT * FROM zones WHERE name = %s', (name))
+            cursor.execute('SELECT * FROM zones WHERE name = %s', (name,))
             result = cursor.fetchone()
+
+            print("getting_zone_result: ", result)
+            print(name)
+            
+            if result is None:
+                return None
+            
+            zone = Zone(result["id"], result["name"])
+
             conn.close()
         except Exception as exception:
-            print(exception)
+            print("get_zone_by_name: ", exception)
             return None
-        return result
+        return zone
     
     @classmethod
     def get_zone(cls, id) -> Zone:
-        result: Zone
+        zone: Zone
         try:
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cursor.execute('SELECT * FROM zones WHERE id = %s', (id))
+            cursor.execute('SELECT * FROM zones WHERE id = %s', (id,))
             result = cursor.fetchone()
+
+            zone = Zone(result["id"], result["name"])
+
             conn.close()
         except Exception as exception:
-            print(exception)
+            print("get_zone: ", exception)
             return None
-        return result
+        return zone
     
     @classmethod
     def create_zone(cls, name) -> bool:
         try:
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cursor.execute('INSERT INTO zones (name) VALUES (%s) RETURNING *', (name, ))
+            cursor.execute('INSERT INTO zones (name) VALUES (%s) RETURNING *', (name,))
             
             result = cursor.fetchone()
 
@@ -66,7 +78,7 @@ class ZoneModel:
         
         except Exception as exception:
 
-            print(f"Exception: {exception}")
+            print("create_zone: ", exception)
 
             return None
     
@@ -75,10 +87,10 @@ class ZoneModel:
         try:
             conn = get_connection()
             cursor = conn.cursor()
-            cursor.execute('DELETE FROM zones WHERE id = %s', (id))
+            cursor.execute('DELETE FROM zones WHERE id = %s', (id,))
             conn.commit()
             conn.close()
         except Exception as exception:
-            print(exception)
+            print("delete_zone: ", exception)
             return False
         return True

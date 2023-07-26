@@ -7,7 +7,9 @@
     <h1>{{ zone.name }}</h1>
 
     <section>
-        <button class="default-button">Eliminar Usuario</button>
+        <form action="/zones/delete/{{ zone.id }}" method="GET">
+            <button class="default-button">Eliminar Zona</button>
+        </form>
         <article>
             <h2>Información</h2>
             <p>Nombre: <strong>{{ zone.name }}</strong></p>
@@ -28,7 +30,6 @@
             <h2>Editar</h2>
             <form action="/zones/{{ zone.id }}/edit" method="post" class="general-form">
                 <label for="name">Nombre</label>
-                <br/>
                 <input type="text" name="name" id="name" value="{{ zone.name }}" required>
                 <input class="default-button" type="submit" value="Actualizar">
             </form>

@@ -11,7 +11,7 @@ from services.zones.entities.zone import Zone
 
 
 # Create function that create a report with the data of the tickets printed by a certain user over a pdf file saved on the server in the reports folder from static.
-def create_report(data: dict, user: User, start_date: datetime, end_date: datetime, location: Zone):
+def create_report(data: dict, user: User, start_date: datetime, end_date: datetime):
     """
         Creates a report with the data of the tickets printed by a certain user over a pdf file saved on the server in the reports folder from static.
         Returns the path of the created report.
@@ -37,7 +37,6 @@ def create_report(data: dict, user: User, start_date: datetime, end_date: dateti
     # Create the table of the pdf
     table_data = [
         ['Zona', 'Cantidad de boletines'],
-        [location.name, data['count_all_bulletins']],
         ['Pagados con tarjeta', data['paid_by_card']],
         ['Pagados en efectivo', data['paid_by_cash']],
         ['Duración de 30 minutos', data['duration_of_30']],

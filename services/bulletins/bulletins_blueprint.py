@@ -3,7 +3,7 @@ from auth.controllers.login import login_required
 
 from .models.bulletin_model import BulletinModel
 from .entities.bulletin import Bulletin
-from .controller.bulletins_controller import get_bulletins_attributes_count
+from .controllers.bulletins_controller import get_bulletins_attributes_count
 
 from services.users.models.user_model import UserModel
 from services.utils.payment_methods import PaymentMethod
@@ -111,7 +111,7 @@ def create_bulletin():
 
     zone: Zone = ZoneModel.get_zone_by_name(bulletin_json["zone"])
 
-    payment_method:PaymentMethod = PaymentMethod.get_enum_value(bulletin_json['payment_method'])
+    payment_method:PaymentMethod = PaymentMethod.get_enum_value(bulletin_json.get('payment_method', payment_method.CASH))
 
 
     try:

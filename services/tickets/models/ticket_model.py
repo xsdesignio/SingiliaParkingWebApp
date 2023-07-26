@@ -14,97 +14,130 @@ from database.db_connection import get_connection
 
 
 class TicketModel:
+
     @classmethod
-    def get_tickets(cls) -> list[dict]:
-        result: list[dict]
+    def get_tickets(cls, **kwargs) -> list[dict]:
+        tickets: list[Ticket] = []
+
+        query = 'SELECT * FROM tickets'
+        params = []
+
+        dict_size = len(kwargs)
+        current_index = 0
+
+        # Build the SQL query dynamically based on the provided parameters
+        if dict_size > 0:
+
+            query += ' WHERE '
+
+            for key, value in kwargs.items():
+                    
+                if key == 'start_date':
+                    query += f'created_at >= %s'
+                    value -= datetime.timedelta(days=1)
+                elif key == 'end_date':
+                    query += f'created_at <= %s'
+                    value+= datetime.timedelta(days=1)
+                else:
+                    query += f'{key} = %s'
+
+                params.append(value)
+
+                if current_index < (dict_size - 1):
+                    query += ' AND '
+                    
+                current_index += 1
+
+        # Execute the query
         try:
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cursor.execute('SELECT * FROM tickets')
-            result = cursor.fetchall()
-            conn.close()
-        except Exception as exception:
-            return None
-        return result
-    
-    @classmethod
-    def get_tickets_by_filter(cls, start_date: datetime.datetime = None, end_date: datetime.datetime = None, location: str = None) -> list[dict]:
-        result: list[dict]
-        
-        try:
-            conn = get_connection()
-            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-
-            # Build the SQL query dynamically based on the provided parameters
-            query = 'SELECT * FROM tickets WHERE created_at BETWEEN %s AND %s'
-            params = [start_date, end_date]
-
-            if location:
-                query += ' AND location = %s'
-                params.append(location)
-
+            
+            
             cursor.execute(query, params)
             result = cursor.fetchall()
+
+            for ticket in result:
+                # Creating ticket object from database ticket data
+                responsible: User = UserModel.get_user(ticket["responsible_id"])
+                
+                zone: Zone = ZoneModel.get_zone(ticket["zone_id"])
+                payment_method: PaymentMethod = PaymentMethod.get_enum_value(ticket["payment_method"])
+
+                tickets.append(
+                    Ticket(
+                        id = ticket["id"], 
+                        responsible = responsible,
+                        zone = zone,
+                        duration = ticket["duration"], 
+                        registration = ticket["registration"], 
+                        price = ticket["price"], 
+                        payment_method = payment_method, 
+                        paid = ticket["paid"],
+                        created_at = ticket["created_at"]
+                    )
+                )
+                
             conn.close()
         except Exception as exception:
+            print("get_tickets: ", exception)
             return None
-        return result
-    
+        return tickets
+
 
     @classmethod
-    def count_all_tickets_variables_by_filter(cls, start_date: datetime.datetime = None, end_date: datetime.datetime = None, location: str = None):
-        """Return a dictionary with the variables and their count"""
-        paid_by_card = cls.count_tickets_variable_by_filter(start_date, end_date, location, 'paid', True)
-        paid_by_cash = cls.count_tickets_variable_by_filter(start_date, end_date, location, 'paid', False)
-        duration_of_30 = cls.count_tickets_variable_by_filter(start_date, end_date, location, 'duration', 30)
-        duration_of_60 = cls.count_tickets_variable_by_filter(start_date, end_date, location, 'duration', 60)
-        duration_of_90 = cls.count_tickets_variable_by_filter(start_date, end_date, location, 'duration', 90)
-        duration_of_120 = cls.count_tickets_variable_by_filter(start_date, end_date, location, 'duration', 120)
-
-        tickets_amount_by_data = {
-            "paid_by_card": paid_by_card,
-            "paid_by_cash": paid_by_cash,
-            "duration_of_30": duration_of_30,
-            "duration_of_60": duration_of_60,
-            "duration_of_90": duration_of_90,
-            "duration_of_120": duration_of_120,
-        }
-
-        return tickets_amount_by_data
-    
-
-    @classmethod
-    def count_tickets_variable_by_filter(cls, start_date: datetime.datetime = None, end_date: datetime.datetime = None, location: str = None, variable: str = None, value = None):
+    def count_tickets(cls, **kwargs) -> int:
         count: int
         
+        query = 'SELECT COUNT(*) AS count FROM tickets'
+        params = []
+
+
+        # Build the SQL query dynamically based on the provided parameters
+        # Add querired parameters to the params list
+        dict_size = len(kwargs)
+        current_index = 0
+        if dict_size > 0:
+
+            query += ' WHERE '
+
+            for key, value in kwargs.items():
+                    
+                if key == 'start_date':
+                    query += f'created_at >= %s'
+                    value -= datetime.timedelta(days=1)
+                elif key == 'end_date':
+                    query += f'created_at <= %s'
+                    value+= datetime.timedelta(days=1)
+                else:
+                    query += f'{key} = %s'
+
+                params.append(value)
+
+                if current_index < (dict_size - 1):
+                    query += ' AND '
+                    
+                current_index += 1
+
         try:
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
 
-            # Build the SQL query dynamically based on the provided parameters
-            query = 'SELECT COUNT(*) AS count FROM tickets WHERE created_at BETWEEN %s AND %s'
-            
-            params = [start_date, end_date]
-            if location:
-                query += ' AND location = %s'
-                params.append(location)
-            
-            query += f' AND {variable} = %s'
-
-            params.append(value)
-
-            
             cursor.execute(query, params)
             result = cursor.fetchone()
-            
+
             count = result["count"]
+            print(count)
 
             conn.close()
             
-        except Exception as exception:
-            return None
-        return count
 
+        except Exception as exception:
+            print("count_tickets: ", exception)
+            return None
+
+        return count
+    
 
     @classmethod
     def get_ticket(cls, id:int) -> Ticket:
@@ -123,7 +156,8 @@ class TicketModel:
             # Creating ticket object from database ticket data
             responsible: User = UserModel.get_user(result["responsible_id"])
             
-            zone: Zone = ZoneModel.get_zone_by_id(result["zone_id"])
+            zone: Zone = ZoneModel.get_zone(result["zone_id"])
+
             payment_method: PaymentMethod = PaymentMethod.get_enum_value(result["payment_method"])
 
             ticket = Ticket(
@@ -139,7 +173,7 @@ class TicketModel:
             
             conn.close()
         except Exception as exception:
-            print(exception)
+            print("get_ticket: ", exception)
             return None
         
         return ticket
@@ -161,17 +195,17 @@ class TicketModel:
 
         ticket: Ticket
 
-        try:
-            conn = get_connection()
-            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-
-            query = '''
+        query = '''
                 INSERT INTO tickets(responsible_id, zone_id, duration, registration, price, payment_method, paid, created_at) 
                 VALUES(%s, %s, %s, %s, %s, %s, %s, %s) 
                 RETURNING *
             '''
+        
+        values = (responsible.id, zone.id, duration, registration, price, payment_method.value, paid, created_at)
 
-            values = (responsible.id, zone.id, duration, registration, price, payment_method, paid, created_at)
+        try:
+            conn = get_connection()
+            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
             
             cursor.execute(query, values)
 
@@ -181,7 +215,7 @@ class TicketModel:
             # Creating ticket object from database ticket data
             payment_method: PaymentMethod = PaymentMethod.get_enum_value(result["payment_method"])
 
-            ticket: Ticket = Ticket(
+            ticket = Ticket(
                 id = result["id"], 
                 responsible = responsible,
                 zone = zone,
@@ -193,11 +227,10 @@ class TicketModel:
                 created_at = result["created_at"])
             
             conn.commit()
-            
             conn.close()
 
         except Exception as exception:
-            print(exception)
+            print("create_ticket: ", exception)
             return None
         
         return ticket
@@ -219,7 +252,7 @@ class TicketModel:
             conn.commit()
             conn.close()
         except Exception as exception:
-            print(exception)
+            print("delete_ticket: ", exception)
             return None
 
         return deleted_ticket
@@ -250,7 +283,7 @@ class TicketModel:
 
             # Creating ticket object from database ticket data
             responsible: User = UserModel.get_user(result["responsible_id"])
-            zone: Zone = ZoneModel.get_zone_by_id(result["zone_id"])
+            zone: Zone = ZoneModel.get_zone(result["zone_id"])
             payment_method: PaymentMethod = PaymentMethod.get_enum_value(result["payment_method"])
 
             ticket: Ticket = Ticket(
@@ -272,7 +305,7 @@ class TicketModel:
             return updated_ticket
         
         except Exception as exception:
-            print(exception)
+            print("pay_ticket: ", exception)
             return None
 
 

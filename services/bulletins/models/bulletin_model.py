@@ -69,7 +69,7 @@ class BulletinModel:
     
 
     @classmethod
-    def get_bulletins_by_filter(cls, start_date: datetime.datetime = None, end_date: datetime.datetime = None, location: str = None) -> list[dict]:
+    def get_bulletins_by_filter(cls, start_date: datetime.datetime = None, end_date: datetime.datetime = None, zone: Zone = None) -> list[dict]:
         result: list[dict]
         
         try:
@@ -80,13 +80,15 @@ class BulletinModel:
             query = 'SELECT * FROM bulletins WHERE created_at BETWEEN %s AND %s'
             params = [start_date, end_date]
 
-            if location:
-                query += ' AND location = %s'
-                params.append(location)
+            if zone:
+                query += ' AND zone_id = %s'
+                params.append(zone.id)
+            
 
             cursor.execute(query, params)
             result = cursor.fetchall()
             conn.close()
+            
         except Exception as exception:
             return None
         return result

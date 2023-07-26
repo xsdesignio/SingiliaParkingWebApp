@@ -278,11 +278,12 @@ class TestTickets(unittest.TestCase):
 
         ticket_data = {
             'responsible_id': signedup_user["id"],
+            'zone_name': 'La Moraleda',
             'registration': '4567-ABG',
             'duration': 30,
             'price': 0.90,
+            'payment_method': 'CASH',
             'paid': True,
-            'location': 'La Moraleda',
             'created_at': created_at
         }
         headers = {

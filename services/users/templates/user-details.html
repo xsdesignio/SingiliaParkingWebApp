@@ -5,7 +5,25 @@
 {% block content %}
 
     <h1>{{ user.name }}</h1>
-
+    
+    <section>
+        <article class="filter-options">
+            <form action="/users/user/{{ user.id }}/generate-report" method="GET">
+                <div class="input-container">
+                    <label for="start_date">Fecha de inicio</label>
+                    <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
+                </div>
+                    
+                <div class="input-container">
+                    <label for="end_date">Fecha de fin</label>
+                    <input type="date" name="end_date" id="end_date" value="{{ end_date }}">   
+                </div>
+                    
+                    
+                <input class="default-button" type="submit" value="Generar Reporte">
+            </form>
+        </article>
+    </section>
     <section>
         <button class="default-button">Eliminar Usuario</button>
         <article>
@@ -40,21 +58,40 @@
     <section>
         <h2>Tickets impresos por este usuario</h2>
         
-        <article class="users-cards">
-            {% for user in users %}
-                <div class="user-card">
-                    <p>{{ user.name }}</p>
-                    <p>{{ user.email }}</p>
-                </div>
-            {% endfor %}
-                <div class="user-card">
-                    <p>Prueba</p>
-                    <p>correo@prueba.com</p>
-                </div>
-                <div class="user-card">
-                    <p>Prueba</p>
-                    <p>correo@prueba.com</p>
-                </div>
+        <article class="tickets-record">
+            {% if tickets %}
+                {% for ticket in tickets %}
+                    <div class="ticket" style="background-image: url('{{ url_for('static', filename='assets/tickets/' + ticket.duration|string + '.png') }}');">
+
+                        <div class="on-ticket-info">
+                            <p><strong>{{ ticket.created_at }}</strong></p>
+                            <p><strong>{{ ticket.duration }}</strong></p>
+                            <p><strong>{{ ticket.registration }}</strong></p>
+                        </div>
+                        <div class="all-ticket-info">
+                            <p>Fecha de impresión: <strong>{{ ticket.created_at }}</strong></p>
+                            <p>Id del responsable: <strong>{{ ticket.responsible_id }}</strong></p>
+                            <p>Duración: <strong>{{ ticket.duration }}</strong></p>
+                            <p>Precio: <strong>{{ ticket.price }}</strong></p>
+                            <p>
+                                Método de pago: 
+                                <strong> 
+                                    {% if ticket.paid == true %}
+                                        Tarjeta
+                                    {% else %}
+                                        Efectivo
+                                    {% endif %}
+                                </strong>
+                            </p>
+                            <p>Matrícula: <strong>{{ ticket.registration }}</strong></p>
+                            <p>Localización: <strong>{{ ticket.zone.name }}</strong></p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No hay tickets para mostrar</p>
+            {% endif %}
+
         </article>
 
     </section>

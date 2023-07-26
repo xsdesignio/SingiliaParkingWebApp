@@ -4,41 +4,118 @@
 
 {% block content %}
     <h1>Resumen</h1>
-    <h3>Filtrar resultados por fecha: </h3>
-    <article class="filter-options">
-        <form action="/summary" method="post">
-            <label for="start_date">Fecha de inicio</label>
-            <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
-            <label for="end_date">Fecha de fin</label>
-            <input type="date" name="end_date" id="end_date" value="{{ end_date }}">
-            <input class="default-button" type="submit" value="Fecha Personalizada">
-        </form>
+    <article>
+        <p>Mostrando tickets creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
     </article>
-    {# PAGE DATA #}
-
     <section>
-        <h2>Resumen de Tickets impresos</h2>
-        <article>
-            <div class="char">
-                <canvas id="bulletins-chart"></canvas>
-                <p id="tickets-amount"></p>
-            </div>
+        <article class="filter-options">
+            <form action="/" method="GET">
+                <div class="input-container">
+                    <label for="start_date">Fecha de inicio</label>
+                    <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
+                </div>
+                
+                <div class="input-container">
+                    <label for="end_date">Fecha de fin</label>
+                    <input type="date" name="end_date" id="end_date" value="{{ end_date }}">   
+                </div>
+                
+                <div class="input-container">
+                    <label for="zone">Localización</label>
+                    <select name="zone" id="zone" value="{{ zone }}">
+                        <option value="all">Todas</option>
+                        <option value="parking">Plaza de Toros</option>
+                        <option value="street">Plaza Castilla</option>
+                    </select>
+                </div>
+                
+                <input class="default-button" type="submit" value="Filtrar resultados">
+            </form>
         </article>
+    </section>
+    <section class="two-columns-grid">
+        <article class="data-shown">
+            <h2>Resumen de Tickets</h2>
+            {% if info.tickets %}
+                <p id="tickets-amount">
+                    <strong>Tickets impresos: </strong>
+                    {{ tickets|length }}
+                </p>
+                <p id="tickets-amount">
+                    <strong>Pagados con tarjeta: </strong>
+                    {{ info.tickets.paid_by_cart }}
+                </p>
+                <p id="tickets-amount">
+                    <strong>Pagados con efectivo: </strong>
+                    {{ info.tickets.paid_by_cash }}
+                </p>
+                <p id="tickets-amount">
+                    <strong>Tickets de 30 minutos: </strong>
+                    {{ info.tickets.duration_of_30 }}
+                </p>
+                <p id="tickets-amount">
+                    <strong>Tickets de 30 minutos: </strong>
+                    {{ info.tickets.duration_of_60 }}
+                </p>
+                <p id="tickets-amount">
+                    <strong>Tickets de 30 minutos: </strong>
+                    {{ info.tickets.duration_of_90 }}
+                </p>
+                <p id="tickets-amount">
+                    <strong>Tickets de 30 minutos: </strong>
+                    {{ info.tickets.duration_of_120 }}
+                </p>
 
-        <h2>Resumen de Boletines impresos</h2>
-        <article>
-            <div class="char">
-                <canvas id="bulletins-chart"></canvas>
-                <p id="tickets-amount"></p>
-            </div>
+            {% else %}
+                <p id="tickets-amount">
+                    <strong>Tickets impresos: </strong>
+                    0
+                </p>
+            {% endif %}
+
         </article>
+        <article class="data-shown">
+            <h2>Resumen de boletines</h2>
+            {% if info.bulletins %}
+                <p id="tickets-amount">
+                    <strong>Boletines impresos: </strong>
+                    {{ info.bulletins.total_bulletins }}
+                </p>
+                <p id="tickets-amount">
+                    <strong>Pagados con tarjeta: </strong>
+                    {{ info.bulletins.paid_by_cart }}
+                </p>
+                <p id="tickets-amount">
+                    <strong>Pagados con efectivo: </strong>
+                    {{ info.bulletins.paid_by_cash }}
+                </p>
+    
+                <p id="tickets-amount">
+                    <strong>Tickets de 30 minutos: </strong>
+                    {{ info.bulletins.duration_of_30 }}
+                </p>
+        
+                <p id="tickets-amount">
+                    <strong>Tickets de 60 minutos: </strong>
+                    {{ info.bulletins.duration_of_60 }}
+                </p>
+        
+                <p id="tickets-amount">
+                    <strong>Tickets de 90 minutos: </strong>
+                    {{ info.bulletins.duration_of_90 }}
+                </p>
+        
+                <p id="tickets-amount">
+                    <strong>Tickets de 120 minutos: </strong>
+                    {{ info.bulletins.duration_of_120 }}
+                </p>
+            {% else %}
+                <p id="tickets-amount">
+                    <strong>Tickets impresos: </strong>
+                    0
+                </p>
+            {% endif %}
 
-        <h2>Resumen de Usuarios</h2>
-        <article>
-            <div class="char">
-                <canvas id="bulletins-chart"></canvas>
-                <p id="tickets-amount"></p>
-            </div>
         </article>
     </section>
 {% endblock %}
