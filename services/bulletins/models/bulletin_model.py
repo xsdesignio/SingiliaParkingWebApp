@@ -3,6 +3,8 @@ from services.users.entities.user import User
 from ..entities.bulletin import Bulletin
 from psycopg2 import extras
 
+from database.base_model import BaseModel
+
 from services.users.models.user_model import UserModel
 from services.zones.models.zone_model import ZoneModel
 from services.zones.entities.zone import Zone
@@ -10,19 +12,36 @@ from services.utils.payment_methods import PaymentMethod
 
 from database.db_connection import get_connection
 
-class BulletinModel:
+class BulletinModel(BaseModel):
     @classmethod
-    def get_bulletins(cls) -> list[dict]:
-        result: list[dict]
-        try:
-            conn = get_connection()
-            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cursor.execute('SELECT * FROM bulletins')
-            result = cursor.fetchall()
-            conn.close()
-        except Exception as exception:
-            return None
-        return result
+    def get_bulletins(cls, **kwargs) -> list[dict]:
+        result = cls.get_elements("bulletins", **kwargs)
+        bulletins: list[Bulletin] = []
+
+        for bulletin in result:
+            # Creating bulletins object from database bulletins data
+            responsible: User = UserModel.get_user(bulletin["responsible_id"])
+            zone: Zone = ZoneModel.get_zone(bulletin["zone_id"])
+            payment_method: PaymentMethod = PaymentMethod.get_enum_value(bulletin["payment_method"])
+
+            bulletins.append(
+                Bulletin(
+                    id = bulletin["id"],
+                    responsible = responsible,
+                    zone = zone,
+                    duration = bulletin["duration"],
+                    registration = bulletin["registration"],
+                    price = bulletin["price"],
+                    payment_method = payment_method,
+                    paid = bulletin["paid"],
+                    created_at = bulletin["created_at"],
+                    brand = bulletin.get("brand"),
+                    model = bulletin.get("model"),
+                    color = bulletin.get("color")
+                )
+            )
+
+        return bulletins
 
 
     @classmethod
@@ -31,102 +50,31 @@ class BulletinModel:
             Returns a bulletin object with the data saved on the database for the introduced id.
             Returns None if the bulletin id doesn't exists
         """
-        bulletin: Bulletin
+        result = cls.get_element('bulletins', id)
 
-        try:
-            conn = get_connection()
-            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cursor.execute('SELECT * FROM bulletins WHERE id= %s', (id,))
 
-            result = cursor.fetchone()
-
-            # Creating bulletins object from database bulletins data
-            responsible: User = UserModel.get_user(result["responsible_id"])
-            zone: Zone = ZoneModel.get_zone(result["zone_id"])
-            payment_method: PaymentMethod = PaymentMethod(result["payment_method"])
+        responsible: User = UserModel.get_user(result["responsible_id"])
+        zone: Zone = ZoneModel.get_zone(result["zone_id"])
+        payment_method: PaymentMethod = PaymentMethod(result["payment_method"])
             
-            bulletin: bulletin = Bulletin(
-                id = result["id"],
-                responsible = responsible, 
-                zone = zone, 
-                duration = result["duration"], 
-                registration = result["registration"], 
-                price = result["price"], 
-                payment_method= payment_method,
-                paid = result["paid"], 
-                created_a = result["created_at"],
-                brand = result.get("brand"), 
-                model = result.get("model"), 
-                color = result.get("color") 
-            )
-
-            conn.close()
-
-        except Exception as exception:
-            return None
-        
-        return bulletin
-    
-
-    @classmethod
-    def get_bulletins_by_filter(cls, start_date: datetime.datetime = None, end_date: datetime.datetime = None, zone: Zone = None) -> list[dict]:
-        result: list[dict]
-        
-        try:
-            conn = get_connection()
-            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-
-            # Build the SQL query dynamically based on the provided parameters
-            query = 'SELECT * FROM bulletins WHERE created_at BETWEEN %s AND %s'
-            params = [start_date, end_date]
-
-            if zone:
-                query += ' AND zone_id = %s'
-                params.append(zone.id)
-            
-
-            cursor.execute(query, params)
-            result = cursor.fetchall()
-            conn.close()
-            
-        except Exception as exception:
-            return None
-        return result
-    
+        return Bulletin(
+            id = result["id"],
+            responsible = responsible, 
+            zone = zone, 
+            duration = result["duration"], 
+            registration = result["registration"], 
+            price = result["price"], 
+            payment_method= payment_method,
+            paid = result["paid"], 
+            created_a = result["created_at"],
+            brand = result.get("brand"), 
+            model = result.get("model"), 
+            color = result.get("color") 
+        )
     
     @classmethod
-    def count_bulletins_by_attribute(cls, attribute: str, value, start_date: datetime.datetime = None, end_date: datetime.datetime = None, zone: Zone = None):
-        count: int
-        
-        try:
-            conn = get_connection()
-            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-
-            # Build the SQL query dynamically based on the provided parameters
-            query = 'SELECT COUNT(*) AS count FROM bulletins WHERE created_at BETWEEN %s AND %s'
-            
-            params = [start_date, end_date]
-            if zone:
-                query += ' AND zone_id = %s'
-                params.append(zone.id)
-            
-            query += f' AND {attribute} = %s'
-
-            params.append(value)
-
-            
-            cursor.execute(query, params)
-            result = cursor.fetchone()
-            
-            count = result["count"]
-
-            conn.close()
-            
-        except Exception as exception:
-            return None
-        
-        return count
-    
+    def count_bulletins(cls, **kwargs) -> int:
+        return cls.count_elements("bulletins", **kwargs)
 
     @classmethod
     def create_bulletin(self, 
@@ -195,7 +143,6 @@ class BulletinModel:
         
         return bulletin
     
-
     @classmethod
     def delete_bulletin(cls, id: int) -> Bulletin:
         """

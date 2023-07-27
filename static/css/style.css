@@ -66,7 +66,7 @@ nav a {
   display: inline-block;
   width: calc(100% - 20px);
   height: 20px;
-  border: 1px solid #081d0e;
+  border: 1px solid #16692d;
   background-color: #95e8c9;
   text-decoration: none;
   color: rgb(5, 31, 0);
@@ -91,7 +91,7 @@ main {
   background-color: #f1fffa;
   padding: 40px;
   overflow-y: scroll;
-  border-left: 1px solid #081d0e;
+  border-left: 1px solid #16692d;
 }
 
 main h1 {

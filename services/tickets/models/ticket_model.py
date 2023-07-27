@@ -11,133 +11,11 @@ from services.utils.payment_methods import PaymentMethod
 
 from database.db_connection import get_connection
 
+from database.base_model import BaseModel
 
 
-class TicketModel:
 
-    @classmethod
-    def get_tickets(cls, **kwargs) -> list[dict]:
-        tickets: list[Ticket] = []
-
-        query = 'SELECT * FROM tickets'
-        params = []
-
-        dict_size = len(kwargs)
-        current_index = 0
-
-        # Build the SQL query dynamically based on the provided parameters
-        if dict_size > 0:
-
-            query += ' WHERE '
-
-            for key, value in kwargs.items():
-                    
-                if key == 'start_date':
-                    query += f'created_at >= %s'
-                    value -= datetime.timedelta(days=1)
-                elif key == 'end_date':
-                    query += f'created_at <= %s'
-                    value+= datetime.timedelta(days=1)
-                else:
-                    query += f'{key} = %s'
-
-                params.append(value)
-
-                if current_index < (dict_size - 1):
-                    query += ' AND '
-                    
-                current_index += 1
-
-        # Execute the query
-        try:
-            conn = get_connection()
-            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-            
-            
-            cursor.execute(query, params)
-            result = cursor.fetchall()
-
-            for ticket in result:
-                # Creating ticket object from database ticket data
-                responsible: User = UserModel.get_user(ticket["responsible_id"])
-                
-                zone: Zone = ZoneModel.get_zone(ticket["zone_id"])
-                payment_method: PaymentMethod = PaymentMethod.get_enum_value(ticket["payment_method"])
-
-                tickets.append(
-                    Ticket(
-                        id = ticket["id"], 
-                        responsible = responsible,
-                        zone = zone,
-                        duration = ticket["duration"], 
-                        registration = ticket["registration"], 
-                        price = ticket["price"], 
-                        payment_method = payment_method, 
-                        paid = ticket["paid"],
-                        created_at = ticket["created_at"]
-                    )
-                )
-                
-            conn.close()
-        except Exception as exception:
-            print("get_tickets: ", exception)
-            return None
-        return tickets
-
-
-    @classmethod
-    def count_tickets(cls, **kwargs) -> int:
-        count: int
-        
-        query = 'SELECT COUNT(*) AS count FROM tickets'
-        params = []
-
-
-        # Build the SQL query dynamically based on the provided parameters
-        # Add querired parameters to the params list
-        dict_size = len(kwargs)
-        current_index = 0
-        if dict_size > 0:
-
-            query += ' WHERE '
-
-            for key, value in kwargs.items():
-                    
-                if key == 'start_date':
-                    query += f'created_at >= %s'
-                    value -= datetime.timedelta(days=1)
-                elif key == 'end_date':
-                    query += f'created_at <= %s'
-                    value+= datetime.timedelta(days=1)
-                else:
-                    query += f'{key} = %s'
-
-                params.append(value)
-
-                if current_index < (dict_size - 1):
-                    query += ' AND '
-                    
-                current_index += 1
-
-        try:
-            conn = get_connection()
-            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-
-            cursor.execute(query, params)
-            result = cursor.fetchone()
-
-            count = result["count"]
-            print(count)
-
-            conn.close()
-            
-
-        except Exception as exception:
-            print("count_tickets: ", exception)
-            return None
-
-        return count
-    
+class TicketModel(BaseModel):
 
     @classmethod
     def get_ticket(cls, id:int) -> Ticket:
@@ -145,38 +23,57 @@ class TicketModel:
             Returns a ticket object with the data saved on the database for the introduced id.
             Returns None if the ticket id doesn't exists
         """
-        ticket: Ticket
-        try:
-            conn = get_connection()
-            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cursor.execute('SELECT * FROM tickets WHERE id= %s', (id,))
+        result = cls.get_element('tickets', id)
 
-            result = cursor.fetchone()
+        responsible: User = UserModel.get_user(result["responsible_id"])
+        zone: Zone = ZoneModel.get_zone(result["zone_id"])
+        payment_method: PaymentMethod = PaymentMethod.get_enum_value(result["payment_method"])
 
+        return Ticket(
+            id = result["id"], 
+            responsible = responsible,
+            zone = zone,
+            duration = result["duration"], 
+            registration = result["registration"], 
+            price = result["price"], 
+            payment_method = payment_method, 
+            paid = result["paid"],
+            created_at = result["created_at"]
+        )
+    
+
+    @classmethod
+    def get_tickets(cls, **kwargs) -> list[dict]:
+        result = cls.get_elements('tickets', **kwargs)
+        tickets: list[Ticket] = []
+
+        for ticket in result:
             # Creating ticket object from database ticket data
-            responsible: User = UserModel.get_user(result["responsible_id"])
-            
-            zone: Zone = ZoneModel.get_zone(result["zone_id"])
+            responsible: User = UserModel.get_user(ticket["responsible_id"])
+                
+            zone: Zone = ZoneModel.get_zone(ticket["zone_id"])
+            payment_method: PaymentMethod = PaymentMethod.get_enum_value(ticket["payment_method"])
 
-            payment_method: PaymentMethod = PaymentMethod.get_enum_value(result["payment_method"])
-
-            ticket = Ticket(
-                id = result["id"], 
-                responsible = responsible,
-                zone = zone,
-                duration = result["duration"], 
-                registration = result["registration"], 
-                price = result["price"], 
-                payment_method = payment_method, 
-                paid = result["paid"],
-                created_at = result["created_at"])
-            
-            conn.close()
-        except Exception as exception:
-            print("get_ticket: ", exception)
-            return None
+            tickets.append(
+                Ticket(
+                    id = ticket["id"], 
+                    responsible = responsible,
+                    zone = zone,
+                    duration = ticket["duration"], 
+                    registration = ticket["registration"], 
+                    price = ticket["price"], 
+                    payment_method = payment_method, 
+                    paid = ticket["paid"],
+                    created_at = ticket["created_at"]
+                )
+            )
         
-        return ticket
+        return tickets
+
+
+    @classmethod
+    def count_tickets(cls, **kwargs) -> int:
+        return cls.count_elements('tickets', **kwargs)
     
 
     @classmethod

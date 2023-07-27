@@ -21,11 +21,12 @@ bulletins_bp = Blueprint('bulletins', __name__, url_prefix='/bulletins', templat
 @bulletins_bp.get('/')
 @login_required
 def bulletins_page():
-    """ Returns the bulletins filtered by date or by zone. Filters are optional and can be combined. They are obtained by get arguments."""
+    """ Returns the tickets filtered by date or by zone. Filters are optional and can be combined. They are obtained by get arguments."""
     
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
     request_zone = request.args.get('zone')
+
 
     if end_date is not None and end_date != '':
         end_date = datetime.strptime(end_date, '%Y-%m-%d')
@@ -37,23 +38,28 @@ def bulletins_page():
     else:
         start_date = datetime.now() - timedelta(days=30)
 
+    query_values = {
+        "start_date": start_date, 
+        "end_date":  end_date, 
+    }
 
-    # Obtaining introduced zone (either all or a specific zone)
-    zone: Zone
-    if request_zone == 'all':
-        zone = None
-    else:
+    if not (request_zone == 'all' or request_zone == None):
         zone = ZoneModel.get_zone_by_name(request_zone)
+        query_values["zone_id"] = zone.id
 
-    #obtaining data to show on the page
-    bulletins = BulletinModel.get_bulletins_by_filter(start_date, end_date, zone)
 
-    count_all_bulletins = get_bulletins_attributes_count(start_date, end_date, zone)
+    bulletins = BulletinModel.get_bulletins(**query_values)
 
+    all_bulletins_count = get_bulletins_attributes_count(start_date, end_date)
+
+    # Convert dates to string in order to pass them to the template
     start_date = start_date.strftime('%Y-%m-%d')
     end_date = end_date.strftime('%Y-%m-%d')
 
-    return render_template('bulletins.html', bulletins=bulletins, start_date=start_date, end_date=end_date, zone=request_zone, bulletins_data = count_all_bulletins)
+    zones = ZoneModel.get_zones_list()
+
+    return render_template('bulletins.html', bulletins = bulletins, start_date = start_date, end_date = end_date, bulletins_data = all_bulletins_count, available_zones = zones, zone = request_zone)
+
 
 
 

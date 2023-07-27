@@ -7,6 +7,12 @@
     <h1>{{ user.name }}</h1>
     
     <section>
+        <article>
+            <h2>Información</h2>
+            <p>Nombre de usuario: <strong>{{ user.name }}</strong></p>
+            <p>Email: <strong>{{ user.email }}</strong></p>
+            <p>Rol: <strong>{{ user.role.value }}</strong></p>
+        </article>
         <article class="filter-options">
             <form action="/users/user/{{ user.id }}/generate-report" method="GET">
                 <div class="input-container">
@@ -23,15 +29,7 @@
                 <input class="default-button" type="submit" value="Generar Reporte">
             </form>
         </article>
-    </section>
-    <section>
-        <button class="default-button">Eliminar Usuario</button>
-        <article>
-            <h2>Información</h2>
-            <p>Nombre de usuario: <strong>{{ user.name }}</strong></p>
-            <p>Email: <strong>{{ user.email }}</strong></p>
-            <p>Rol: <strong>{{ user.role.value }}</strong></p>
-        </article>
+
         <article>
             <h2>Editar</h2>
             <form action="/users/{{ user.id }}/edit" method="post" class="general-form">
@@ -48,6 +46,18 @@
                 </select>
                 <input class="default-button" type="submit" value="Actualizar">
             </form>
+        </article>
+        <article class="two-columns-grid">
+            <div>
+                <h2>Eliminar</h2>
+                <p>¿Estás seguro de que quieres eliminar este usuario?</p>
+            </div>
+            <div>
+                <!-- Create a form that open a confirmation model before making the request -->
+                <form action="/users/{{ user.id }}/delete" id="delete-user">
+                    <button class="default-button">Eliminar Usuario</button>
+                </form>
+            </div>
         </article>
         <article>
             Cantidad de tickets impresos: <strong>{{ users|length }}</strong>
@@ -95,4 +105,8 @@
         </article>
 
     </section>
+
+    <script>
+
+    </script>
 {% endblock %}
