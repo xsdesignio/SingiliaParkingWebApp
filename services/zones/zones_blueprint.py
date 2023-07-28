@@ -11,7 +11,6 @@ zones_bp = Blueprint('zones', __name__, url_prefix='/zones', template_folder='./
 @zones_bp.get('/')
 def zones_page():
     zones = ZoneModel.get_zones_list()
-    print(f"zones: {zones}")
     return render_template('zones.html', zones=zones)
 
 
@@ -48,10 +47,7 @@ def create_zone_page():
 def create_zone():
     name = request.form['name']
 
-    print(f"name: {name}")
     zone: Zone = ZoneModel.create_zone(name)
-
-    print(f"zone: {zone.__str__()}")
 
     if zone != None:
         return redirect(url_for('zones.zones_page'))

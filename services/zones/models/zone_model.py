@@ -28,9 +28,6 @@ class ZoneModel:
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
             cursor.execute('SELECT * FROM zones WHERE name = %s', (name,))
             result = cursor.fetchone()
-
-            print("getting_zone_result: ", result)
-            print(name)
             
             if result is None:
                 return None

@@ -48,11 +48,11 @@
                 </p>
                 <p id="bulletins-amount">
                     <strong>Pagados con tarjeta: </strong>
-                    {{ bulletins_data["paid_by_cart"]}}
+                    {{ bulletins_data["paid_by_card"] }}
                 </p>
                 <p id="bulletins-amount">
                     <strong>Pagados con efectivo: </strong>
-                    {{ bulletins_data["paid_by_cash"]}}
+                    {{ bulletins_data["paid_by_cash"] }}
                 </p>
 
                 <p id="bulletins-amount">
@@ -84,7 +84,7 @@
            
             {% if bulletins %}
                 {% for bulletin in bulletins %}
-                    <div class="ticket" style="background-image: url('{{ url_for('static', filename='assets/tickets/' + ticket.duration|string + '.png') }}');">
+                    <div class="ticket" style="background-image: url('{{ url_for('static', filename='assets/bulletins/bulletin.png') }}');">
 
                         <div class="on-ticket-info">
                             <p><strong>{{ bulletin.created_at }}</strong></p>

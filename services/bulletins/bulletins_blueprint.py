@@ -117,7 +117,7 @@ def create_bulletin():
 
     zone: Zone = ZoneModel.get_zone_by_name(bulletin_json["zone"])
 
-    payment_method:PaymentMethod = PaymentMethod.get_enum_value(bulletin_json.get('payment_method', payment_method.CASH))
+    payment_method:PaymentMethod = PaymentMethod.get_enum_value(bulletin_json.get('payment_method', 'CASH'))
 
 
     try:
@@ -129,7 +129,8 @@ def create_bulletin():
             price = bulletin_json['price'],  
             payment_method = payment_method,
             paid = bulletin_json['paid'],  
-            created_at = bulletin_json['created_at'] or None,
+            precept= bulletin_json.get('precept', None),
+            created_at = bulletin_json.get('created_at', datetime.now()),
             brand = bulletin_json.get("brand"), 
             model = bulletin_json.get("model"), 
             color = bulletin_json.get("color")

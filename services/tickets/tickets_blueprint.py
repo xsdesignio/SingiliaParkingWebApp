@@ -122,7 +122,7 @@ def create_ticket():
         )
 
     except Exception as e:
-        print(e)
+        print("create_ticket: ", e)
         return jsonify({'message': 'El ticket no pudo ser creado.'}), 400
 
 
@@ -153,7 +153,7 @@ def pay_ticket(id: int):
         return jsonify({'message': 'El ticket ha sido pagado con éxito'}), 200
     
     except Exception as exception:
-        print(exception)
+        print("pay_ticket: ", exception)
         return jsonify({'message': exception.__str__()}), 400
 
 

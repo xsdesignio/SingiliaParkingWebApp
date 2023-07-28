@@ -85,6 +85,7 @@ class BulletinModel(BaseModel):
                 price: float,
                 payment_method: PaymentMethod,
                 paid: bool,
+                precept: str,
                 created_at:datetime.datetime = datetime.datetime.now(),
                 brand: str = None,
                 model: str = None,
@@ -101,8 +102,8 @@ class BulletinModel(BaseModel):
 
             query = '''
                 INSERT INTO bulletins(responsible_id, zone_id, duration, registration,
-                    price, payment_method_id, paid, brand, model, color, created_at) 
-                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
+                    price, payment_method, paid, precept, brand, model, color, created_at) 
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) 
                 RETURNING *
             '''
 
@@ -114,7 +115,7 @@ class BulletinModel(BaseModel):
             result = cursor.fetchone()
 
             # Creating bulletin object from database bulletin data
-            payment_method: PaymentMethod = PaymentMethod(result["payment_method"])
+            payment_method: PaymentMethod = PaymentMethod.get_enum_value(result["payment_method"])
 
 
             bulletin: bulletin = Bulletin(
@@ -124,9 +125,9 @@ class BulletinModel(BaseModel):
                 duration = result["duration"], 
                 registration = result["registration"], 
                 price = result["price"], 
-                payment_method= payment_method.value,
+                payment_method= payment_method,
                 paid = result["paid"], 
-                created_a = result["created_at"],
+                created_at = result["created_at"],
                 brand = result.get("brand"), 
                 model = result.get("model"), 
                 color = result.get("color") 
