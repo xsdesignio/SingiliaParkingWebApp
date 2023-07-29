@@ -41,24 +41,75 @@
 
     {# PAGE DATA #}
     <section>
-        <!-- <h2>Tickets impresos por en esta zona</h2>
-        
-        <article class="users-cards">
-            {% for user in users %}
-                <div class="user-card">
-                    <p>{{ user.name }}</p>
-                    <p>{{ user.email }}</p>
-                </div>
-            {% endfor %}
-                <div class="user-card">
-                    <p>Prueba</p>
-                    <p>correo@prueba.com</p>
-                </div>
-                <div class="user-card">
-                    <p>Prueba</p>
-                    <p>correo@prueba.com</p>
-                </div>
-        </article> -->
+        <h2>Tickets creados en {{ zone.name }}.</h2>
+        <article class="tickets-record">
+            <!-- If tickets, for ticket in tickets create a div where the ticket information is shown, it ocuppy all width and contains the image at left and all ticket information at right-->
+            {% if tickets %}
+                {% for ticket in tickets %}
+                    <div class="ticket" style="background-image: url('{{ url_for('static', filename='assets/tickets/' + ticket.duration|string + '.png') }}');">
 
+                        <div class="on-ticket-info">
+                            <p><strong>{{ ticket.created_at }}</strong></p>
+                            <p><strong>{{ ticket.duration }}</strong></p>
+                            <p><strong>{{ ticket.registration }}</strong></p>
+                        </div>
+                        <div class="all-ticket-info">
+                            <p>Fecha de impresión: <strong>{{ ticket.created_at }}</strong></p>
+                            <p>Id del responsable: <strong>{{ ticket.responsible_id }}</strong></p>
+                            <p>Duración: <strong>{{ ticket.duration }}</strong></p>
+                            <p>Precio: <strong>{{ ticket.price }}</strong></p>
+                            <p>
+                                Método de pago: 
+                                <strong> 
+                                    {% if ticket.paid == true %}
+                                        Tarjeta
+                                    {% else %}
+                                        Efectivo
+                                    {% endif %}
+                                </strong>
+                            </p>
+                            <p>Matrícula: <strong>{{ ticket.registration }}</strong></p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No hay tickets para mostrar</p>
+            {% endif %}
+        </article>
+        <h2>Boletines creados en {{ zone.name }}.</h2>
+        <article class="tickets-record">
+           
+            {% if bulletins %}
+                {% for bulletin in bulletins %}
+                    <div class="ticket" style="background-image: url('{{ url_for('static', filename='assets/bulletins/bulletin.png') }}');">
+
+                        <div class="on-ticket-info">
+                            <p><strong>{{ bulletin.created_at }}</strong></p>
+                            <p><strong>{{ bulletin.duration }}</strong></p>
+                            <p><strong>{{ bulletin.registration }}</strong></p>
+                        </div>
+                        <div class="all-ticket-info">
+                            <p>Fecha de impresión: <strong>{{ bulletin.created_at }}</strong></p>
+                            <p>Id del responsable: <strong>{{ bulletin.responsible_id }}</strong></p>
+                            <p>Duración: <strong>{{ bulletin.duration }}</strong></p>
+                            <p>Precio: <strong>{{ bulletin.price }}</strong></p>
+                            <p>
+                                Método de pago: 
+                                <strong> 
+                                    {% if bulletin.paid == true %}
+                                        Tarjeta
+                                    {% else %}
+                                        Efectivo
+                                    {% endif %}
+                                </strong>
+                            </p>
+                            <p>Matrícula: <strong>{{ bulletin.registration }}</strong></p>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No hay boletines para mostrar</p>
+            {% endif %}
+        </article>
     </section>
 {% endblock %}

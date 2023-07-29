@@ -3,6 +3,11 @@ from .models.zone_model import ZoneModel
 from .entities.zone import Zone
 from auth.controllers.login import role_required
 
+from services.bulletins.models.bulletin_model import BulletinModel
+from services.bulletins.entities.bulletin import Bulletin
+from services.tickets.models.ticket_model import TicketModel
+from services.tickets.entities.ticket import Ticket
+
 
 zones_bp = Blueprint('zones', __name__, url_prefix='/zones', template_folder='./templates')
 
@@ -18,8 +23,10 @@ def zones_page():
 @zones_bp.get('/zone/<id>')
 def zone_details(id):
     zone = ZoneModel.get_zone(id)
+    tickets = TicketModel.get_tickets(zone_id=id)
+    bulletins = BulletinModel.get_bulletins(zone_id=id)
     if zone != None:
-        return render_template('zone-details.html', zone=zone)
+        return render_template('zone-details.html', zone=zone, tickets=tickets, bulletins=bulletins)
     else:
         error_message = 'Ha ocurrido un error obteniendo la zona indicada, o esta no existe'
         return render_template('zone-details.html', error=error_message)

@@ -41,9 +41,14 @@ def tickets_page():
         "end_date":  end_date, 
     }
 
+    all_tickets_count: dict
+
     if not (request_zone == 'all' or request_zone == None):
         zone = ZoneModel.get_zone_by_name(request_zone)
         query_values["zone_id"] = zone.id
+        all_tickets_count = get_tickets_attributes_count(start_date, end_date, zone)
+    else:
+        all_tickets_count = get_tickets_attributes_count(start_date, end_date)
 
 
     tickets = TicketModel.get_tickets(**query_values)
