@@ -54,7 +54,7 @@
             </div>
             <div>
                 <!-- Create a form that open a confirmation model before making the request -->
-                <form action="/users/{{ user.id }}/delete" id="delete-user">
+                <form action="/users/user/{{ user.id }}/delete" method="POST" id="delete-user">
                     <button class="default-button">Eliminar Usuario</button>
                 </form>
             </div>

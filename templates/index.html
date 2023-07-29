@@ -43,7 +43,7 @@
                 </p>
                 <p id="tickets-amount">
                     <strong>Pagados con tarjeta: </strong>
-                    {{ info.tickets.paid_by_cart }}
+                    {{ info.tickets.paid_by_card }}
                 </p>
                 <p id="tickets-amount">
                     <strong>Pagados con efectivo: </strong>
@@ -79,11 +79,11 @@
             {% if info.bulletins %}
                 <p id="tickets-amount">
                     <strong>Boletines impresos: </strong>
-                    {{ info.bulletins.total_bulletins }}
+                    {{ info.bulletins.bulletins_amount }}
                 </p>
                 <p id="tickets-amount">
                     <strong>Pagados con tarjeta: </strong>
-                    {{ info.bulletins.paid_by_cart }}
+                    {{ info.bulletins.paid_by_card }}
                 </p>
                 <p id="tickets-amount">
                     <strong>Pagados con efectivo: </strong>

@@ -164,14 +164,29 @@ class UserModel:
 
     @classmethod
     def delete_user(cls, id):
+        user: User
+
         try:
             conn =  get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
 
-            cursor.execute('DELETE FROM users WHERE id = %s', (id,))
+            cursor.execute('DELETE FROM users WHERE id = %s RETURNING *', (id,))
 
+            result = cursor.fetchone()
+            print(result)
+            user = User(
+                id=result['id'], 
+                role=result['role'], 
+                name=result['name'], 
+                email=result['email'], 
+                password=result['password'],
+                created_at=result['created_at']
+            )
+            conn.commit()
             conn.close()
         except Exception as e:
             return None
+        
+        return user
         
 

@@ -1,11 +1,12 @@
 from services.zones.models.zone_model import ZoneModel
 from services.zones.entities.zone import Zone
+from services.users.entities.user import User
 from ..models.ticket_model import TicketModel
 from datetime import datetime
 
 
 
-def get_tickets_attributes_count(start_date: datetime = None, end_date: datetime = None, zone: Zone = None):
+def get_tickets_attributes_count(start_date: datetime = None, end_date: datetime = None, zone: Zone = None, user: User = None):
     """Return a dictionary with the variables and their count"""
     
     query_dict = {}
@@ -19,6 +20,9 @@ def get_tickets_attributes_count(start_date: datetime = None, end_date: datetime
     if(zone):
         query_dict["zone_id"] = zone.id
 
+    if(user):
+        query_dict["responsible_id"] = user.id
+
 
     paid_by_card = TicketModel.count_tickets(**query_dict, payment_method = "CARD")
     paid_by_cash = TicketModel.count_tickets(**query_dict, payment_method = "CASH")
@@ -31,17 +35,43 @@ def get_tickets_attributes_count(start_date: datetime = None, end_date: datetime
         paid_by_card = 0
     if paid_by_cash is None:
         paid_by_cash = 0
+        
     
 
-    tickets_amount_by_data = {
-        "total_tickets": paid_by_card + paid_by_cash,
+    tickets_amount = {
+        "tickets_amount": paid_by_card + paid_by_cash,
         "paid_by_card": paid_by_card,
         "paid_by_cash": paid_by_cash,
         "duration_of_30": duration_of_30,
+        "total_income_by_30": round(duration_of_30 * get_prices_by_duration(30), 2),
         "duration_of_60": duration_of_60,
+        "total_income_by_60": round(duration_of_60 * get_prices_by_duration(60), 2),
         "duration_of_90": duration_of_90,
+        "total_income_by_90": round(duration_of_90 * get_prices_by_duration(90), 2),
         "duration_of_120": duration_of_120,
+        "total_income_by_120": round(duration_of_120 * get_prices_by_duration(120), 2),
     }
+    total_income = round(tickets_amount["total_income_by_30"] + tickets_amount["total_income_by_60"] + tickets_amount["total_income_by_90"] + tickets_amount["total_income_by_120"], 2)
+    tickets_amount["total_income"] = total_income
 
 
-    return tickets_amount_by_data
+    return tickets_amount
+
+
+
+
+def get_prices_by_duration(duration):
+    """Return a dictionary with the prices by duration"""
+    
+    if duration <= 30:
+        return 0.7
+    elif duration <= 60:
+        return 0.9
+    elif duration <= 90:
+        return 1.4
+    elif duration <= 120:
+        return 1.8
+    elif duration <= 180:
+        return 3.6
+    elif duration <= 240:
+        return 4.5

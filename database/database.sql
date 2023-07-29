@@ -19,6 +19,15 @@ CREATE TABLE zones(
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+
+CREATE TABLE zones_responsibles(
+    id SERIAL PRIMARY KEY NOT NULL,
+    zone_id INTEGER REFERENCES zones(id),
+    responsible_id INTEGER REFERENCES users(id),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
 CREATE TABLE withhelds(
     id SERIAL PRIMARY KEY NOT NULL,
     responsible_id INTEGER REFERENCES users(id),

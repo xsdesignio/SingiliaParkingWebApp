@@ -1,6 +1,8 @@
 import datetime
 from ..models.bulletin_model import BulletinModel
 
+from decimal import Decimal
+
 from services.zones.entities.zone import Zone
 
 
@@ -31,16 +33,42 @@ def get_bulletins_attributes_count(start_date: datetime.datetime = None, end_dat
             paid_by_cash = 0
         
 
-        bulletins_amount_by_data = {
-            "total_tickets": paid_by_card + paid_by_cash,
+        bulletins_amount = {
+            "bulletins_amount": paid_by_card + paid_by_cash,
             "paid_by_card": paid_by_card,
             "paid_by_cash": paid_by_cash,
             "duration_of_30": duration_of_30,
+            "total_income_by_30": round(duration_of_30 * get_prices_by_duration(30), 2),
             "duration_of_60": duration_of_60,
+            "total_income_by_60": round(duration_of_60 * get_prices_by_duration(60), 2),
             "duration_of_90": duration_of_90,
+            "total_income_by_90": round(duration_of_90 * get_prices_by_duration(90), 2),
             "duration_of_120": duration_of_120,
+            "total_income_by_120": round(duration_of_120 * get_prices_by_duration(120), 2),
         }
 
+        total_income = round(bulletins_amount["total_income_by_30"] + bulletins_amount["total_income_by_60"] + bulletins_amount["total_income_by_90"] + bulletins_amount["total_income_by_120"]
+                               , 2)
+        bulletins_amount["total_income"] = total_income
 
-        return bulletins_amount_by_data
+
+        return bulletins_amount
     
+
+
+
+def get_prices_by_duration(duration):
+    """Return a dictionary with the prices by duration"""
+    
+    if duration <= 30:
+        return 0.7
+    elif duration <= 60:
+        return 0.9
+    elif duration <= 90:
+        return 1.4
+    elif duration <= 120:
+        return 1.8
+    elif duration <= 180:
+        return 3.6
+    elif duration <= 240:
+        return 4.5

@@ -102,6 +102,7 @@ def create_bulletin():
     price -- price of the bulletin
     payment_method -- payment method of the bulletin
     paid -- if the bulletin has been paid
+    precept -- precept of the bulletin (Optional)
     created_at -- date when the bulletin was created
     brand -- brand of the vehicle (Optional)
     model -- model of the vehicle (Optional)

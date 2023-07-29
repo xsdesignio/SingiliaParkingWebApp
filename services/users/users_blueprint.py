@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 
 from services.tickets.models.ticket_model import TicketModel
 from services.tickets.controllers.tickets_controller import get_tickets_attributes_count
+from services.bulletins.controllers.bulletins_controller import get_bulletins_attributes_count
 from services.zones.models.zone_model import ZoneModel
 from services.users.entities.user import User
 from services.utils.reports.generation import create_report
@@ -53,10 +54,16 @@ def generate_report(id):
         if zone != None:
             query_values["zone_id"] = zone.id
 
-    tickets = TicketModel.get_tickets(**query_values)
+    #tickets = TicketModel.get_tickets(**query_values)
     tickets_amount_by_data = get_tickets_attributes_count()
+    bulletins_amount_by_data = get_bulletins_attributes_count()
 
-    created_report_url = create_report(tickets_amount_by_data, user, start_date, end_date)
+    data = {
+        "tickets":tickets_amount_by_data,
+        "bulletins":bulletins_amount_by_data
+    }
+
+    created_report_url = create_report(data, user, start_date, end_date)
 
     return send_file(created_report_url, as_attachment=True)
 
@@ -110,6 +117,19 @@ def update_user():
         return jsonify(updated_user.to_json()), 200
     else:
         return {'message': 'Ha ocurrido un error actualizando el usuario.'}, 500
+
+
+@role_required('ADMIN')
+@users_bp.post('user/<id>/delete')
+def delete_user(id):
+    deleted_user = UserModel.delete_user(id)
+    if deleted_user != None:
+        return redirect('/users', code=302)
+        # return jsonify(deleted_user.to_json()), 200
+    else:
+        return {'message': 'Ha ocurrido un error eliminando el usuario.'}, 500
+
+
 
 
 @role_required('ADMIN')
