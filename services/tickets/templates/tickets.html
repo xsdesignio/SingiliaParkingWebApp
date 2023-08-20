@@ -6,105 +6,137 @@
 
     <h1>Administración de Tickets</h1>
     {# PAGE DATA #}
-    <article>
-        <p>Mostrando tickets creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
-    </article>
 
-    <section>
-        <div class="two-columns-grid">
-            <article class="filter-options">
-                <form action="/tickets" method="GET">
-                    <div class="input-container">
-                        <label for="start_date">Fecha de inicio</label>
-                        <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
-                    </div>
-                    
-                    <div class="input-container">
-                        <label for="end_date">Fecha de fin</label>
-                        <input type="date" name="end_date" id="end_date" value="{{ end_date }}">   
-                    </div>
-                    
-                    <div class="input-container">
-                        <label for="zone">Zona</label>
-                        <select name="zone" id="zone" value="{{ zone.name }}">
-                            <option value="all">Todas</option>
-                            {% if available_zones %}
-                                {% for zone in available_zones %}
-                                    <option value="{{ zone.name }}">{{ zone.name }}</option>
-                                {% endfor %}
-                            {% endif %}
-                        </select>
-                    </div>
-                    
-                    <input class="default-button" type="submit" value="Filtrar resultados">
-                </form>
-            </article>
-            {# <article class="char">
-                <canvas id="tickets-chart">
-
-                </canvas>
+    <section class="filter-section">
+        <article class="filter-options">
+            <form action="" method="GET">
+                <div class="input-container">
+                    <label for="start_date">Fecha de inicio</label>
+                    <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
+                </div>
                 
-            </article> #}
-            <article class="data-shown">
-                <p id="tickets-amount">
-                    <strong>Número de tickets impresos: </strong>
-                    {% if tickets %}
-                        {{ tickets|length }}
-                    {% else %}
-                        0
-                    {% endif %}
-                </p>
-                <p id="tickets-amount">
-                    <strong>Pagados con tarjeta: </strong>
-                    {{ tickets_data["paid_by_card"] }}
-                </p>
-                <p id="tickets-amount">
-                    <strong>Pagados con efectivo: </strong>
-                    {{ tickets_data["paid_by_cash"] }}
-                </p>
+                <div class="input-container">
+                    <label for="end_date">Fecha de fin</label>
+                    <input type="date" name="end_date" id="end_date" value="{{ end_date }}">   
+                </div>
+                
+                <div class="input-container">
+                    <label for="zone">Zona</label>
+                    <select name="zone" id="zone">
+                        <option value="all">Todas</option>
+                        {% if available_zones %}
+                            {% for available_zone in available_zones %}
+                                {% if available_zone.name == zone.name %} 
+                                    <option value="{{ available_zone.name }}" selected>
+                                        {{ available_zone.name }}
+                                    </option>
+                                {% else %}
+                                    <option value="{{ available_zone.name }}">
+                                        {{ available_zone.name }}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                
+                <input class="default-button" type="submit" value="Filtrar resultados">
+            </form>
+        </article>
 
-                <p id="tickets-amount">
-                    <strong>Tickets de 30 minutos: </strong>
+        <article class="selected-date">
+            <p>Mostrando tickets creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
+        </article>
+    </section>
+    
+    <section>
+        <article class="data-shown" style="text-align: center;">
+            <h3>
+                <strong>Número de tickets impresos: </strong>
+                {% if tickets %}
+                    {{ tickets|length }}
+                {% else %}
+                    0
+                {% endif %}
+            </h3>
+            <p>
+                <strong>Pagados con tarjeta: </strong>
+                {{ tickets_data["paid_by_card"] }}
+            </p>
+            <p>
+                <strong>Pagados con efectivo: </strong>
+                {{ tickets_data["paid_by_cash"] }}
+            </p>
+
+            <h3>
+                Ingresos totales: {{ tickets_data.total_income }} €
+            </h3>
+        </article>
+    </section>
+
+    <section class="flex-content">
+            <article class="data-shown yellow-box">
+
+                <p>
+                    <strong>Nº tickets de 30 min: </strong>
                     {{ tickets_data["duration_of_30"]}}
                 </p>
+                <p>
+                    <strong>Ingresos por tickets de 30 min: </strong>
+                    {{ tickets_data["total_income_by_30"] }} €
+                </p>
+            </article>
+            <article class="data-shown green-box">
 
-                <p id="tickets-amount">
-                    <strong>Tickets de 60 minutos: </strong>
+                <p>
+                    <strong>Nº tickets de 60 min: </strong>
                     {{ tickets_data["duration_of_60"] }}
                 </p>
+                <p>
+                    <strong>Ingresos por tickets de 60 min: </strong>
+                    {{ tickets_data["total_income_by_60"] }} €
+                </p>
+            </article>
+            <article class="data-shown orange-box">
 
-                <p id="tickets-amount">
-                    <strong>Tickets de 90 minutos: </strong>
+                <p>
+                    <strong>Nº tickets de 90 min: </strong>
                     {{ tickets_data["duration_of_90"] }}
                 </p>
 
-                <p id="tickets-amount">
-                    <strong>Tickets de 120 minutos: </strong>
+                <p>
+                    <strong>Ingresos por tickets de 90 min: </strong>
+                    {{ tickets_data["total_income_by_90"] }} €
+                </p>
+            </article>
+            <article class="data-shown pink-box">
+
+                <p>
+                    <strong>Nº tickets de 120 min: </strong>
                     {{ tickets_data["duration_of_120"] }}
                 </p>
 
-            </article>
-        </div>
-    </section>
-    <section>
+                <p>
+                    <strong>Ingresos por tickets de 120 min: </strong>
+                    {{ tickets_data["total_income_by_120"] }} €
+                </p>
 
-        <h2>Tickets</h2>
-        <article class="tickets-record">
+            </article>
+    </section>
+    
+    <section class="record-wrapper">
+
+        <h2>Registro de Tickets</h2>
+        <article class="record">
             <!-- If tickets, for ticket in tickets create a div where the ticket information is shown, it ocuppy all width and contains the image at left and all ticket information at right-->
             {% if tickets %}
                 {% for ticket in tickets %}
-                    <div class="ticket" style="background-image: url('{{ url_for('static', filename='assets/tickets/' + ticket.duration|string + '.png') }}');">
-
-                        <div class="on-ticket-info">
-                            <p><strong>{{ ticket.created_at }}</strong></p>
-                            <p><strong>{{ ticket.duration }}</strong></p>
-                            <p><strong>{{ ticket.registration }}</strong></p>
-                        </div>
-                        <div class="all-ticket-info">
-                            <p>Fecha de impresión: <strong>{{ ticket.created_at }}</strong></p>
-                            <p>Id del responsable: <strong>{{ ticket.responsible_id }}</strong></p>
-                            <p>Duración: <strong>{{ ticket.duration }}</strong></p>
-                            <p>Precio: <strong>{{ ticket.price }}</strong></p>
+                    <div class="ticket {% if ticket.duration == 30 %} yellow-box {% elif ticket.duration == 60 %} green-box {% elif ticket.duration == 90 %} orange-box {% elif ticket.duration == 120 %} pink-box {% endif %}">
+                        <div class="ticket-info">
+                            <p>Fecha de impresión: <br/> <strong>{{ ticket.created_at.strftime('%d-%m-%Y %H:%M') }}</strong></p>
+                            <p>Responsable: <strong>{{ ticket.responsible.name }}</strong></p>
+                            <p>Duración: <strong>{{ ticket.duration }} min</strong></p>
+                            <p>Precio: <strong>{{ ticket.price }} €</strong></p>
                             <p>
                                 Método de pago: 
                                 <strong> 
@@ -116,7 +148,7 @@
                                 </strong>
                             </p>
                             <p>Matrícula: <strong>{{ ticket.registration }}</strong></p>
-                            <p>Localización: <strong>{{ ticket.zone.name }}</strong></p>
+                            <p>Zona: <strong>{{ ticket.zone.name }}</strong></p>
                         </div>
                     </div>
                 {% endfor %}

@@ -8,6 +8,7 @@ CREATE TABLE users(
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    associated_zone_id INTEGER REFERENCES zones(id),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -15,22 +16,14 @@ CREATE TABLE users(
 CREATE TABLE zones(
     id SERIAL PRIMARY KEY NOT NULL,
     name VARCHAR(100) NOT NULL UNIQUE,
-    zone_responsibles INTEGER[],
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-
-CREATE TABLE zones_responsibles(
-    id SERIAL PRIMARY KEY NOT NULL,
-    zone_id INTEGER REFERENCES zones(id),
-    responsible_id INTEGER REFERENCES users(id),
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
 
 
 CREATE TABLE withhelds(
     id SERIAL PRIMARY KEY NOT NULL,
-    responsible_id INTEGER REFERENCES users(id),
+    responsible_id INTEGER REFERENCES users(id) NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

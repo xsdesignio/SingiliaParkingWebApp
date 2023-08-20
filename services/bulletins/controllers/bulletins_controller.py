@@ -20,23 +20,23 @@ def get_bulletins_attributes_count(start_date: datetime.datetime = None, end_dat
             query_dict["zone_id"] = zone.id
 
 
-        paid_by_card = BulletinModel.count_bulletins(**query_dict, payment_method = "CARD")
-        paid_by_cash = BulletinModel.count_bulletins(**query_dict, payment_method = "CASH")
+        paid = BulletinModel.count_bulletins(**query_dict, paid = False)
+        not_paid = BulletinModel.count_bulletins(**query_dict, paid = True)
         duration_of_30 = BulletinModel.count_bulletins(**query_dict, duration = 30)
         duration_of_60 = BulletinModel.count_bulletins(**query_dict, duration = 60)
         duration_of_90 = BulletinModel.count_bulletins(**query_dict, duration = 90)
         duration_of_120 = BulletinModel.count_bulletins(**query_dict, duration = 120)
 
-        if paid_by_card is None:
-            paid_by_card = 0
-        if paid_by_cash is None:
-            paid_by_cash = 0
+        if paid is None:
+            paid = 0
+        if not_paid is None:
+            not_paid = 0
         
 
         bulletins_amount = {
-            "bulletins_amount": paid_by_card + paid_by_cash,
-            "paid_by_card": paid_by_card,
-            "paid_by_cash": paid_by_cash,
+            "bulletins_amount": paid + not_paid,
+            "paid": paid,
+            "not_paid": not_paid,
             "duration_of_30": duration_of_30,
             "total_income_by_30": round(duration_of_30 * get_prices_by_duration(30), 2),
             "duration_of_60": duration_of_60,

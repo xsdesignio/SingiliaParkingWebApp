@@ -2,6 +2,8 @@ from dataclasses import dataclass
 import datetime
 from enum import Enum
 
+from services.zones.entities.zone import Zone
+
 class UserRole(Enum):
     ADMIN = "ADMIN"
     MANAGER = "MANAGER"
@@ -22,13 +24,18 @@ class User:
     name: str
     email: str
     password: str
+    associated_zone: Zone = None
     created_at: datetime = datetime.datetime.now()
 
     def to_json(self):
-        return {
+        json_object = {
             'id': self.id,
             'role': self.role.name,
             'name': self.name,
             'email': self.email,
-            'created_at': str(self.created_at)
+            'created_at': self.created_at.strftime("%Y-%m-%d %H:%M:%S")
         }
+        if self.associated_zone != None:
+            json_object['zone'] = self.associated_zone.name
+
+        return json_object

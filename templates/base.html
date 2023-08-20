@@ -12,29 +12,34 @@
     <body>
         <!-- Create the structure for a dashboard where there is header on top, a menu on left and the current information or page on the rest of the window -->
         <div class="container">
-            <header class="header">
-                <img class="img-logo" src="{{ url_for('static', filename='/assets/icons/logo.png') }}" alt="">
-            </header>
-            <nav class="menu">
-                <ul>
-                    <li>
-                        <a class="{{ 'selected' if request.path == '/' else '' }}" href="/">Resumen</a>
-                    </li>
-                    <li>
-                        <a class="{{ 'selected' if '/tickets/' in request.path else '' }}" href="/tickets/">Tickets</a>
-                    </li>
-                    <li>
-                        <a class="{{ 'selected' if '/bulletins/' in request.path  else '' }}" href="/bulletins/">Boletines</a>
-                    </li>
-                    <li>
-                        <a class="{{ 'selected' if '/users/' in request.path else '' }}" href="/users/">Usuarios</a>
-                    </li>
-                    <li>
-                        <a class="{{ 'selected' if '/zones/' in request.path else '' }}" href="/zones/">Zonas</a>
-                    </li>
-
-                </ul>
-            </nav>
+            <div class="sidebar">
+                <header class="header">
+                    <img class="img-logo" src="{{ url_for('static', filename='/assets/icons/logo.png') }}" alt="">
+                </header>
+                <nav class="menu">
+                    <ul>
+                        <li>
+                            <a class="{{ 'selected' if request.path == '/' else '' }}" href="/">Resumen</a>
+                        </li>
+                        <li>
+                            <a class="{{ 'selected' if '/tickets/' in request.path else '' }}" href="/tickets/">Tickets</a>
+                        </li>
+                        <li>
+                            <a class="{{ 'selected' if '/bulletins/' in request.path  else '' }}" href="/bulletins/">Boletines</a>
+                        </li>
+                        <li>
+                            <a class="{{ 'selected' if '/users/' in request.path else '' }}" href="/users/">Usuarios</a>
+                        </li>
+                        <li>
+                            <a class="{{ 'selected' if '/zones/' in request.path else '' }}" href="/zones/">Zonas</a>
+                        </li>
+    
+                    </ul>
+                </nav>
+                <div class="logout-container">
+                    <a href="/auth/logout">Cerrar Sesión</a>
+                </div>
+            </div>
             <main class="content">
                 {% block content %}
                     <span>Recuerda recargar la página si quieres ver los resultados actualizados</span>
@@ -43,6 +48,18 @@
                     <p>This is the home page</p>
                 {% endblock %}
             </main>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <ul class="messages">
+                        {% for category, message in messages %}
+                        <li class="{% if category == 'success' %}alert-success{% elif category == 'error' %}alert-error{% endif %}">
+                                {{ message }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
         
     </body>
 </html>

@@ -4,6 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from database.db_connection import get_connection
 from ..entities.user import User, UserRole
+from services.zones.entities.zone import Zone
+from services.zones.models.zone_model import ZoneModel
 
 class UserModel:
 
@@ -19,38 +21,14 @@ class UserModel:
 
             result = cursor.fetchone()
             
-            if result != None:
-                user_role: UserRole = UserRole.get_enum_value(result['role'])
-                user: User = User(
-                    id=result['id'], 
-                    role=user_role, 
-                    name=result['name'], 
-                    email=result['email'], 
-                    password=result['password'],
-                    created_at=result['created_at']
-                )
-                return user
-            
             conn.close()
         except Exception as e:
             print('An error occurred accessing the database')
             print(e)
             return None
 
-        if result != None:
-            user_role: UserRole = UserRole.get_enum_value(result['role'])
-            user: User = User(
-                id=result['id'], 
-                role=user_role, 
-                name=result['name'], 
-                email=result['email'], 
-                password=result['password'],
-                created_at=result['created_at']
-            )
-            return user
-        else:
-            return None
-    
+        return cls.create_user_from_result(result)
+
     
     @classmethod
     def get_validated_user(cls, email, password) -> User:
@@ -71,18 +49,7 @@ class UserModel:
         
 
         if result != None and check_password_hash(result['password'], password):
-            user_role: UserRole = UserRole.get_enum_value(result['role'])
-            
-            user: User = User(
-                id=result['id'], 
-                role=user_role, 
-                name=result['name'], 
-                email=result['email'], 
-                password=result['password'],
-                created_at=result['created_at']
-            )
-            
-            return user
+            return cls.create_user_from_result(result)
         else:
             return None
         
@@ -108,7 +75,7 @@ class UserModel:
 
 
     @classmethod
-    def create_user(cls, role: str, name:str, email:str, password: str):
+    def create_user(cls, role: str, name:str, email:str, password: str, associated_zone: Zone = None):
         # Pasword hashing for security purposes
         hashed_password = generate_password_hash(password)
 
@@ -121,9 +88,15 @@ class UserModel:
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
 
-            query = 'INSERT INTO users(role, name, email, password) VALUES(%s, %s, %s, %s) RETURNING *'
+            query = 'INSERT INTO users(role, name, email, password'
 
-            values = (role, name, email, hashed_password)
+            values = [role, name, email, hashed_password]
+
+            if associated_zone != None:
+                query += ', associates_zone_id) VALUES(%s, %s, %s, %s, %s) RETURNING *'
+                values.append(associated_zone.id)
+            else:
+                query += ') VALUES(%s, %s, %s, %s) RETURNING *'
 
             cursor.execute(query, values)
             conn.commit()
@@ -137,34 +110,32 @@ class UserModel:
             print(e)
             return None
 
-
-        if result != None:
-            user_role: UserRole = UserRole.get_enum_value(result['role'])
-            user: User = User(
-                id=result['id'], 
-                role=user_role, 
-                name=result['name'], 
-                email=result['email'], 
-                password=result['password'],
-                created_at=result['created_at']
-            )
-                
-            return user
-        else:
-            return None
-
+        return cls.create_user_from_result(result)
 
 
     @classmethod
-    def update_user(cls, admin_user, updated_user):
-        # Check if updater_user have enaugh privilegies to update
-        if(admin_user.role != UserRole.ADMIN):
-            raise Exception('Updater user have not got the needed privilegies to execute this action (Only admins can update users)')
+    def update_user(cls, user_id, new_user_data: dict) -> User:
+        result: dict
+
+        try:
+            conn =  get_connection()
+            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+
+            cursor.execute('UPDATE users SET role = %s, name = %s, email = %s WHERE id = %s RETURNING *', (new_user_data['role'], new_user_data['name'], new_user_data['email'], user_id))
+
+            result = cursor.fetchone()
+            
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            return None
+
+        return cls.create_user_from_result(result)
         
 
     @classmethod
     def delete_user(cls, id):
-        user: User
+        result: dict
 
         try:
             conn =  get_connection()
@@ -173,20 +144,54 @@ class UserModel:
             cursor.execute('DELETE FROM users WHERE id = %s RETURNING *', (id,))
 
             result = cursor.fetchone()
-            print(result)
-            user = User(
-                id=result['id'], 
-                role=result['role'], 
-                name=result['name'], 
-                email=result['email'], 
-                password=result['password'],
-                created_at=result['created_at']
-            )
+            
             conn.commit()
             conn.close()
         except Exception as e:
             return None
         
-        return user
+        return cls.create_user_from_result(result)
         
+    @classmethod
+    def asign_zone_to_user(cls, user_id, zone: Zone) -> bool:
+        
+        if zone == None:
+            return False
+        
+        try:
+            conn =  get_connection()
+            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
 
+            cursor.execute('UPDATE users SET zone_id = %s WHERE id = %s', (zone.id, user_id))
+
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print('An error occurred accessing the database')
+            print(e)
+            return False
+        
+        return True
+
+
+    def create_user_from_result(result) -> User:
+        if result == None:
+            return None
+        
+        user_role: UserRole = UserRole.get_enum_value(result['role'])
+        associated_zone_id = result.get('associates_zone_id')
+        associated_zone: Zone = None
+
+        if associated_zone_id != None:
+            associated_zone = ZoneModel.get_zone(associated_zone_id)
+
+        user: User = User(
+            id=result['id'], 
+            role=user_role, 
+            name=result['name'], 
+            email=result['email'], 
+            associated_zone=associated_zone,
+            password=result['password'],
+            created_at=result['created_at']
+        )
+        return user

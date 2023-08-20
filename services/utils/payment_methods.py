@@ -7,7 +7,13 @@ class PaymentMethod(Enum):
 
     @classmethod
     def get_enum_value(cls, enum_member_name: str):
+
+        if(enum_member_name == None):
+            return None
+        
         for member in cls:
             if member.name == enum_member_name.upper():
                 return member
-        raise ValueError(f"No enum member with name '{enum_member_name}' found.")
+        
+        # If the enum_member_name doesn't exists return None
+        return None

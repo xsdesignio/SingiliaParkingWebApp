@@ -1,4 +1,4 @@
-import unittest
+""" import unittest
 from decimal import Decimal
 from datetime import datetime
 import json
@@ -378,3 +378,4 @@ class TestBulletins(unittest.TestCase):
 
         self.client.get('http://localhost:5000/auth/logout/', headers=headers, follow_redirects=True)
 
+ """

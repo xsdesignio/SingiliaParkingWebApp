@@ -91,3 +91,16 @@ class ZoneModel:
             print("delete_zone: ", exception)
             return False
         return True
+    
+    @classmethod
+    def update_zone(cls, id, new_name) -> bool:
+        try:
+            conn = get_connection()
+            cursor = conn.cursor()
+            cursor.execute('UPDATE zones SET name = %s WHERE id = %s', (new_name, id))
+            conn.commit()
+            conn.close()
+        except Exception as exception:
+            print("update_zone: ", exception)
+            return False
+        return True

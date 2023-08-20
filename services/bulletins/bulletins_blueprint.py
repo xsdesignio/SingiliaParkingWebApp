@@ -43,14 +43,19 @@ def bulletins_page():
         "end_date":  end_date, 
     }
 
+    all_bulletins_count: dict
+    zone: Zone
+
     if not (request_zone == 'all' or request_zone == None):
         zone = ZoneModel.get_zone_by_name(request_zone)
         query_values["zone_id"] = zone.id
+        all_bulletins_count = get_bulletins_attributes_count(start_date, end_date, zone)
+    else:
+        zone = None
+        all_bulletins_count = get_bulletins_attributes_count(start_date, end_date)
 
 
     bulletins = BulletinModel.get_bulletins(**query_values)
-
-    all_bulletins_count = get_bulletins_attributes_count(start_date, end_date)
 
     # Convert dates to string in order to pass them to the template
     start_date = start_date.strftime('%Y-%m-%d')
@@ -58,7 +63,8 @@ def bulletins_page():
 
     zones = ZoneModel.get_zones_list()
 
-    return render_template('bulletins.html', bulletins = bulletins, start_date = start_date, end_date = end_date, bulletins_data = all_bulletins_count, available_zones = zones, zone = request_zone)
+    print(zone)
+    return render_template('bulletins.html', bulletins = bulletins, start_date = start_date, end_date = end_date, bulletins_data = all_bulletins_count, available_zones = zones, zone = zone)
 
 
 
@@ -116,9 +122,18 @@ def create_bulletin():
 
     responsible = UserModel.get_user(bulletin_json['responsible_id'])
 
-    zone: Zone = ZoneModel.get_zone_by_name(bulletin_json["zone"])
+    zone: Zone = ZoneModel.get_zone_by_name(bulletin_json["zone_name"])
 
-    payment_method:PaymentMethod = PaymentMethod.get_enum_value(bulletin_json.get('payment_method', 'CASH'))
+    payment_method_used = bulletin_json.get('payment_method')
+
+    payment_method:PaymentMethod
+
+    if(payment_method_used == None):
+        payment_method = None
+    else:
+        payment_method= PaymentMethod.get_enum_value(payment_method_used)
+
+    print("payment_method", payment_method)
 
 
     try:
@@ -149,20 +164,38 @@ def create_bulletin():
         return {'message': 'Ha ocurrido un error inesperado.'}, 500
     
 
-
 @bulletins_bp.post('/pay/<id>')
 @login_required
 def pay_bulletin(id: int):
     try:
         bulletin_id = int(id)
+        print("El error va a estar en get_bulletin")
 
-        if(BulletinModel.get_bulletin(bulletin_id) == None):
+        bulletin = BulletinModel.get_bulletin(bulletin_id)
+
+        print(bulletin)
+
+        if not bulletin:
+            print("El boletin no existe")
             return jsonify({'message': "El boletin que se ha intentado pagar no existe"}), 400
         
-        BulletinModel.pay_bulletin(bulletin_id)
+        print(request.form)
+        
+        payment_method = request.form.get('payment_method')
+
+        if not payment_method:
+            payment_method_used = None
+        else:
+            payment_method_used = PaymentMethod.get_enum_value(payment_method)
+
+        if not payment_method_used:
+            return jsonify({'message': "El metodo de pago indicado no existe"}), 400
+        else:
+            BulletinModel.pay_bulletin(bulletin_id, payment_method_used)
+        
+        print(payment_method_used)
 
         return jsonify({'message': 'El boletin ha sido pagado con exito'}), 200
     except Exception as e:
-        return jsonify({'message': e.__str__()}), 400
-
-
+        print(e)
+        return jsonify({'message': str(e)}), 400

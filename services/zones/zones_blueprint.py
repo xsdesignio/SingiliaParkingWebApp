@@ -33,6 +33,18 @@ def zone_details(id):
         
 
 @role_required('ADMIN')
+@zones_bp.post('/zone/<id>/edit')
+def zone_editing(id):
+    zone = ZoneModel.get_zone(id)
+    if zone != None:
+        new_name = request.form.get('name')
+        if new_name != None:
+            ZoneModel.update_zone(id, new_name)
+            return redirect(url_for('zones.zone_details', id=id))
+
+        
+
+@role_required('ADMIN')
 @zones_bp.get('/get-zone/<id>')
 def get_zone(id: int):
     zone = ZoneModel.get_zone(id)
@@ -67,3 +79,14 @@ def create_zone():
 def delete_zone(id):
     ZoneModel.delete_zone(id)
     return redirect(url_for('zones.zones_page'))
+
+
+
+""" @role_required('ADMIN')
+@zones_bp.get('/get-zone-responsibles')
+def get_zone_responsibles():
+    zones = ZoneModel.get_zones_list()
+    if zones != None:
+        return jsonify(zones), 200
+    else:
+        return {'message': 'Ha ocurrido un error obteniendo las zonas.'}, 500 """

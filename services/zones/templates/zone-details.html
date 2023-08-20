@@ -28,33 +28,27 @@
         </article>
         <article>
             <h2>Editar</h2>
-            <form action="/zones/{{ zone.id }}/edit" method="post" class="general-form">
+            <form action="/zones/zone/{{ zone.id }}/edit" method="post" class="general-form">
                 <label for="name">Nombre</label>
                 <input type="text" name="name" id="name" value="{{ zone.name }}" required>
                 <input class="default-button" type="submit" value="Actualizar">
             </form>
         </article>
         <article>
-            Cantidad de tickets impresos: <strong>0</strong>
+            Cantidad de tickets impresos: <strong> {{ tickets|length }}</strong>
         </article>
     </section>
 
     {# PAGE DATA #}
-    <section>
+    <section class="record-wrapper">
         <h2>Tickets creados en {{ zone.name }}.</h2>
-        <article class="tickets-record">
+        <article class="record">
             <!-- If tickets, for ticket in tickets create a div where the ticket information is shown, it ocuppy all width and contains the image at left and all ticket information at right-->
             {% if tickets %}
                 {% for ticket in tickets %}
-                    <div class="ticket" style="background-image: url('{{ url_for('static', filename='assets/tickets/' + ticket.duration|string + '.png') }}');">
-
-                        <div class="on-ticket-info">
-                            <p><strong>{{ ticket.created_at }}</strong></p>
-                            <p><strong>{{ ticket.duration }}</strong></p>
-                            <p><strong>{{ ticket.registration }}</strong></p>
-                        </div>
-                        <div class="all-ticket-info">
-                            <p>Fecha de impresión: <strong>{{ ticket.created_at }}</strong></p>
+                    <div class="ticket {% if ticket.duration == 30 %} yellow-box {% elif ticket.duration == 60 %} green-box {% elif ticket.duration == 90 %} orange-box {% elif ticket.duration == 120 %} pink-box {% endif %}">
+                        <div class="ticket-info">
+                            <p>Fecha de impresión: <br/><strong>{{ ticket.created_at }}</strong></p>
                             <p>Id del responsable: <strong>{{ ticket.responsible_id }}</strong></p>
                             <p>Duración: <strong>{{ ticket.duration }}</strong></p>
                             <p>Precio: <strong>{{ ticket.price }}</strong></p>
@@ -76,20 +70,18 @@
                 <p>No hay tickets para mostrar</p>
             {% endif %}
         </article>
+
+    </section>
+    <section class="record-wrapper">
         <h2>Boletines creados en {{ zone.name }}.</h2>
         <article class="tickets-record">
            
             {% if bulletins %}
                 {% for bulletin in bulletins %}
-                    <div class="ticket" style="background-image: url('{{ url_for('static', filename='assets/bulletins/bulletin.png') }}');">
+                    <div class="ticket green-box">
 
-                        <div class="on-ticket-info">
-                            <p><strong>{{ bulletin.created_at }}</strong></p>
-                            <p><strong>{{ bulletin.duration }}</strong></p>
-                            <p><strong>{{ bulletin.registration }}</strong></p>
-                        </div>
-                        <div class="all-ticket-info">
-                            <p>Fecha de impresión: <strong>{{ bulletin.created_at }}</strong></p>
+                        <div class="ticket-info">
+                            <p>Fecha de impresión: <br/> <strong>{{ bulletin.created_at }}</strong></p>
                             <p>Id del responsable: <strong>{{ bulletin.responsible_id }}</strong></p>
                             <p>Duración: <strong>{{ bulletin.duration }}</strong></p>
                             <p>Precio: <strong>{{ bulletin.price }}</strong></p>

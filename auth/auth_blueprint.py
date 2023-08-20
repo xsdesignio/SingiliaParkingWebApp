@@ -69,7 +69,6 @@ def signup():
     # Signup user. Get true or false depending on whether login is made successfully
     signed_up_user = signup_user(role, name, email, password)
 
-
     if signed_up_user != None:
         return jsonify({
             "id": signed_up_user.id,
@@ -88,7 +87,7 @@ def logout():
     """Logout user by clearing session"""
     session.clear()
         
-    return {"message": "Se ha cerrado sesion correctamente"}, 200
+    return redirect('/auth/login', code=302)
 
 
 

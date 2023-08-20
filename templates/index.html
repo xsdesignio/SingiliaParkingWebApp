@@ -4,10 +4,7 @@
 
 {% block content %}
     <h1>Resumen</h1>
-    <article>
-        <p>Mostrando tickets creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
-    </article>
-    <section>
+    <section class="filter-section">
         <article class="filter-options">
             <form action="/" method="GET">
                 <div class="input-container">
@@ -21,99 +18,125 @@
                 </div>
                 
                 <div class="input-container">
-                    <label for="zone">Localización</label>
-                    <select name="zone" id="zone" value="{{ zone }}">
+                    <label for="zone">Zona</label>
+                    <select name="zone" id="zone">
                         <option value="all">Todas</option>
-                        <option value="parking">Plaza de Toros</option>
-                        <option value="street">Plaza Castilla</option>
+                        {% if available_zones %}
+                            {% for available_zone in available_zones %}
+                                {% if available_zone.name == zone.name %} 
+                                    <option value="{{ available_zone.name }}" selected>
+                                        {{ available_zone.name }}
+                                    </option>
+                                {% else %}
+                                    <option value="{{ available_zone.name }}">
+                                        {{ available_zone.name }}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
                     </select>
                 </div>
                 
                 <input class="default-button" type="submit" value="Filtrar resultados">
             </form>
         </article>
+
+        <article class="selected-date">
+            <p>Mostrando tickets creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
+        </article>
     </section>
     <section class="two-columns-grid">
         <article class="data-shown">
-            <h2>Resumen de Tickets</h2>
+            <h2 class="title">Resumen de Tickets</h2>
             {% if info.tickets %}
-                <p id="tickets-amount">
-                    <strong>Tickets impresos: </strong>
-                    {{ tickets|length }}
+            
+                <h3>
+                    Tickets impresos:
+                    <strong>{{ info.tickets.tickets_amount }} </strong>
+                    
+                </h3>
+                <p>
+                    Pagados con tarjeta: 
+                    <strong>{{ info.tickets.paid_by_card }}</strong>
+                </p>
+                <p>
+                    Pagados con efectivo: 
+                    <strong>{{ info.tickets.paid_by_cash }}</strong>
                 </p>
                 <p id="tickets-amount">
-                    <strong>Pagados con tarjeta: </strong>
-                    {{ info.tickets.paid_by_card }}
+                    Tickets de 30 minutos: 
+                    <strong>{{ info.tickets.duration_of_30 }}</strong>
                 </p>
                 <p id="tickets-amount">
-                    <strong>Pagados con efectivo: </strong>
-                    {{ info.tickets.paid_by_cash }}
+                    Tickets de 60 minutos: 
+                    <strong>{{ info.tickets.duration_of_60 }}</strong>
                 </p>
                 <p id="tickets-amount">
-                    <strong>Tickets de 30 minutos: </strong>
-                    {{ info.tickets.duration_of_30 }}
+                    Tickets de 90 minutos: 
+                    <strong>{{ info.tickets.duration_of_90 }}</strong>
                 </p>
                 <p id="tickets-amount">
-                    <strong>Tickets de 30 minutos: </strong>
-                    {{ info.tickets.duration_of_60 }}
-                </p>
-                <p id="tickets-amount">
-                    <strong>Tickets de 30 minutos: </strong>
-                    {{ info.tickets.duration_of_90 }}
-                </p>
-                <p id="tickets-amount">
-                    <strong>Tickets de 30 minutos: </strong>
-                    {{ info.tickets.duration_of_120 }}
+                    Tickets de 120 minutos: 
+                    <strong>{{ info.tickets.duration_of_120 }}</strong>
                 </p>
 
+                <h3>
+                    Ingresos totales: <strong>{{ info.tickets.total_income }} €</strong>
+                </h3>
+
             {% else %}
-                <p id="tickets-amount">
-                    <strong>Tickets impresos: </strong>
-                    0
-                </p>
+                <h2 id="tickets-amount">
+                    Tickets impresos: 
+                    <strong>0</strong>
+                </h2>
             {% endif %}
 
         </article>
         <article class="data-shown">
-            <h2>Resumen de boletines</h2>
+            <h2 class="title">Resumen de boletines</h2>
             {% if info.bulletins %}
-                <p id="tickets-amount">
-                    <strong>Boletines impresos: </strong>
-                    {{ info.bulletins.bulletins_amount }}
+                <h3>
+                    Boletines impresos: 
+                    <strong>{{ info.bulletins.bulletins_amount }}</strong>
+                </h3>
+                <p>
+                    Pagados con tarjeta:
+                    <strong>{{ info.bulletins.paid }}</strong>
                 </p>
-                <p id="tickets-amount">
-                    <strong>Pagados con tarjeta: </strong>
-                    {{ info.bulletins.paid_by_card }}
-                </p>
-                <p id="tickets-amount">
-                    <strong>Pagados con efectivo: </strong>
-                    {{ info.bulletins.paid_by_cash }}
+                <p>
+                    Pagados con efectivo: 
+                    <strong>{{ info.bulletins.not_paid }}</strong>
                 </p>
     
-                <p id="tickets-amount">
-                    <strong>Tickets de 30 minutos: </strong>
-                    {{ info.bulletins.duration_of_30 }}
+                <p>
+                    Tickets de 30 minutos: 
+                    <strong>{{ info.bulletins.duration_of_30 }}</strong>
+                </p>
+        
+                <p>
+                    Tickets de 60 minutos: 
+                    <strong>{{ info.bulletins.duration_of_60 }}</strong>
+                </p>
+        
+                <p>
+                    Tickets de 90 minutos: 
+                    <strong>{{ info.bulletins.duration_of_90 }}</strong>
                 </p>
         
                 <p id="tickets-amount">
-                    <strong>Tickets de 60 minutos: </strong>
-                    {{ info.bulletins.duration_of_60 }}
+                    Tickets de 120 minutos: 
+                    <strong>{{ info.bulletins.duration_of_120 }}</strong>
                 </p>
-        
-                <p id="tickets-amount">
-                    <strong>Tickets de 90 minutos: </strong>
-                    {{ info.bulletins.duration_of_90 }}
-                </p>
-        
-                <p id="tickets-amount">
-                    <strong>Tickets de 120 minutos: </strong>
-                    {{ info.bulletins.duration_of_120 }}
-                </p>
+
+                <h3>
+                    Ingresos totales: <strong>{{ info.bulletins.total_income }} €</strong>
+                </h3>
+
             {% else %}
-                <p id="tickets-amount">
-                    <strong>Tickets impresos: </strong>
-                    0
-                </p>
+                <h3>
+                    Tickets impresos: 
+                    <strong>0</strong>
+                </h3>
             {% endif %}
 
         </article>

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify, redirect, send_file
+from flask import Blueprint, flash, render_template, request, jsonify, redirect, send_file
 from .models.user_model import UserModel
 from auth.controllers.login import role_required
 from datetime import datetime, timedelta
@@ -80,10 +80,38 @@ def user_details(id):
 
     tickets = TicketModel.get_tickets(**query_values)
 
+    available_zones = ZoneModel.get_zones_list()
+
     if user != None:
-        return render_template('user-details.html', user=user, tickets=tickets)
+        return render_template('user-details.html', user=user, tickets=tickets, zones=available_zones)
     else:
         return {'message': 'Ha ocurrido un error obteniendo el usuario.'}, 500
+
+
+
+@role_required('ADMIN')
+@users_bp.post('/user/<id>/asign-zone/')
+def asign_zone(id):
+    user: User = UserModel.get_user(id)
+    zone_name = request.form.get('zone')
+
+    if user != None:
+        zone = ZoneModel.get_zone_by_name(zone_name)
+        if zone != None:
+            user.zone_id = zone.id
+            zone_assigned = UserModel.asign_zone_to_user(user.id, zone)
+            if zone_assigned:
+                flash('Zona asignada correctamente.', 'success')
+                return redirect(f"/users/user/{str(user.id)}", code=302)
+            else:
+                flash('Ha ocurrido un error desconocido asignando la zona.', 'error')
+                return redirect(f"/users/user/{str(user.id)}", code=302)
+        else:
+            flash('La zona introducida no existe.', 'error')
+            return redirect(f"/users/user/{str(user.id)}", code=302)
+    else:
+        flash('Ha ocurrido un error obteniendo el usuario.', 'error')
+        return redirect('/users', code=302)
 
 
 @role_required('ADMIN')
@@ -124,6 +152,7 @@ def update_user():
 def delete_user(id):
     deleted_user = UserModel.delete_user(id)
     if deleted_user != None:
+        flash('Usuario eliminado correctamente.', 'success')
         return redirect('/users', code=302)
         # return jsonify(deleted_user.to_json()), 200
     else:
@@ -144,8 +173,10 @@ def create_user():
     
     user = UserModel.create_user(request.form['role'], request.form['name'], request.form['email'], request.form['password'])
 
-    if update_user != None:
+    if user != None and user.id != None:
+        flash('Usuario creado correctamente.', 'success')
         return redirect(f"/users/user/{str(user.id)}", code=302)
     else:
-        return {'message': 'Ha ocurrido un error creando el usuario.'}, 500
+        flash('Los datos introducidos no son correctos.', 'error')
+        return redirect('/users/create', code=302)
 

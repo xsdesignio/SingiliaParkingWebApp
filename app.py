@@ -9,6 +9,8 @@ from services.bulletins.bulletins_blueprint import bulletins_bp
 from services.zones.zones_blueprint import zones_bp
 
 from services.resumeController import get_resume_information
+from services.zones.models.zone_model import ZoneModel
+from services.zones.entities.zone import Zone
 
 from datetime import datetime, timedelta
 
@@ -36,7 +38,7 @@ app.register_blueprint(zones_bp, url_prefix="/zones")
 def home():
     start_date = request.args.get('start_date')
     end_date = request.args.get('end_date')
-    zone_name = request.args.get('zone')
+    request_zone = request.args.get('zone')
 
     if end_date is not None and end_date != '':
         end_date = datetime.strptime(end_date, '%Y-%m-%d')
@@ -48,16 +50,22 @@ def home():
     else:
         start_date = datetime.now() - timedelta(days=30)
 
-    if zone_name == 'all':
-        zone_name = None
+    zone: Zone
+    if not (request_zone == 'all' or request_zone == None):
+        zone = ZoneModel.get_zone_by_name(request_zone)
+    else:
+        zone = None
 
-
-    info = get_resume_information(start_date, end_date, zone_name)
+    info = get_resume_information(start_date, end_date, zone)
 
     start_date = start_date.strftime('%Y-%m-%d')
     end_date = end_date.strftime('%Y-%m-%d')
 
-    return render_template('index.html', start_date = start_date, end_date = end_date, zone = zone_name, info = info)
+
+    zones = ZoneModel.get_zones_list()
+    
+
+    return render_template('index.html', start_date = start_date, end_date = end_date, zone = zone, info = info, available_zones = zones)
 
 
 

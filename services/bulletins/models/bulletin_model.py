@@ -55,7 +55,12 @@ class BulletinModel(BaseModel):
 
         responsible: User = UserModel.get_user(result["responsible_id"])
         zone: Zone = ZoneModel.get_zone(result["zone_id"])
-        payment_method: PaymentMethod = PaymentMethod(result["payment_method"])
+
+        payment_method = result.get("payment_method", None)
+        payment_method_obj: PaymentMethod = None
+
+        if payment_method is not None:
+            payment_method_obj = PaymentMethod(payment_method)
             
         return Bulletin(
             id = result["id"],
@@ -64,9 +69,9 @@ class BulletinModel(BaseModel):
             duration = result["duration"], 
             registration = result["registration"], 
             price = result["price"], 
-            payment_method= payment_method,
+            payment_method= payment_method_obj,
             paid = result["paid"], 
-            created_a = result["created_at"],
+            created_at = result["created_at"],
             brand = result.get("brand"), 
             model = result.get("model"), 
             color = result.get("color") 
@@ -107,7 +112,12 @@ class BulletinModel(BaseModel):
                 RETURNING *
             '''
 
-            values = (responsible.id, zone.id, duration, registration, price, payment_method.value, paid, brand, model, color, created_at)
+            if payment_method is not None:
+                payment_method = payment_method.value
+            else:
+                payment_method = None
+
+            values = (responsible.id, zone.id, duration, registration, price, payment_method, bool(paid), precept, brand, model, color, created_at)
             
             cursor.execute(query, values)
 
@@ -166,7 +176,7 @@ class BulletinModel(BaseModel):
 
 
     @classmethod
-    def pay_bulletin(cls, bulletin_id:int) -> Bulletin:
+    def pay_bulletin(cls, bulletin_id:int, payment_method: PaymentMethod) -> Bulletin:
         updated_bulletin: Bulletin
         
         conn = get_connection()
@@ -180,12 +190,12 @@ class BulletinModel(BaseModel):
 
 
         query = '''
-            UPDATE bulletins SET paid = true
+            UPDATE bulletins SET paid = true, payment_method = %s
             WHERE id = %s
             RETURNING *
         '''
 
-        cursor.execute(query, (bulletin_id, ))
+        cursor.execute(query, (payment_method.value, bulletin_id))
         result = cursor.fetchone()
 
         # Creating bulletin object from database bulletin data
@@ -194,7 +204,7 @@ class BulletinModel(BaseModel):
         payment_method: PaymentMethod = PaymentMethod(result["payment_method"])
 
 
-        bulletin: updated_bulletin = Bulletin(
+        updated_bulletin: Bulletin = Bulletin(
             id = result["id"],
             responsible = responsible, 
             zone = zone, 
@@ -203,7 +213,7 @@ class BulletinModel(BaseModel):
             price = result["price"], 
             payment_method= payment_method,
             paid = result["paid"], 
-            created_a = result["created_at"],
+            created_at = result["created_at"],
             brand = result.get("brand"), 
             model = result.get("model"), 
             color = result.get("color") 

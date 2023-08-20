@@ -39,7 +39,7 @@ def check_data(role:str, name: str, email: str, password: str) -> bool:
         Returns true if the params introduced follow the defined rules
     """
     role = role.upper()
-    if not (role == "ADMIN" or role == "MANAGER" or role == "EMPLOYE"):
+    if not (role == "ADMIN" or role == "MANAGER" or role == "EMPLOYEE"):
         return False
     
     

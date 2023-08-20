@@ -96,16 +96,16 @@ def create_report(data: dict, user: User, start_date: datetime, end_date: dateti
     bulletins = data["bulletins"]
     bulletins_data = [
         ['Modo', 'Cantidad de boletines'],
-        ['Pagados con tarjeta', bulletins['paid_by_card']],
-        ['Pagados en efectivo', bulletins['paid_by_cash']],
+        ['Pagados', bulletins['paid']],
+        ['Aún por pagar', bulletins['not_paid']],
         ['Duración de 30 minutos', bulletins['duration_of_30']],
-        ['Ingresos por tickets de 30 minutos', f"{bulletins['total_income_by_30']} €"],
+        ['Ingresos por boletines de 30 minutos', f"{bulletins['total_income_by_30']} €"],
         ['Duración de 60 minutos', bulletins['duration_of_60']],
-        ['Ingresos por tickets de 60 minutos', f"{bulletins['total_income_by_60']} €"],
+        ['Ingresos por boletines de 60 minutos', f"{bulletins['total_income_by_60']} €"],
         ['Duración de 90 minutos', bulletins['duration_of_90']],
-        ['Ingresos por tickets de 90 minutos', f"{bulletins['total_income_by_90']} €"],
+        ['Ingresos por boletines de 90 minutos', f"{bulletins['total_income_by_90']} €"],
         ['Duración de 120 minutos', bulletins['duration_of_120']],
-        ['Ingresos por tickets de 120 minutos', f"{bulletins['total_income_by_120']} €"],
+        ['Ingresos por boletines de 120 minutos', f"{bulletins['total_income_by_120']} €"],
         ['Total de ingresos',f"{bulletins['total_income']} €"],
     ]
     bulletins_table = Table(bulletins_data, colWidths=[280, 200], rowHeights=30)
