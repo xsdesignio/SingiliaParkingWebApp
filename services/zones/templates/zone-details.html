@@ -4,12 +4,15 @@
 
 {% block content %}
 
+    <a class="come-back-button" href="/zones"> 
+        <!-- Create an image linking to static/assets/icons/ -->
+        <img src="{{ url_for('static', filename='/assets/icons/arrow-left.svg') }}" alt="Volver">
+        <span>Volver</span>
+    </a>
+
     <h1>{{ zone.name }}</h1>
 
-    <section>
-        <form action="/zones/delete/{{ zone.id }}" method="GET">
-            <button class="default-button">Eliminar Zona</button>
-        </form>
+    <section class="two-columns-grid">
         <article>
             <h2>Información</h2>
             <p>Nombre: <strong>{{ zone.name }}</strong></p>
@@ -24,23 +27,72 @@
                     {% endfor %}
                 {% endif %}
             </ul>
-            <a href="/" class="default-button">Asignar nuevo usuario</a>
+            <p>
+                Cantidad de tickets impresos: <strong> {{ tickets|length }}</strong>
+            </p>
         </article>
-        <article>
-            <h2>Editar</h2>
-            <form action="/zones/zone/{{ zone.id }}/edit" method="post" class="general-form">
-                <label for="name">Nombre</label>
-                <input type="text" name="name" id="name" value="{{ zone.name }}" required>
-                <input class="default-button" type="submit" value="Actualizar">
-            </form>
-        </article>
-        <article>
-            Cantidad de tickets impresos: <strong> {{ tickets|length }}</strong>
-        </article>
+        <div class="two-columns-grid">
+            <article>
+                <h2>Editar</h2>
+                <form action="/zones/zone/{{ zone.id }}/edit" method="post" class="general-form">
+                    <input type="text" name="name" id="name" value="{{ zone.name }}" required>
+                    <input class="default-button" type="submit" value="Actualizar">
+                </form>
+            </article>
+            <article>
+                <h2>Eliminar zona</h2>
+                <form action="/zones/delete/{{ zone.id }}" method="GET">
+                    <button class="default-button">Eliminar Zona</button>
+                </form>
+            </article>
+        </div>
+        
     </section>
 
+    <article class="filter-options">
+        <form action="/zones/zone/{{ zone.id }}/generate-report" method="GET">
+            <div class="input-container">
+                <label for="start_date">Fecha de inicio</label>
+                <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
+            </div>
+                
+            <div class="input-container">
+                <label for="end_date">Fecha de fin</label>
+                <input type="date" name="end_date" id="end_date" value="{{ end_date }}">   
+            </div>
+                
+            <input class="default-button" type="submit" value="Generar Reporte">
+        </form>
+    </article>
+
+
+    <article class="selector two-columns-grid">
+        <div>
+            <h2>Seleccionar</h2>
+            <p>Selecciona el tipo de registro que quieres ver</p>
+        </div>
+        <div class="two-columns-grid">
+            <button class="default-button" onclick="selectTickets()">
+                Tickets
+            </button>
+            <button class="default-button" onclick="selectBulletins()">
+                Boletines
+            </button>
+        </div>
+    </article>
+    <script>
+        function selectTickets() {
+            document.getElementById("tickets-record").classList.remove("hidden");
+            document.getElementById("bulletins-record").classList.add("hidden");
+        }
+        function selectBulletins() {
+            document.getElementById("tickets-record").classList.add("hidden");
+            document.getElementById("bulletins-record").classList.remove("hidden");
+        }
+    </script>
+
     {# PAGE DATA #}
-    <section class="record-wrapper">
+    <section id="tickets-record" class="record-wrapper">
         <h2>Tickets creados en {{ zone.name }}.</h2>
         <article class="record">
             <!-- If tickets, for ticket in tickets create a div where the ticket information is shown, it ocuppy all width and contains the image at left and all ticket information at right-->
@@ -51,7 +103,7 @@
                             <p>Fecha de impresión: <br/><strong>{{ ticket.created_at }}</strong></p>
                             <p>Id del responsable: <strong>{{ ticket.responsible_id }}</strong></p>
                             <p>Duración: <strong>{{ ticket.duration }}</strong></p>
-                            <p>Precio: <strong>{{ ticket.price }}</strong></p>
+                            <p>Precio: <strong>{{ ticket.price }} €</strong></p>
                             <p>
                                 Método de pago: 
                                 <strong> 
@@ -72,19 +124,19 @@
         </article>
 
     </section>
-    <section class="record-wrapper">
+    <section id="bulletins-record" class="record-wrapper hidden">
         <h2>Boletines creados en {{ zone.name }}.</h2>
-        <article class="tickets-record">
+        <article class="record">
            
             {% if bulletins %}
                 {% for bulletin in bulletins %}
-                    <div class="ticket green-box">
+                    <div class="ticket bulletin-box">
 
                         <div class="ticket-info">
                             <p>Fecha de impresión: <br/> <strong>{{ bulletin.created_at }}</strong></p>
                             <p>Id del responsable: <strong>{{ bulletin.responsible_id }}</strong></p>
                             <p>Duración: <strong>{{ bulletin.duration }}</strong></p>
-                            <p>Precio: <strong>{{ bulletin.price }}</strong></p>
+                            <p>Precio: <strong>{{ bulletin.price }} €</strong></p>
                             <p>
                                 Método de pago: 
                                 <strong> 
@@ -96,6 +148,19 @@
                                 </strong>
                             </p>
                             <p>Matrícula: <strong>{{ bulletin.registration }}</strong></p>
+                            <div class="divider"></div>
+
+                            {% if bulletin.color %}
+                                <p>Color: <strong>{{ bulletin.color }}</strong></p>
+                            {% endif %}
+
+                            {% if bulletin.model %}
+                                <p>Modelo: <strong>{{ bulletin.model }}</strong></p>
+                            {% endif %}
+
+                            {% if bulletin.brand %}
+                                <p>Marca: <strong>{{ bulletin.brand }}</strong></p>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}

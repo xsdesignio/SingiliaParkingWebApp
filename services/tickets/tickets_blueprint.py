@@ -1,18 +1,16 @@
 from flask import Blueprint, render_template, request, jsonify, session
 from auth.controllers.login import login_required
 from datetime import datetime, timedelta
-
 from .models.ticket_model import TicketModel
 from .entities.ticket import Ticket
 from services.users.models.user_model import UserModel
-
 from services.zones.entities.zone import Zone
 from services.zones.models.zone_model import ZoneModel
 
 from .controllers.tickets_controller import get_tickets_attributes_count
 
 from services.utils.payment_methods import PaymentMethod
-
+from services.utils.data_management import parse_date, get_queries_from_request_data, get_range_from_page
 
 tickets_bp = Blueprint('tickets', __name__, url_prefix='/tickets', template_folder='./templates')
 
@@ -21,48 +19,26 @@ tickets_bp = Blueprint('tickets', __name__, url_prefix='/tickets', template_fold
 @login_required
 def tickets_page():
     """ Returns the tickets filtered by date or by zone. Filters are optional and can be combined. They are obtained by get arguments."""
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
-    request_zone = request.args.get('zone')
 
-
-    if end_date is not None and end_date != '':
-        end_date = datetime.strptime(end_date, '%Y-%m-%d')
-    else:
-        end_date = datetime.now()
-
-    if start_date is not None and start_date != '':
-        start_date = datetime.strptime(start_date, '%Y-%m-%d')
-    else:
-        start_date = datetime.now() - timedelta(days=30)
-
-    query_values = {
-        "start_date": start_date, 
-        "end_date":  end_date, 
-    }
+    start_date = parse_date(request.args.get('start_date'), datetime.now() - timedelta(days=30))
+    end_date = parse_date(request.args.get('end_date'), datetime.now())
+    
 
     all_tickets_count: dict
+    request_zone = request.args.get('zone', 'all')
 
-    zone: Zone
-
-    if not (request_zone == 'all' or request_zone == None):
+    zone = None
+    if request_zone != 'all':
         zone = ZoneModel.get_zone_by_name(request_zone)
-        query_values["zone_id"] = zone.id
-        all_tickets_count = get_tickets_attributes_count(start_date, end_date, zone)
-    else:
-        zone = None
-        all_tickets_count = get_tickets_attributes_count(start_date, end_date)
 
-
-    tickets = TicketModel.get_tickets(**query_values)
+    all_tickets_count = get_tickets_attributes_count(start_date, end_date, zone)
 
     # Convert dates to string in order to pass them to the template
     start_date = start_date.strftime('%Y-%m-%d')
     end_date = end_date.strftime('%Y-%m-%d')
-
     zones = ZoneModel.get_zones_list()
 
-    return render_template('tickets.html', tickets = tickets, start_date = start_date, end_date = end_date, tickets_data = all_tickets_count, available_zones = zones, zone = zone)
+    return render_template('tickets.html', start_date = start_date, end_date = end_date, tickets_data = all_tickets_count, available_zones = zones, zone = zone)
 
 
 
@@ -76,6 +52,30 @@ def get_ticket(id: int):
         return {'message': 'Ha ocurrido un error obteniendo el ticket indicado'}, 500
 
 
+
+@tickets_bp.post('/get-tickets/<page>')
+@login_required
+def get_tickets_by_page(page = 0):
+
+    # Getting and preparing the data
+    tickets_range = get_range_from_page(int(page))
+
+    query_values = None
+
+    if(request.content_type == 'application/json') and (request.json != None):
+        query_values = get_queries_from_request_data(request.json)
+
+    # Get tickets from database
+    tickets_json = TicketModel.get_tickets(tickets_range, **query_values)
+
+    # Return the tickets as JSON
+    if tickets_json is not None:
+        return jsonify(tickets_json), 200
+    else:
+        return jsonify({'message': 'Ha ocurrido un error obteniendo los tickets, inténtelo de nuevo más tarde'}), 500
+
+
+
 @tickets_bp.get('/get-tickets')
 @login_required
 def get_tickets():
@@ -84,6 +84,7 @@ def get_tickets():
         return jsonify(tickets_json), 200
     else:
         return jsonify({'message': 'Ha ocurrido un error obteniendo los tickets, initéntelo de nuevo más tarde'}), 500
+
 
 
  
@@ -100,9 +101,6 @@ def create_ticket():
 
     responsible_id = ticket_json.get('responsible_id', session["id"])
     responsible = UserModel.get_user(responsible_id)
-
-    print(ticket_json.get('zone'))
-    print(ticket_json.get('zone_name'))
 
     requested_zone: str = ticket_json.get('zone')
 
@@ -162,6 +160,5 @@ def pay_ticket(id: int):
     except Exception as exception:
         print("pay_ticket: ", exception)
         return jsonify({'message': exception.__str__()}), 400
-
 
 

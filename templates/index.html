@@ -4,6 +4,7 @@
 
 {% block content %}
     <h1>Resumen</h1>
+    
     <section class="filter-section">
         <article class="filter-options">
             <form action="/" method="GET">
@@ -37,7 +38,10 @@
                     </select>
                 </div>
                 
-                <input class="default-button" type="submit" value="Filtrar resultados">
+                <button class="default-button" type="submit" >
+                    Filtrar resultados
+                    <embed src="{{ url_for('static', filename='assets/icons/loup-icon.svg') }}" width="22" height="22" fill="white"> </embed>
+                </button>
             </form>
         </article>
 
@@ -50,11 +54,11 @@
             <h2 class="title">Resumen de Tickets</h2>
             {% if info.tickets %}
             
-                <h3>
-                    Tickets impresos:
+                <p>
+                    <b>Tickets impresos:</b>
                     <strong>{{ info.tickets.tickets_amount }} </strong>
                     
-                </h3>
+                </p>
                 <p>
                     Pagados con tarjeta: 
                     <strong>{{ info.tickets.paid_by_card }}</strong>
@@ -80,9 +84,10 @@
                     <strong>{{ info.tickets.duration_of_120 }}</strong>
                 </p>
 
-                <h3>
-                    Ingresos totales: <strong>{{ info.tickets.total_income }} €</strong>
-                </h3>
+                <p>
+                    <b>Ingresos totales: </b>
+                    <strong>{{ info.tickets.total_income }} €</strong>
+                </p>
 
             {% else %}
                 <h2 id="tickets-amount">
@@ -95,10 +100,10 @@
         <article class="data-shown">
             <h2 class="title">Resumen de boletines</h2>
             {% if info.bulletins %}
-                <h3>
-                    Boletines impresos: 
+                <p>
+                    <b>Boletines impresos: </b>
                     <strong>{{ info.bulletins.bulletins_amount }}</strong>
-                </h3>
+                </p>
                 <p>
                     Pagados con tarjeta:
                     <strong>{{ info.bulletins.paid }}</strong>
@@ -128,9 +133,12 @@
                     <strong>{{ info.bulletins.duration_of_120 }}</strong>
                 </p>
 
-                <h3>
-                    Ingresos totales: <strong>{{ info.bulletins.total_income }} €</strong>
-                </h3>
+                <p>
+                    <b>
+                        Ingresos totales: 
+                    </b>
+                    <strong>{{ info.bulletins.total_income }} €</strong>
+                </p>
 
             {% else %}
                 <h3>

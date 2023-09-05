@@ -4,16 +4,21 @@
 
 {% block content %}
 
+    <a class="come-back-button" href="/users"> 
+        <!-- Create an image linking to static/assets/icons/ -->
+        <img src="{{ url_for('static', filename='/assets/icons/arrow-left.svg') }}" alt="Volver">
+        <span>Volver</span>
+    </a>
     <h1>{{ user.name }}</h1>
     
-
     <h2>Información</h2>
     <section class="two-columns-grid">
         <article>
             <p>Nombre de usuario: <strong>{{ user.name }}</strong></p>
             <p>Email: <strong>{{ user.email }}</strong></p>
             <p>Rol: <strong>{{ user.role.value }}</strong></p>
-            <p>Zona Asignada: <strong>{{ user.zone }}</strong></p>
+            <p>Cantidad de tickets impresos: <strong>{{ tickets|length }}</strong></p>
+            <p>Zona Asignada: <strong>{{ user.associated_zone.name }}</strong></p>
         </article>
         <article class="filter-options">
             <form action="/users/user/{{ user.id }}/generate-report" method="GET">
@@ -27,37 +32,35 @@
                     <input type="date" name="end_date" id="end_date" value="{{ end_date }}">   
                 </div>
                     
-                    
                 <input class="default-button" type="submit" value="Generar Reporte">
             </form>
         </article>
     </section>
     <h2>Editar</h2>
     <section class="two-columns-grid">
-
-
         <div>
             <article>
-                <form>
+                <form action="/users/user/{{ user.id }}/assign-zone" method="POST">
                     <label for="zone">
                         Asignar zona
                     </label>
                     <select name="zone" id="zone">
                         {% for zone in zones %}
-                            <option value="{{ zone.id }}">{{ zone.name }}</option>
+                            <option value="{{ zone.name }}">{{ zone.name }}</option>
                         {% endfor %}
                     </select>
                     <input class="default-button" type="submit" value="Asignar">
                 </form>
             </article>
             <article>
+                <p>Esta acción es irreversible</p>
                 <form action="/users/user/{{ user.id }}/delete" method="POST" id="delete-user">
                     <button class="default-button">Eliminar Usuario</button>
                 </form>
             </article>
         </div>
 
-        <article>
+        <article class="form-container">
             <form action="/users/{{ user.id }}/edit" method="post" class="general-form">
                 <label for="username">Nombre de usuario</label>
                 <input type="text" name="username" id="username" value="{{ user.name }}" required>
@@ -73,50 +76,63 @@
                 <input class="default-button" type="submit" value="Actualizar">
             </form>
         </article>
-        
-    </section>
-        <article>
-            Cantidad de tickets impresos: <strong>{{ tickets|length }}</strong>
-        </article>
     </section>
 
     {# PAGE DATA #}
-    <section class="record-wrapper">
-        <h2>Tickets impresos por este usuario</h2>
-        
-        <article class="record">
-            {% if tickets %}
-                {% for ticket in tickets %}
-                    <div class="ticket {% if ticket.duration == 30 %} yellow-box {% elif ticket.duration == 60 %} green-box {% elif ticket.duration == 90 %} orange-box {% elif ticket.duration == 120 %} pink-box {% endif %}">
-                        <div class="ticket-info">
-                            <p>Fecha de impresión: <br/> <strong>{{ ticket.created_at.strftime('%d-%m-%Y %H:%M') }}</strong></p>
-                            <p>Responsable: <strong>{{ ticket.responsible.name }}</strong></p>
-                            <p>Duración: <strong>{{ ticket.duration }} min</strong></p>
-                            <p>Precio: <strong>{{ ticket.price }} €</strong></p>
-                            <p>
-                                Método de pago: 
-                                <strong> 
-                                    {% if ticket.paid == true %}
-                                        Tarjeta
-                                    {% else %}
-                                        Efectivo
-                                    {% endif %}
-                                </strong>
-                            </p>
-                            <p>Matrícula: <strong>{{ ticket.registration }}</strong></p>
-                            <p>Zona: <strong>{{ ticket.zone.name }}</strong></p>
-                        </div>
-                    </div>
-                {% endfor %}
+
+    <script type="module" src="{{ url_for('static', filename='js/user_details.js') }}"></script>
+
+    <section class="selector">
+        <div>
+            <h2>Selecciona qué quieres ver</h2>
+        </div>
+        <div class="two-columns-grid">
+            <button id="tickets-button" class="default-button selected">
+                Tickets
+            </button>
+            <button id="bulletins-button" class="default-button">
+                Boletines
+            </button>
+        </div>
+    </section>
+    <section id="tickets-record-wrapper" class="record-wrapper">
+        <h2>Tickets creados por {{ user.name }}.</h2>
+        <div class="record" id="tickets-record">
+            {% if tickets_data %}
+                {% if tickets_data["tickets_amount"] == 0 %}
+                    <p>No hay tickets que mostrar</p>
+                {% endif %}
             {% else %}
-                <p>No hay tickets para mostrar</p>
+                <p>No hay tickets que mostrar</p>
             {% endif %}
+        </div>
 
-        </article>
-
+        {% if tickets_data %}
+            {% if tickets_data["tickets_amount"] > 0 %}
+                <span class="loader" id="loadMoreTicketsTrigger"></span>
+            {% endif %}
+        {% endif %}
     </section>
 
-    <script>
 
-    </script>
+    <section id="bulletins-record-wrapper" class="record-wrapper hidden">
+        <h2>Boletines creados por {{ user.name }}.</h2>
+        <div class="record" id="bulletins-record">
+            {% if bulletins_data %}
+                {% if bulletins_data["bulletins_amount"] == 0 %}
+                    <p>No hay tickets que mostrar</p>
+                {% endif %}
+            {% else %}
+                <p>No hay tickets que mostrar</p>
+            {% endif %}
+        </div>
+        
+        {% if bulletins_data %}
+            {% if bulletins_data["bulletins_amount"] > 0 %}
+                <div class="loader" id="loadMoreBulletinsTrigger"></div>
+            {% endif %}
+        {% endif %}
+
+    </section>
+    
 {% endblock %}

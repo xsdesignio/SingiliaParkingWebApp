@@ -10,6 +10,7 @@ from services.utils.payment_methods import PaymentMethod
 
 from services.zones.entities.zone import Zone
 from services.zones.models.zone_model import ZoneModel
+from services.utils.data_management import parse_date, get_queries_from_request_data, get_range_from_page
 
 from datetime import datetime, timedelta
 
@@ -23,48 +24,23 @@ bulletins_bp = Blueprint('bulletins', __name__, url_prefix='/bulletins', templat
 def bulletins_page():
     """ Returns the tickets filtered by date or by zone. Filters are optional and can be combined. They are obtained by get arguments."""
     
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
+    start_date = parse_date(request.args.get('start_date'), datetime.now() - timedelta(days=30))
+    end_date = parse_date(request.args.get('end_date'), datetime.now())
+    
     request_zone = request.args.get('zone')
 
-
-    if end_date is not None and end_date != '':
-        end_date = datetime.strptime(end_date, '%Y-%m-%d')
-    else:
-        end_date = datetime.now()
-
-    if start_date is not None and start_date != '':
-        start_date = datetime.strptime(start_date, '%Y-%m-%d')
-    else:
-        start_date = datetime.now() - timedelta(days=30)
-
-    query_values = {
-        "start_date": start_date, 
-        "end_date":  end_date, 
-    }
-
-    all_bulletins_count: dict
-    zone: Zone
-
-    if not (request_zone == 'all' or request_zone == None):
+    zone = None
+    if request_zone != 'all':
         zone = ZoneModel.get_zone_by_name(request_zone)
-        query_values["zone_id"] = zone.id
-        all_bulletins_count = get_bulletins_attributes_count(start_date, end_date, zone)
-    else:
-        zone = None
-        all_bulletins_count = get_bulletins_attributes_count(start_date, end_date)
 
-
-    bulletins = BulletinModel.get_bulletins(**query_values)
+    all_bulletins_count = get_bulletins_attributes_count(start_date, end_date)
 
     # Convert dates to string in order to pass them to the template
     start_date = start_date.strftime('%Y-%m-%d')
     end_date = end_date.strftime('%Y-%m-%d')
-
     zones = ZoneModel.get_zones_list()
 
-    print(zone)
-    return render_template('bulletins.html', bulletins = bulletins, start_date = start_date, end_date = end_date, bulletins_data = all_bulletins_count, available_zones = zones, zone = zone)
+    return render_template('bulletins.html', start_date = start_date, end_date = end_date, bulletins_data = all_bulletins_count, available_zones = zones, zone = zone)
 
 
 
@@ -77,6 +53,30 @@ def get_bulletin(id: int):
         return jsonify(bulletin.to_json()), 200
     else:
         return {'message': 'Ha ocurrido un error obteniendo el boletin indicado'}, 500
+
+
+@bulletins_bp.post('/get-bulletins/<page>')
+@login_required
+def get_bulletins_by_page(page = 0):
+
+    # Getting and preparing the data
+    bulletins_range = get_range_from_page(int(page))
+
+    query_values = None
+
+    if(request.content_type == 'application/json') and (request.json != None):
+        query_values = get_queries_from_request_data(request.json)
+
+
+    # Get tickets from database
+    bulletins_json = BulletinModel.get_bulletins(bulletins_range, **query_values)
+
+    # Return the tickets as JSON
+    if bulletins_json is not None:
+        return jsonify(bulletins_json), 200
+    else:
+        return jsonify({'message': 'Ha ocurrido un error obteniendo los boletines, inténtelo de nuevo más tarde'}), 500
+
 
 
 @bulletins_bp.get('/get-bulletins')
@@ -133,9 +133,6 @@ def create_bulletin():
     else:
         payment_method= PaymentMethod.get_enum_value(payment_method_used)
 
-    print("payment_method", payment_method)
-
-
     try:
         bulletin = BulletinModel.create_bulletin(
             responsible = responsible, 
@@ -169,17 +166,11 @@ def create_bulletin():
 def pay_bulletin(id: int):
     try:
         bulletin_id = int(id)
-        print("El error va a estar en get_bulletin")
 
         bulletin = BulletinModel.get_bulletin(bulletin_id)
 
-        print(bulletin)
-
         if not bulletin:
-            print("El boletin no existe")
             return jsonify({'message': "El boletin que se ha intentado pagar no existe"}), 400
-        
-        print(request.form)
         
         payment_method = request.form.get('payment_method')
 
@@ -193,8 +184,6 @@ def pay_bulletin(id: int):
         else:
             BulletinModel.pay_bulletin(bulletin_id, payment_method_used)
         
-        print(payment_method_used)
-
         return jsonify({'message': 'El boletin ha sido pagado con exito'}), 200
     except Exception as e:
         print(e)

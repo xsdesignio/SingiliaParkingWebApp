@@ -6,8 +6,8 @@
             {% block title %} Home {% endblock %} - Sigilia Barba
         </title>
         <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ url_for('static', filename='css/animations.css') }}" rel="stylesheet" type="text/css">
         
-        <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
     </head>
     <body>
         <!-- Create the structure for a dashboard where there is header on top, a menu on left and the current information or page on the rest of the window -->
@@ -42,10 +42,7 @@
             </div>
             <main class="content">
                 {% block content %}
-                    <span>Recuerda recargar la página si quieres ver los resultados actualizados</span>
-
-                    <h2>Resumen</h2>
-                    <p>This is the home page</p>
+                    <span>Hubo algún tipo de problema al cargar el contenido</span>
                 {% endblock %}
             </main>
             
@@ -61,5 +58,7 @@
                 {% endif %}
             {% endwith %}
         
+        </div>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     </body>
 </html>

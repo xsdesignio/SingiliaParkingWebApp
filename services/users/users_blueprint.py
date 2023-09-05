@@ -6,9 +6,10 @@ from datetime import datetime, timedelta
 from services.tickets.models.ticket_model import TicketModel
 from services.tickets.controllers.tickets_controller import get_tickets_attributes_count
 from services.bulletins.controllers.bulletins_controller import get_bulletins_attributes_count
+from services.bulletins.models.bulletin_model import BulletinModel
 from services.zones.models.zone_model import ZoneModel
 from services.users.entities.user import User
-from services.utils.reports.generation import create_report
+from services.utils.reports.generation import create_report_for_user 
 
 
 
@@ -63,7 +64,7 @@ def generate_report(id):
         "bulletins":bulletins_amount_by_data
     }
 
-    created_report_url = create_report(data, user, start_date, end_date)
+    created_report_url = create_report_for_user(data, user, start_date, end_date)
 
     return send_file(created_report_url, as_attachment=True)
 
@@ -76,21 +77,23 @@ def user_details(id):
     query_values = {
         "responsible_id": user.id
     }
-    print(user.id)
 
-    tickets = TicketModel.get_tickets(**query_values)
+    tickets_data = get_tickets_attributes_count(user = user)
+
+    bulletins_data = get_bulletins_attributes_count(user = user)
 
     available_zones = ZoneModel.get_zones_list()
 
+
     if user != None:
-        return render_template('user-details.html', user=user, tickets=tickets, zones=available_zones)
+        return render_template('user-details.html', user=user, tickets_data=tickets_data, bulletins_data=bulletins_data, zones=available_zones)
     else:
         return {'message': 'Ha ocurrido un error obteniendo el usuario.'}, 500
 
 
 
 @role_required('ADMIN')
-@users_bp.post('/user/<id>/asign-zone/')
+@users_bp.post('/user/<id>/assign-zone/')
 def asign_zone(id):
     user: User = UserModel.get_user(id)
     zone_name = request.form.get('zone')

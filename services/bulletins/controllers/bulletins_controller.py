@@ -1,5 +1,6 @@
 import datetime
 from ..models.bulletin_model import BulletinModel
+from services.users.entities.user import User
 
 from decimal import Decimal
 
@@ -7,7 +8,7 @@ from services.zones.entities.zone import Zone
 
 
 
-def get_bulletins_attributes_count(start_date: datetime.datetime = None, end_date: datetime.datetime = None, zone: Zone = None):
+def get_bulletins_attributes_count(start_date: datetime.datetime = None, end_date: datetime.datetime = None, zone: Zone = None, user: User = None):
         query_dict = {}
     
         if start_date:
@@ -18,8 +19,12 @@ def get_bulletins_attributes_count(start_date: datetime.datetime = None, end_dat
 
         if(zone):
             query_dict["zone_id"] = zone.id
+        
+        if(user):
+            query_dict["responsible_id"] = user.id
 
 
+        # Obtaining the amount of bulletins that meet the conditions imposed by the query_dict dictionary and the value we want to count
         paid = BulletinModel.count_bulletins(**query_dict, paid = False)
         not_paid = BulletinModel.count_bulletins(**query_dict, paid = True)
         duration_of_30 = BulletinModel.count_bulletins(**query_dict, duration = 30)

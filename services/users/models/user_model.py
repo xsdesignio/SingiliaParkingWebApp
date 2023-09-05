@@ -93,7 +93,7 @@ class UserModel:
             values = [role, name, email, hashed_password]
 
             if associated_zone != None:
-                query += ', associates_zone_id) VALUES(%s, %s, %s, %s, %s) RETURNING *'
+                query += ', associated_zone_id) VALUES(%s, %s, %s, %s, %s) RETURNING *'
                 values.append(associated_zone.id)
             else:
                 query += ') VALUES(%s, %s, %s, %s) RETURNING *'
@@ -162,7 +162,7 @@ class UserModel:
             conn =  get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
 
-            cursor.execute('UPDATE users SET zone_id = %s WHERE id = %s', (zone.id, user_id))
+            cursor.execute('UPDATE users SET associated_zone_id = %s WHERE id = %s', (zone.id, user_id))
 
             conn.commit()
             conn.close()
@@ -179,7 +179,7 @@ class UserModel:
             return None
         
         user_role: UserRole = UserRole.get_enum_value(result['role'])
-        associated_zone_id = result.get('associates_zone_id')
+        associated_zone_id = result.get('associated_zone_id')
         associated_zone: Zone = None
 
         if associated_zone_id != None:

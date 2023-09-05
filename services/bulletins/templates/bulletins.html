@@ -40,7 +40,11 @@
                     </select>
                 </div>
                 
-                <input class="default-button" type="submit" value="Filtrar resultados">
+                
+                <button class="default-button" type="submit" >
+                    Filtrar resultados
+                    <embed src="{{ url_for('static', filename='assets/icons/loup-icon.svg') }}" width="22" height="22" fill="white"> </embed>
+                </button>
             </form>
         </article>
 
@@ -51,26 +55,28 @@
 
     <section>
         <article class="data-shown" style="text-align: center;">
-            <h3>
-                <strong>Número de boletines impresos: </strong>
-                {% if bulletins %}
-                    {{ bulletins|length }}
-                {% else %}
-                    0
-                {% endif %}
-            </h3>
             <p>
-                <strong>Pagados: </strong>
-                {{ bulletins_data["paid"] }}
+                <b>Número de boletines impresos: </b>
+                <strong>
+                    {% if bulletins %}
+                        {{ bulletins|length }}
+                    {% else %}
+                        0
+                    {% endif %}
+                </strong>
             </p>
             <p>
-                <strong>Aún por pagar: </strong>
-                {{ bulletins_data["not_paid"] }}
+                Pagados: 
+                <strong>{{ bulletins_data["paid"] }}</strong>
+            </p>
+            <p>
+                Aún por pagar: 
+                <strong>{{ bulletins_data["not_paid"] }}</strong>
             </p>
 
-            <h3>
-                Ingresos totales: {{ bulletins_data.total_income }} €
-            </h3>
+            <p>
+                <b>Ingresos totales: </b>{{ bulletins_data.total_income }} €
+            </p>
 
         </article>
     </section>
@@ -124,64 +130,21 @@
     </section>
 
     <section class="record-wrapper">
+        
         <h2>Registro de Boletines</h2>
-
-        <article class="record">
-           
-            {% if bulletins %}
-                {% for bulletin in bulletins %}
-                    <div class="ticket green-box">
-                        <div class="ticket-info">
-                            <p>Fecha de impresión: <br/><strong>{{ bulletin.created_at.strftime('%d-%m-%Y %H:%M') }}</strong></p>
-                            <p>Id del responsable: <strong>{{ bulletin.responsible_id }}</strong></p>
-                            <p>Duración: <strong>{{ bulletin.duration }}</strong></p>
-                            <p>Precio: <strong>{{ bulletin.price }} €</strong></p>
-
-                            {% if bulletin.paid == true %}
-                                <p>
-                                    Estado: <strong>Pagado</strong>
-                                </p>
-                                <p>
-                                    Método de Pago: 
-                                    <strong>
-                                        {% if bulletin.payment_method.value == "CASH" %}
-                                            Efectivo
-                                        {% else %}
-                                            Tarjeta
-                                        {% endif %}
-                                    </strong>
-                                </p>
-                            {% else %}
-                                <p>
-                                    Estado: <strong>Pendiente de pago</strong>
-                                </p>
-                            {% endif %}
-                            <p>Matrícula: <strong>{{ bulletin.registration }}</strong></p>
-                            <p>Zona: <strong>{{ bulletin.zone.name }}</strong></p>
-
-                            <div class="divider"></div>
-
-                            {% if bulletin.color %}
-                                <p>Color: <strong>{{ bulletin.color }}</strong></p>
-                            {% endif %}
-
-                            {% if bulletin.model %}
-                                <p>Modelo: <strong>{{ bulletin.model }}</strong></p>
-                            {% endif %}
-
-                            {% if bulletin.brand %}
-                                <p>Marca: <strong>{{ bulletin.brand }}</strong></p>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
+        <div class="record" id="record">
+            {% if bulletins_data %}
+                {% if bulletins_data["bulletins_amount"] == 0 %}
+                    <p>No hay tickets que mostrar</p>
+                {% endif %}
             {% else %}
-                <p>No hay boletines para mostrar</p>
+                <p>No hay tickets que mostrar</p>
             {% endif %}
-        </article>
+        </div>
+        
+        <div class="loader" id="loadMoreBulletinsTrigger"></div>
+
     </section>
 
-    <script>
-
-    </script>
+    <script type="module" src="{{ url_for('static', filename='js/lazy_bulletins.js')}}" data-main></script>
 {% endblock %}

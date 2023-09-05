@@ -14,8 +14,8 @@ from database.db_connection import get_connection
 
 class BulletinModel(BaseModel):
     @classmethod
-    def get_bulletins(cls, **kwargs) -> list[dict]:
-        result = cls.get_elements("bulletins", **kwargs)
+    def get_bulletins(cls, range: tuple= None, **kwargs) -> list[dict]:
+        result = cls.get_elements("bulletins", range, **kwargs)
         bulletins: list[Bulletin] = []
 
         for bulletin in result:
@@ -38,7 +38,7 @@ class BulletinModel(BaseModel):
                     brand = bulletin.get("brand"),
                     model = bulletin.get("model"),
                     color = bulletin.get("color")
-                )
+                ).to_json()
             )
 
         return bulletins

@@ -4,11 +4,17 @@
 
 {% block content %}
 
+    <a class="come-back-button" href="/zones"> 
+        <!-- Create an image linking to static/assets/icons/ -->
+        <img src="{{ url_for('static', filename='/assets/icons/arrow-left.svg') }}" alt="Volver">
+        <span>Volver</span>
+    </a>
+
     <h1>Administración de zonas</h1>
 
     <section>
+        <h2>Crear zona</h2>
         <div class="form-wrapper">
-            <h2>Crear zona</h2>
             <form action="/zones/create-zone" method="post" class="general-form">
                 <div>
                     <label for="name">Nombre</label>

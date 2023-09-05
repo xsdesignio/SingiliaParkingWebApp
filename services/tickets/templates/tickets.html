@@ -5,7 +5,6 @@
 {% block content %}
 
     <h1>Administración de Tickets</h1>
-    {# PAGE DATA #}
 
     <section class="filter-section">
         <article class="filter-options">
@@ -40,7 +39,10 @@
                     </select>
                 </div>
                 
-                <input class="default-button" type="submit" value="Filtrar resultados">
+                <button class="default-button" type="submit" >
+                    Filtrar resultados
+                    <embed src="{{ url_for('static', filename='assets/icons/loup-icon.svg') }}" width="22" height="22" fill="white"> </embed>
+                </button>
             </form>
         </article>
 
@@ -51,26 +53,28 @@
     
     <section>
         <article class="data-shown" style="text-align: center;">
-            <h3>
-                <strong>Número de tickets impresos: </strong>
-                {% if tickets %}
-                    {{ tickets|length }}
-                {% else %}
-                    0
-                {% endif %}
-            </h3>
             <p>
-                <strong>Pagados con tarjeta: </strong>
-                {{ tickets_data["paid_by_card"] }}
+                <b>Número de tickets impresos: </b> 
+                <strong>
+                    {% if tickets_data %}
+                        {{ tickets_data["tickets_amount"] }}
+                    {% else %}
+                        0
+                    {% endif %}
+                </strong>
             </p>
             <p>
-                <strong>Pagados con efectivo: </strong>
-                {{ tickets_data["paid_by_cash"] }}
+                Pagados con tarjeta: 
+                <strong>{{ tickets_data["paid_by_card"] }}</strong>
+            </p>
+            <p>
+                Pagados con efectivo: 
+                <strong>{{ tickets_data["paid_by_cash"] }}</strong>
             </p>
 
-            <h3>
-                Ingresos totales: {{ tickets_data.total_income }} €
-            </h3>
+            <p>
+                <b>Ingresos totales:</b> <strong>{{ tickets_data.total_income }} €</strong>
+            </p>
         </article>
     </section>
 
@@ -124,42 +128,24 @@
             </article>
     </section>
     
+
     <section class="record-wrapper">
 
         <h2>Registro de Tickets</h2>
-        <article class="record">
-            <!-- If tickets, for ticket in tickets create a div where the ticket information is shown, it ocuppy all width and contains the image at left and all ticket information at right-->
-            {% if tickets %}
-                {% for ticket in tickets %}
-                    <div class="ticket {% if ticket.duration == 30 %} yellow-box {% elif ticket.duration == 60 %} green-box {% elif ticket.duration == 90 %} orange-box {% elif ticket.duration == 120 %} pink-box {% endif %}">
-                        <div class="ticket-info">
-                            <p>Fecha de impresión: <br/> <strong>{{ ticket.created_at.strftime('%d-%m-%Y %H:%M') }}</strong></p>
-                            <p>Responsable: <strong>{{ ticket.responsible.name }}</strong></p>
-                            <p>Duración: <strong>{{ ticket.duration }} min</strong></p>
-                            <p>Precio: <strong>{{ ticket.price }} €</strong></p>
-                            <p>
-                                Método de pago: 
-                                <strong> 
-                                    {% if ticket.paid == true %}
-                                        Tarjeta
-                                    {% else %}
-                                        Efectivo
-                                    {% endif %}
-                                </strong>
-                            </p>
-                            <p>Matrícula: <strong>{{ ticket.registration }}</strong></p>
-                            <p>Zona: <strong>{{ ticket.zone.name }}</strong></p>
-                        </div>
-                    </div>
-                {% endfor %}
+        <div class="record" id="record">
+            {% if tickets_data %}
+                {% if tickets_data["tickets_amount"] == 0 %}
+                    <p>No hay tickets que mostrar</p>
+                {% endif %}
             {% else %}
-                <p>No hay tickets para mostrar</p>
+                <p>No hay tickets que mostrar</p>
             {% endif %}
-        </article>
+        </div>
+        <span class="loader" id="loadMoreTicketsTrigger"></span>
+
     </section>
 
-    <script>
+    <script type="module" src="{{ url_for('static', filename='js/lazy_tickets.js') }}" data-main></script>
 
-    </script>
 {% endblock %}
 

@@ -1,6 +1,7 @@
 from datetime import timedelta
 from .db_connection import get_connection
 from psycopg2 import extras
+from typing import Optional
 
 
 
@@ -23,51 +24,60 @@ class BaseModel:
         return result
 
     @classmethod
-    def get_elements(cls, table, **kwargs) -> list[dict]:
+    def get_elements(cls, table: str, range: Optional[tuple] = [0, 50], **kwargs) -> list[dict]:
+        """Get a list with the elements of the table that match the provided parameters (kwargs)
+        
+        Keyword arguments:
+        table -- the name of the table to query
+        range -- an optional tuple with the start and end index of the elements to return
+        Return: the list with the elements
+        """
+        
         query = f'SELECT * FROM { table }'
         params = []
 
-        dict_size = len(kwargs)
-        current_index = 0
-
         # Build the SQL query dynamically based on the provided parameters
-        if dict_size > 0:
-
+        if kwargs:
             query += ' WHERE '
 
-            for key, value in kwargs.items():
-                    
+            for index, (key, value) in enumerate(kwargs.items()):
                 if key == 'start_date':
                     query += f'created_at >= %s'
                     value -= timedelta(days=1)
                 elif key == 'end_date':
                     query += f'created_at <= %s'
-                    value+= timedelta(days=1)
+                    value += timedelta(days=1)
                 else:
                     query += f'{key} = %s'
 
                 params.append(value)
 
-                if current_index < (dict_size - 1):
+                if index < len(kwargs) - 1:
                     query += ' AND '
-                    
-                current_index += 1
+
+        # Add LIMIT and OFFSET if a range is provided
+        if range:
+            limit = range[1] - range[0]
+            offset = range[0]
+            query += f' LIMIT %s OFFSET %s'
+            params.extend([limit, offset])
 
         # Execute the query
-        result: list[dict]
         try:
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
             
-            cursor.execute(query, params)
+            cursor.execute(query, tuple(params))
             result = cursor.fetchall()
-                
+            
             conn.close()
         except Exception as exception:
             print("get_elements: ", exception)
             return None
         
         return result
+
+    
     
     @classmethod
     def count_elements(cls, table, **kwargs) -> int:

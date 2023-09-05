@@ -43,8 +43,9 @@ class TicketModel(BaseModel):
     
 
     @classmethod
-    def get_tickets(cls, **kwargs) -> list[dict]:
-        result = cls.get_elements('tickets', **kwargs)
+    def get_tickets(cls, range: tuple = None, **kwargs) -> list[dict]:
+        
+        result = cls.get_elements('tickets', range, **kwargs)
         tickets: list[Ticket] = []
 
         for ticket in result:
@@ -65,7 +66,7 @@ class TicketModel(BaseModel):
                     payment_method = payment_method, 
                     paid = ticket["paid"],
                     created_at = ticket["created_at"]
-                )
+                ).to_json()
             )
         
         return tickets
