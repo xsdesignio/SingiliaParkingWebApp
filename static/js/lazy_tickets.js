@@ -40,7 +40,7 @@ export class TicketsManager {
         if(end_date != undefined && end_date != '')
             this.filter['end_date'] = end_date
 
-        let zone = document.getElementById('zone').value
+        let zone = document.getElementById('zone')?.value
         if(zone != undefined && zone != '')
             this.filter['zone'] = zone
     }
@@ -48,7 +48,6 @@ export class TicketsManager {
 
     showTicketsLot() {
 
-        console.log(this.filter)
         fetch(`/tickets/get-tickets/${this.page}`,
             {
                 method: 'POST',

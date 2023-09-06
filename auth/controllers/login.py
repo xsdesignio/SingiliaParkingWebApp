@@ -40,6 +40,8 @@ def login_user(email, password) -> bool:
         session['role'] = user.role.name
         session['email'] = user.email
         session['name'] = user.name
+        if user.associated_zone != None:
+            session['associated_zone'] = user.associated_zone.name
 
     return user
         

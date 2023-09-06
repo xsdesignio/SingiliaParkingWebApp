@@ -48,13 +48,19 @@
             
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
-                    <ul class="messages">
+                    <ul class="messages" id="flash-messages">
                         {% for category, message in messages %}
                         <li class="{% if category == 'success' %}alert-success{% elif category == 'error' %}alert-error{% endif %}">
                                 {{ message }}
                             </li>
                         {% endfor %}
                     </ul>
+                    <script>
+                        setTimeout(function() {
+                            let flash_messages = document.getElementById('flash-messages');
+                            flash_messages.remove();
+                        }, 5000);
+                    </script>
                 {% endif %}
             {% endwith %}
         

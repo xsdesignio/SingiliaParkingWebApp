@@ -1,13 +1,14 @@
 
 from psycopg2 import extras
 from werkzeug.security import generate_password_hash, check_password_hash
+from database.base_model import BaseModel
 
 from database.db_connection import get_connection
 from ..entities.user import User, UserRole
 from services.zones.entities.zone import Zone
 from services.zones.models.zone_model import ZoneModel
 
-class UserModel:
+class UserModel(BaseModel):
 
     @classmethod
     def get_user(cls, id) -> User:
@@ -60,18 +61,19 @@ class UserModel:
     @classmethod
     def get_users_list(cls):
         results: list(dict)
-        try:
-            conn =  get_connection()
-            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cursor.execute('SELECT * FROM users')
-            results = cursor.fetchall()
-            conn.close()
-        except Exception as e:
-            print('An error occurred accessing the database')
-            print(e)
-            return None
 
-        return results
+        result = cls.get_elements('users')
+        users: list[User] = []
+
+        for user in result:
+            # Creating ticket object from database ticket data
+            responsible: User = UserModel.get_user(user["id"])
+                
+            users.append(
+                responsible.to_json()
+            )
+        
+        return users
 
 
     @classmethod
@@ -121,13 +123,40 @@ class UserModel:
             conn =  get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
 
-            cursor.execute('UPDATE users SET role = %s, name = %s, email = %s WHERE id = %s RETURNING *', (new_user_data['role'], new_user_data['name'], new_user_data['email'], user_id))
+            query = 'UPDATE users SET '
+            query_values = []
+            if new_user_data.get('role') != None:
+                query += 'role = %s, '
+                query_values.append(new_user_data['role'])
+            
+            if new_user_data.get('name') != None:
+                query += 'name = %s, '
+                query_values.append(new_user_data['name'])
+            
+            if new_user_data.get('email') != None:
+                query += 'email = %s, '
+                query_values.append(new_user_data['email'])
+            
+            if new_user_data.get('password') != None:
+                query += 'password = %s, '
+                query_values.append(generate_password_hash(new_user_data['password']))
+
+            if query[-2:] == ', ':
+                query = query[:-2]
+
+            query += ' WHERE id = %s RETURNING *'
+            query_values.append(user_id)
+
+
+            cursor.execute(query, query_values)
 
             result = cursor.fetchone()
             
             conn.commit()
             conn.close()
         except Exception as e:
+            print('An error updating the user at the database')
+            print(e)
             return None
 
         return cls.create_user_from_result(result)

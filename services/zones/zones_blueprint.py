@@ -7,6 +7,9 @@ from .models.zone_model import ZoneModel
 from .entities.zone import Zone
 from auth.controllers.login import role_required
 
+from services.bulletins.controllers.bulletins_controller import get_bulletins_attributes_count
+from services.tickets.controllers.tickets_controller import get_tickets_attributes_count
+
 from services.bulletins.models.bulletin_model import BulletinModel
 from services.bulletins.entities.bulletin import Bulletin
 from services.tickets.models.ticket_model import TicketModel
@@ -30,10 +33,11 @@ def zones_page():
 @zones_bp.get('/zone/<id>')
 def zone_details(id):
     zone = ZoneModel.get_zone(id)
-    tickets = TicketModel.get_tickets(zone_id=id)
-    bulletins = BulletinModel.get_bulletins(zone_id=id)
+    tickets_data = get_tickets_attributes_count(zone = zone)
+    bulletins_data = get_bulletins_attributes_count(zone = zone)
+
     if zone != None:
-        return render_template('zone-details.html', zone=zone, tickets=tickets, bulletins=bulletins)
+        return render_template('zone-details.html', zone=zone, tickets_data=tickets_data, bulletins_data=bulletins_data)
     else:
         error_message = 'Ha ocurrido un error obteniendo la zona indicada, o esta no existe'
         return render_template('zone-details.html', error=error_message)

@@ -30,7 +30,7 @@ export class BulletinsManager {
         if(end_date != undefined && end_date != '')
             this.filter['end_date'] = end_date
 
-        let zone = document.getElementById('zone').value
+        let zone = document.getElementById('zone')?.value
         if(zone != undefined && zone != '')
             this.filter['zone_name'] = zone
     }
@@ -69,7 +69,6 @@ export class BulletinsManager {
             })
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 
                 if(data != undefined && data.length > 0) {
 
@@ -108,8 +107,6 @@ export class BulletinsManager {
         let car_data = this.format_bulletin_car_info(data) 
         let formatted_element = formatted_bulletin.replace('</div>', car_data + '</div>')
         
-        console.log(formatted_bulletin)
-        console.log(formatted_element)
         return formatted_element
         
     }

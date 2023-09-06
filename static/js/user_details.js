@@ -28,11 +28,10 @@ function selectTickets() {
 function selectBulletins() {
     document.getElementById("tickets-record-wrapper").classList.add("hidden");
     document.getElementById("bulletins-record-wrapper").classList.remove("hidden");
-    console.log("This should be executed now")
 
     document.getElementById("tickets-button").classList.remove("selected");
     document.getElementById("bulletins-button").classList.add("selected");
-    console.log("This should be executed now 2")
+
     getBulletins("bulletins-record", filter)
 }
 
@@ -40,3 +39,14 @@ function selectBulletins() {
 
 document.getElementById("tickets-button").addEventListener("click", selectTickets);
 document.getElementById("bulletins-button").addEventListener("click", selectBulletins);
+
+
+
+const deleteButton = document.querySelector('#delete-user button');
+deleteButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    const confirmation = confirm('¿Estás seguro que quieres eliminar este usuario?');
+    if (confirmation) {
+        document.querySelector('#delete-user').submit();
+    }
+});

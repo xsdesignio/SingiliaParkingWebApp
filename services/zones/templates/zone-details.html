@@ -28,7 +28,10 @@
                 {% endif %}
             </ul>
             <p>
-                Cantidad de tickets impresos: <strong> {{ tickets|length }}</strong>
+                Cantidad de tickets impresos: <strong> {{ tickets_data["tickets_amount"] }}</strong>
+            </p>
+            <p>
+                Cantidad de boletines impresos: <strong> {{ bulletins_data["bulletins_amount"] }}</strong>
             </p>
         </article>
         <div class="two-columns-grid">
@@ -68,105 +71,64 @@
 
     <article class="selector two-columns-grid">
         <div>
-            <h2>Seleccionar</h2>
+            <h2>Selección</h2>
             <p>Selecciona el tipo de registro que quieres ver</p>
         </div>
         <div class="two-columns-grid">
-            <button class="default-button" onclick="selectTickets()">
+            <button id="tickets-button" class="default-button selected">
                 Tickets
             </button>
-            <button class="default-button" onclick="selectBulletins()">
+            <button id="bulletins-button" class="default-button">
                 Boletines
             </button>
         </div>
     </article>
-    <script>
-        function selectTickets() {
-            document.getElementById("tickets-record").classList.remove("hidden");
-            document.getElementById("bulletins-record").classList.add("hidden");
-        }
-        function selectBulletins() {
-            document.getElementById("tickets-record").classList.add("hidden");
-            document.getElementById("bulletins-record").classList.remove("hidden");
-        }
-    </script>
 
     {# PAGE DATA #}
-    <section id="tickets-record" class="record-wrapper">
+
+
+    <script type="module" src="{{ url_for('static', filename='js/zone_details.js') }}"></script>
+
+
+    <section id="tickets-record-wrapper" class="record-wrapper">
         <h2>Tickets creados en {{ zone.name }}.</h2>
-        <article class="record">
-            <!-- If tickets, for ticket in tickets create a div where the ticket information is shown, it ocuppy all width and contains the image at left and all ticket information at right-->
-            {% if tickets %}
-                {% for ticket in tickets %}
-                    <div class="ticket {% if ticket.duration == 30 %} yellow-box {% elif ticket.duration == 60 %} green-box {% elif ticket.duration == 90 %} orange-box {% elif ticket.duration == 120 %} pink-box {% endif %}">
-                        <div class="ticket-info">
-                            <p>Fecha de impresión: <br/><strong>{{ ticket.created_at }}</strong></p>
-                            <p>Id del responsable: <strong>{{ ticket.responsible_id }}</strong></p>
-                            <p>Duración: <strong>{{ ticket.duration }}</strong></p>
-                            <p>Precio: <strong>{{ ticket.price }} €</strong></p>
-                            <p>
-                                Método de pago: 
-                                <strong> 
-                                    {% if ticket.paid == true %}
-                                        Tarjeta
-                                    {% else %}
-                                        Efectivo
-                                    {% endif %}
-                                </strong>
-                            </p>
-                            <p>Matrícula: <strong>{{ ticket.registration }}</strong></p>
-                        </div>
-                    </div>
-                {% endfor %}
+        <div class="record" id="tickets-record">
+            {% if tickets_data %}
+                {% if tickets_data["tickets_amount"] == 0 %}
+                    <p>No hay tickets que mostrar</p>
+                {% endif %}
             {% else %}
-                <p>No hay tickets para mostrar</p>
+                <p>No hay tickets que mostrar</p>
             {% endif %}
+        </div>
+
+        {% if tickets_data %}
+            {% if tickets_data["tickets_amount"] > 0 %}
+                <span class="loader" id="loadMoreTicketsTrigger"></span>
+            {% endif %}
+        {% endif %}
         </article>
 
     </section>
-    <section id="bulletins-record" class="record-wrapper hidden">
+    <section id="bulletins-record-wrapper" class="record-wrapper hidden">
         <h2>Boletines creados en {{ zone.name }}.</h2>
-        <article class="record">
-           
-            {% if bulletins %}
-                {% for bulletin in bulletins %}
-                    <div class="ticket bulletin-box">
-
-                        <div class="ticket-info">
-                            <p>Fecha de impresión: <br/> <strong>{{ bulletin.created_at }}</strong></p>
-                            <p>Id del responsable: <strong>{{ bulletin.responsible_id }}</strong></p>
-                            <p>Duración: <strong>{{ bulletin.duration }}</strong></p>
-                            <p>Precio: <strong>{{ bulletin.price }} €</strong></p>
-                            <p>
-                                Método de pago: 
-                                <strong> 
-                                    {% if bulletin.paid == true %}
-                                        Tarjeta
-                                    {% else %}
-                                        Efectivo
-                                    {% endif %}
-                                </strong>
-                            </p>
-                            <p>Matrícula: <strong>{{ bulletin.registration }}</strong></p>
-                            <div class="divider"></div>
-
-                            {% if bulletin.color %}
-                                <p>Color: <strong>{{ bulletin.color }}</strong></p>
-                            {% endif %}
-
-                            {% if bulletin.model %}
-                                <p>Modelo: <strong>{{ bulletin.model }}</strong></p>
-                            {% endif %}
-
-                            {% if bulletin.brand %}
-                                <p>Marca: <strong>{{ bulletin.brand }}</strong></p>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
+        
+        <div class="record" id="bulletins-record">
+            {% if bulletins_data %}
+                {% if bulletins_data["bulletins_amount"] == 0 %}
+                    <p>No hay tickets que mostrar</p>
+                {% endif %}
             {% else %}
-                <p>No hay boletines para mostrar</p>
+                <p>No hay tickets que mostrar</p>
             {% endif %}
+        </div>
+        
+        {% if bulletins_data %}
+            {% if bulletins_data["bulletins_amount"] > 0 %}
+                <div class="loader" id="loadMoreBulletinsTrigger"></div>
+            {% endif %}
+        {% endif %}
+
         </article>
     </section>
 {% endblock %}
