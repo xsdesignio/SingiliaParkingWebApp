@@ -36,6 +36,6 @@ class User:
             'created_at': self.created_at.strftime("%Y-%m-%d %H:%M:%S")
         }
         if self.associated_zone != None:
-            json_object['zone'] = self.associated_zone.name
+            json_object['associated_zone'] = self.associated_zone.name
 
         return json_object

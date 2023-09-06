@@ -39,9 +39,11 @@ export class BulletinsManager {
     bulletinTemplate() {
         return `
             <div class="ticket bulletin-box">
+
+                <p>Responsable: <strong class="capital-letter">[responsible]</strong></p>
+                <p>Zona: <strong>[zone_name]</strong></p>
                 <p>Fecha: <strong>[creation_date]</strong></p>
                 <p>Hora: <strong>[creation_time]</strong></p>
-                <p>Responsable: <strong>[responsible]</strong></p>
                 <p>Duración: <strong>[duration] min</strong></p>
                 <p>Precio: <strong>[price] €</strong></p>
                 <p>
@@ -51,7 +53,6 @@ export class BulletinsManager {
                     </strong>
                 </p>
                 <p>Matrícula: <strong>[registration]</strong></p>
-                <p>Zona: <strong>[zone_name]</strong></p>
             </div>
         `
     }

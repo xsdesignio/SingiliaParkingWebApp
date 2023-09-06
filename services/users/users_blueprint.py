@@ -134,7 +134,12 @@ def asign_zone(id):
 def get_user_zone():
     print("fetching zone")
     if session["associated_zone"] == None:
-        return jsonify({"error": "zona no asignada"}), 200
+        user = UserModel.get_user(session["user_id"])
+        if user.associated_zone == None:
+            return jsonify({"error": "zona no asignada"}), 500
+        
+        return jsonify({"zone": user.associated_zone}), 200
+        
     return jsonify({"zone": session["associated_zone"]}), 200
 
 

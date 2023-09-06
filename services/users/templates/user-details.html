@@ -20,7 +20,14 @@
                 <p>Rol: <strong>{{ user.role.value }}</strong></p>
                 <p>Cantidad de tickets impresos: <strong>{{ tickets_data["tickets_amount"] }}</strong></p>
                 <p>Cantidad de boletines impresos: <strong>{{ bulletins_data["bulletins_amount"] }}</strong></p>
-                <p>Zona Asignada: <strong>{{ user.associated_zone.name }}</strong></p>
+                <p>Zona Asignada: <strong>
+                    {% if user.associated_zone.name == None %}
+                        No tiene zona asignada
+                    {% else %}
+                        {{ user.associated_zone.name }}
+                    {% endif %}
+                    
+                </strong></p>
             </article>
             <article class="selected-date">
                 <p>Mostrando tickets creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
@@ -31,11 +38,11 @@
             <form action="/users/user/{{ user.id }}/edit" method="POST" class="general-form">
                 <label for="name">Nombre de usuario</label>
                 <input type="text" name="name" id="name" value="{{ user.name }}">
-                <label for="password">Contraseña</label>
+                <label for="password">Nueva Contraseña</label>
                 <input type="text" name="password" id="password">
-                <label for="email">Email</label>
+                <label for="email">Cambiar correo electrónico</label>
                 <input type="email" name="email" id="email" value="{{ user.email }}">
-                <label for="role">Rol</label>
+                <label for="role">Cambiar Rol</label>
                 <select name="role" id="role">
                     <option value="ADMIN" {% if user.role.value == 'ADMIN' %} selected {% endif %}>Administrador</option>
                     <option value="MANAGER" {% if user.role.value == 'MANAGER' %} selected {% endif %}>Manager</option>

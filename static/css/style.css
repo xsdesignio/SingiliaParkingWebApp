@@ -10,7 +10,7 @@
   --black: #000000;
   --dark_green: #1c4528;
   --green: #45a584;
-  --light_green: #d4faec;
+  --light_green: #ddfaf0;
   --light_green_selected: #95e8c9;
   --dark_blue: darkblue;
   --green_button: #559f97;
@@ -85,18 +85,25 @@ nav a {
   text-align: left;
   border-top-right-radius: 24px;
   border-bottom-right-radius: 24px;
+  cursor: pointer;
 }
 
 nav a:hover {
   background-color: #39866b;
   color: white;
+  cursor: pointer;
 }
 
 nav a.selected {
   background-color: #45a584;
   color: white;
+  cursor: pointer;
 }
 
+
+.capital-letter {
+  text-transform: capitalize;
+}
 
 .logout-container {
   display: flex;
@@ -175,7 +182,11 @@ p {
 }
 
 input {
-  font-size: 16px;
+  font-size: 14.8px;
+}
+
+input[type=submit] {
+  cursor: pointer;
 }
 
 select {
@@ -184,6 +195,7 @@ select {
   border-radius: 8px;
   background-color: var(--green);
   color: white;
+  width: 100%;
 }
 
 .messages {
@@ -225,13 +237,13 @@ select {
   display: grid;
   place-items: center;
   height: 100vh;
+  background: linear-gradient(-60deg, rgb(243, 255, 244) 0%, rgb(255, 255, 255) 50%, rgb(225, 255, 246) 100%);
 }
 
 .login {
-  max-width: 320px;
+  max-width: 400px;
   background-color: white;
-  padding: 40px;
-  border-radius: 8px;
+  padding: 40px 20px;
   box-shadow: 2px 2px 40px 2px rgba(18, 77, 37, 0.2);
 }
 
@@ -254,14 +266,13 @@ select {
 
 .login button {
   width: 100%;
-  margin: 0 auto 20px auto;
+  display: block;
+  margin: 20px 0 0 auto;
   padding: 10px;
   border-radius: 5px;
-  border: 1px solid #35523e5a;
-  background-color: #5cd6a9;
-  color: white;
   font-weight: bold;
   transition: background-color 0.3s ease;
+  cursor: pointer;
 }
 
 .login button:hover {
@@ -294,6 +305,7 @@ form .default-button {
   font-weight: bold;
   transition: background-color 0.3s ease;
   font-weight: bold;
+  cursor: pointer !important;
   font-size: 16px;
   transition: color .2s ease;
 }
@@ -370,6 +382,7 @@ form .default-button {
 
 .data-shown {
   width: 100%;
+  background-color: white;
 }
 .data-shown h3 {
   margin-top: 0;
@@ -472,7 +485,8 @@ form .default-button {
 
 
 .ticket {
-  width: auto;
+  width: 100%;
+  max-width: 400px;
   position: relative;
   margin: 20px 0;
   padding: 20px;
@@ -503,6 +517,7 @@ form .default-button {
   width: 320px;
 }
 
+
 .user-card h3 {
   text-transform: capitalize;
   margin: 10px 0;
@@ -529,11 +544,12 @@ form .default-button {
   transition: background-color 0.3s ease;
   font-weight: 400;
   font-size: 14px;
+  cursor: pointer;
 }
 .come-back-button:hover {
   background-color: #39866b;
   color: white;
-  /* box-shadow: 2px 2px 20px 2px rgba(28, 92, 14, 0.4); */
+  cursor: pointer;
 }
 
 .come-back-button img {
@@ -547,8 +563,8 @@ form .default-button {
 
 .form-wrapper {
   background-color: white;
-  box-shadow: 2px 2px 40px 2px rgba(18, 77, 37, 0.2);
-  padding: 20px;
+  border: 1px solid #45a583b9;
+  padding: 32px 20px;
 }
 
 .general-form {
@@ -557,9 +573,13 @@ form .default-button {
   place-items: center flex-start;
   gap: 10px;
   text-align: left;
-  width: calc(max-cntent - 40px) !important;
+  width: calc(max-content - 40px) !important;
   background-color: white;
   margin: 0px auto;
+}
+
+.general-form div {
+  width: 100%;
 }
 
 .general-form label {
@@ -569,15 +589,16 @@ form .default-button {
 
 .general-form input {
   width: 100%;
-  padding: 8px 16px;
+  padding: 6px 18px;
   margin: 0 0 10px 0;
   border-radius: 24px;
-  border: 1px solid var(--dark_green)
+  border: 1px solid var(--green)
 }
 .general-form input[type="submit"] {
   width: 100%;
   padding: 8px 16px;
   margin: 20px 0;
+  cursor: pointer;
 }
 
 .general-form button {
@@ -624,7 +645,7 @@ form .default-button {
 
 
 .yellow-box {
-  outline: 2px solid rgba(253, 246, 50, 0.8);
+  border: 2px solid rgba(253, 246, 50, 0.8);
   transition: transform .1s ease;
 }
 .yellow-box:hover {
@@ -633,7 +654,7 @@ form .default-button {
 }
 
 .green-box {
-  outline: 2px solid rgba(58, 175, 25, 0.8);
+  border: 2px solid rgba(58, 175, 25, 0.8);
   transition: transform .1s ease;
 }
 .green-box:hover {
@@ -642,7 +663,7 @@ form .default-button {
 }
 
 .orange-box {
-  outline: 2px solid rgba(255, 141, 3, 0.8);
+  border: 2px solid rgba(255, 141, 3, 0.8);
   transition: transform .1s ease;
 }
 .orange-box:hover {
@@ -651,7 +672,7 @@ form .default-button {
 }
 
 .pink-box {
-  outline: 2px solid rgba(228, 68, 121, 0.8);
+  border: 2px solid rgba(228, 68, 121, 0.8);
   transition: transform .1s ease;
 }
 .pink-box:hover {
@@ -660,7 +681,7 @@ form .default-button {
 }
 
 .bulletin-box {
-  outline: 2px solid rgba(63, 77, 202, 0.8);
+  border: 2px solid rgba(63, 77, 202, 0.8);
   transition: transform .1s ease;
 }
 .bulletin-box:hover {
