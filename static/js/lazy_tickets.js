@@ -76,6 +76,8 @@ export class TicketsManager {
     ticketTemplate() {
         return `
             <div class="ticket [box_class]">
+                <img class="icon-logo" src="/static/assets/icons/logo.png" alt="ticket" />
+                <h3>Ticket Estacionamiento Regulado</h3>
                 <p>Responsable: <strong class="capital-letter">[responsible]</strong></p>
                 <p>Zona: <strong>[zone_name]</strong></p>
                 <p>Fecha: <strong>[creation_date]</strong></p>

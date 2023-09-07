@@ -4,14 +4,14 @@
 
 {% block content %}
 
-    <h1>Administración de usuarios</h1>
+    <h1 class="center-text">Administración de usuarios</h1>
 
     <section>
         <article class="two-columns-flex">
             <p>
                 Cantidad de usuarios: <strong>{{ users|length }}</strong>
             </p>
-            <a href="/users/create" class="default-button">Crear Usuario</a>
+            <a href="/users/create" class="default-button">Crear Usuario +</a>
         </article>
     </section>
 
@@ -19,16 +19,16 @@
     <section class="record-wrapper">
         <h2>Usuarios Actuales</h2>
         
-        <article class="cards">
+        <div class="cards">
             {% for user in users %}
                 <div class="user-card">
                     <h3> <b>{{ user.name }}</b></h3>
                     <p> <b>Email:</b> {{ user.email }}</p>
-                    <p><b>Zona:</b> {{ user.associated_zone }}</p>
+                    <p><b>Zona Asignada:</b> {{ user.associated_zone }}</p>
                     <a href="/users/user/{{ user.id }}" class="default-button">Ver usuario</a>
                 </div>
             {% endfor %}
-        </article>
+        </div>
 
     </section>
 {% endblock %}

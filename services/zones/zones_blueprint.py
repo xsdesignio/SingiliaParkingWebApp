@@ -2,6 +2,7 @@ from flask import Blueprint, flash, send_file, render_template, request, jsonify
 from services.bulletins.controllers.bulletins_controller import get_bulletins_attributes_count
 
 from services.tickets.controllers.tickets_controller import get_tickets_attributes_count
+from services.utils.data_management import parse_date
 from services.utils.reports.generation import create_report_for_zone
 from .models.zone_model import ZoneModel
 from .entities.zone import Zone
@@ -33,11 +34,21 @@ def zones_page():
 @zones_bp.get('/zone/<id>')
 def zone_details(id):
     zone = ZoneModel.get_zone(id)
-    tickets_data = get_tickets_attributes_count(zone = zone)
-    bulletins_data = get_bulletins_attributes_count(zone = zone)
+
+
+    start_date = parse_date(request.args.get('start_date'), datetime.now() - timedelta(days=30))
+    end_date = parse_date(request.args.get('end_date'), datetime.now())
+
+    tickets_data = get_tickets_attributes_count(start_date, end_date, zone)
+    bulletins_data = get_bulletins_attributes_count(start_date, end_date, zone)
+
+    zones = ZoneModel.get_zones_list()
+
+    start_date = start_date.strftime('%Y-%m-%d')
+    end_date = end_date.strftime('%Y-%m-%d')
 
     if zone != None:
-        return render_template('zone-details.html', zone=zone, tickets_data=tickets_data, bulletins_data=bulletins_data)
+        return render_template('zone-details.html', zone=zone, zones=zones,  start_date = start_date, end_date = end_date, tickets_data=tickets_data, bulletins_data=bulletins_data)
     else:
         error_message = 'Ha ocurrido un error obteniendo la zona indicada, o esta no existe'
         return render_template('zone-details.html', error=error_message)

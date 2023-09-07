@@ -10,15 +10,21 @@
         <div class="login-container">
             <div class="login">
                 <div class="img-container">
-                    <img class="img-logo" src="{{ url_for('static', filename='/assets/icons/logo.png')}}" alt="">
+                    <img class="img-logo" src="{{ url_for('static', filename='/assets/logo.png')}}" alt="">
                 </div>
 
                 <h1>Inicio de sesión</h1>
+                
                 <form id="login-form" action="javascript:login()">
                     <input type="text" name="email" placeholder="Email" required="required" />
                     <input type="password" name="password" placeholder="Contraseña" required="required" />
                     <button class="default-button" type="submit">Acceder</button>
                 </form>
+                <div>
+                    <p>Administración de zona azul de parking en Antequera.</p>
+                    <span>Página solo disponible para Administradores.</span>
+                </div>
+                
             </div>
         </div>
         <source>

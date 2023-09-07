@@ -39,6 +39,8 @@ export class BulletinsManager {
     bulletinTemplate() {
         return `
             <div class="ticket bulletin-box">
+                <img class="icon-logo" src="/static/assets/icons/logo.png" alt="ticket" />
+                <h3>Boletín Estacionamiento Regulado</h3>
 
                 <p>Responsable: <strong class="capital-letter">[responsible]</strong></p>
                 <p>Zona: <strong>[zone_name]</strong></p>

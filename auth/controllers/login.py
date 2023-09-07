@@ -16,11 +16,20 @@ def login_required(function):
 
 
 
+
+# Create the enum for the roles so the decorator can check if the user has the required role or a higher one
+
+
 def role_required(role:str):
     def decorator(function):
         def wrapper(*args, **kwargs):
-            if 'name' not in session or session['role'] != role.upper():
+            if 'name' not in session:
+                redirect_url = url_for('auth.login_page')
+                return redirect(redirect_url)
+            
+            if session['role'] != role.upper():
                 return {}, 500 # Redirige a la página de inicio de sesión
+            
             return function(*args, **kwargs)
         return wrapper
     return decorator
@@ -42,6 +51,8 @@ def login_user(email, password) -> bool:
         session['name'] = user.name
         if user.associated_zone != None:
             session['associated_zone'] = user.associated_zone.name
+
+        print("session: " + str(session))
 
     return user
         

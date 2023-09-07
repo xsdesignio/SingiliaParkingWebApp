@@ -4,33 +4,33 @@
 
 {% block content %}
 
-    <h1>Administración de zonas</h1>
+    <h1 class="center-text">Administración de zonas</h1>
 
     <section>
         <article class="two-columns-flex">
             <p>
                 Cantidad de zonas: <strong>{{ zones|length }}</strong>
             </p>
-            <a href="/zones/create" class="default-button">Crear Zona</a>
+            <a href="/zones/create" class="default-button">Crear Zona + </a>
         </article>
     </section>
 
     {# PAGE DATA #}
-    <section>
+    <section class="record-wrapper">
         <h2>Zonas Actuales</h2>
         
-        <article class="cards">
+        <div class="cards">
             {% if zones|length == 0 %}
                 <p>Aún no hay zonas creadas</p>
                 <a href="/zones/create" class="default-button">Crear Zona</a>
             {% endif %}
             {% for zone in zones %}
                 <div class="zone-card">
-                    <p>{{ zone.name }}</p>
-                    <a href="/zones/zone/{{ zone.id }}" class="default-button">Ver zona -></a>
+                    <h3> <b>{{ zone.name }}</b></h3>
+                    <a href="/zones/zone/{{ zone.id }}" class="default-button">Ver zona</a>
                 </div>
             {% endfor %}
-        </article>
+            </div>
 
     </section>
 {% endblock %}

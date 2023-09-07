@@ -10,64 +10,135 @@
         <span>Volver</span>
     </a>
 
-    <h1>{{ zone.name }}</h1>
+    <h1 class="center-text">{{ zone.name }}</h1>
 
-    <section class="two-columns-grid">
-        <article>
-            <h2>Información</h2>
-            <p>Nombre: <strong>{{ zone.name }}</strong></p>
-            <p>Responsables:</p>
-            <ul>
-                {% if users %}
-                    {% if users|length == 0 %}
-                        <li>No hay usuarios asignados</li>
+    <section class="three-columns-grid">
+        <div class="default-box">
+            <article>
+                <h2>Información</h2>
+                <p>Nombre: <strong>{{ zone.name }}</strong></p>
+                <ul>
+                    {% if users %}
+                        {% if users|length == 0 %}
+                            <li>No hay usuarios asignados</li>
+                        {% endif %}
+                        {% for user in users %}
+                            <li>{{ user.name }}</li>
+                        {% endfor %}
                     {% endif %}
-                    {% for user in users %}
-                        <li>{{ user.name }}</li>
-                    {% endfor %}
-                {% endif %}
-            </ul>
-            <p>
-                Cantidad de tickets impresos: <strong> {{ tickets_data["tickets_amount"] }}</strong>
-            </p>
-            <p>
-                Cantidad de boletines impresos: <strong> {{ bulletins_data["bulletins_amount"] }}</strong>
-            </p>
-        </article>
-        <div class="two-columns-grid">
+                </ul>
+                <p>
+                    Cantidad de tickets impresos: <strong> {{ tickets_data["tickets_amount"] }}</strong>
+                </p>
+                <p>
+                    Cantidad de boletines impresos: <strong> {{ bulletins_data["bulletins_amount"] }}</strong>
+                </p>
+            </article>
+
+            <article class="selected-date">
+                <p>Mostrando tickets creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
+            </article>
+        </div>
+        <div>
             <article>
                 <h2>Editar</h2>
-                <form action="/zones/zone/{{ zone.id }}/edit" method="post" class="general-form">
+                <form class="general-form" action="/zones/zone/{{ zone.id }}/edit" method="post" class="general-form">
+                    <label for="name">Actualizar nombre: </label>
                     <input type="text" name="name" id="name" value="{{ zone.name }}" required>
                     <input class="default-button" type="submit" value="Actualizar">
                 </form>
             </article>
             <article>
-                <h2>Eliminar zona</h2>
-                <form action="/zones/delete/{{ zone.id }}" method="GET">
-                    <button class="default-button">Eliminar Zona</button>
+                <form action="/zones/delete/{{ zone.id }}" method="GET" id="delete-zone">
+
+                    <h2>Eliminar zona</h2>
+                    <div class="two-columns-grid">
+                        <div>
+                            <p>Esta acción es irreversible</p>
+                        </div>
+                        <button class="default-button" id="delete-zone-button">Eliminar Zona</button>
+                    </div>
                 </form>
             </article>
         </div>
+        <article>
+            
+            <h2>Generación de reportes</h2>
+            <p>Selecciona la fecha sobre la cual quieres realizar el reporte de {{ zone.name }} </p>
+            <form class="general-form" action="/zones/zone/{{ zone.id }}/generate-report" method="GET">
+                <div class="two-columns-flex">
+                    
+                    <div class="input-container">
+                        <label for="start_date">Fecha de inicio</label>
+                        <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
+                    </div>
+                        
+                    <div class="input-container">
+                        <label for="end_date">Fecha de fin</label>
+                        <input type="date" name="end_date" id="end_date" value="{{ end_date }}">   
+                    </div>
+                        
+                </div>
+
+                    
+                <label for="zone">Objeto del reporte: </label>
+                <select name="zone" value="Tickets">
+                    <option value="Tickets" selected>
+                        Tickets
+                    </option>
+                    <option value="Bulletins">
+                        Boletines
+                    </option>
+                    <option value="Both">
+                        Ambos
+                    </option>
+                </select>
+                <input class="default-button" type="submit" value="Generar Reporte">
+            </form>
+        </article>
         
     </section>
 
-    <article class="filter-options">
-        <form action="/zones/zone/{{ zone.id }}/generate-report" method="GET">
-            <div class="input-container">
-                <label for="start_date">Fecha de inicio</label>
-                <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
-            </div>
-                
-            <div class="input-container">
-                <label for="end_date">Fecha de fin</label>
-                <input type="date" name="end_date" id="end_date" value="{{ end_date }}">   
-            </div>
-                
-            <input class="default-button" type="submit" value="Generar Reporte">
-        </form>
-    </article>
 
+    {# ------------------------------------------------------- RECORD ------------------------------------------------------- #}
+
+    <div class="blanck-height"></div>
+    
+    <h1 class="center-text">Registro de Tickets y boletines impresos en {{ zone.name }}</h1>
+
+    <script type="module" src="{{ url_for('static', filename='js/zone_details.js') }}"></script>
+
+    <section class="filter-section">
+        <article class="filter-options">
+            <h2>Filtrar resultados</h2>
+            <form action="#results-form" id="results-form" method="GET">
+                <div class="input-container">
+                    <label for="start_date">Fecha de inicio</label>
+                    <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
+                </div>
+                
+                <div class="input-container">
+                    <label for="end_date">Fecha de fin</label>
+                    <input type="date" name="end_date" id="end_date" value="{{ end_date }}">   
+                </div>
+                
+                <button class="default-button" type="submit" >
+                    Filtrar resultados
+                    <embed src="{{ url_for('static', filename='assets/icons/loup-icon.svg') }}" width="22" height="22" fill="white"> </embed>
+                </button>
+            </form>
+        </article>
+        <div class="default-box">
+            <article class="selected-date">
+                <p>Mostrando tickets creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
+            </article>
+            <article class="selected-date">
+                <p>Cantidad de tickets impresos: <strong>{{ tickets_data["tickets_amount"] }}</strong></p>
+                <p>Cantidad de boletines impresos: <strong>{{ bulletins_data["bulletins_amount"] }}</strong></p>
+            </article>
+        </div>
+    </section>
+    
 
     <article class="selector two-columns-grid">
         <div>
@@ -86,8 +157,6 @@
 
     {# PAGE DATA #}
 
-
-    <script type="module" src="{{ url_for('static', filename='js/zone_details.js') }}"></script>
 
 
     <section id="tickets-record-wrapper" class="record-wrapper">

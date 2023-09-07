@@ -129,15 +129,18 @@ def asign_zone(id):
 
 
 
-@role_required('EMPLOYEE')
+@role_required('ADMIN')
 @users_bp.get('/get-assigned-zone')
 def get_user_zone():
     print("fetching zone")
-    if session["associated_zone"] == None:
-        user = UserModel.get_user(session["user_id"])
+    print(session)
+    if session.get("associated_zone") == None:
+        user = UserModel.get_user(session["id"])
+        print(user.to_json())
         if user.associated_zone == None:
             return jsonify({"error": "zona no asignada"}), 500
         
+        session["associated_zone"] = user.associated_zone
         return jsonify({"zone": user.associated_zone}), 200
         
     return jsonify({"zone": session["associated_zone"]}), 200

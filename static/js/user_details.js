@@ -42,11 +42,13 @@ document.getElementById("bulletins-button").addEventListener("click", selectBull
 
 
 
-const deleteButton = document.querySelector('#delete-user button');
+const deleteButton = document.getElementById('delete-user-button');
+const deleteForm = document.getElementById('delete-user')
+
 deleteButton.addEventListener('click', (event) => {
     event.preventDefault();
     const confirmation = confirm('¿Estás seguro que quieres eliminar este usuario?');
     if (confirmation) {
-        document.querySelector('#delete-user').submit();
+        deleteForm.submit();
     }
 });

@@ -10,7 +10,7 @@
         <span>Volver</span>
     </a>
 
-    <h1>Información sobre el usuario</h1>
+    <h1 class="center-text">Información sobre {{ user.name }}</h1>
     <section class="three-columns-grid">
         <div>
             <article>
@@ -20,45 +20,43 @@
                 <p>Rol: <strong>{{ user.role.value }}</strong></p>
                 <p>Cantidad de tickets impresos: <strong>{{ tickets_data["tickets_amount"] }}</strong></p>
                 <p>Cantidad de boletines impresos: <strong>{{ bulletins_data["bulletins_amount"] }}</strong></p>
-                <p>Zona Asignada: <strong>
-                    {% if user.associated_zone.name == None %}
-                        No tiene zona asignada
-                    {% else %}
-                        {{ user.associated_zone.name }}
-                    {% endif %}
-                    
-                </strong></p>
+                <p>Zona Asignada: 
+                    <strong>
+                        {% if user.associated_zone.name == None %}
+                            No tiene zona asignada
+                        {% else %}
+                            {{ user.associated_zone.name }}
+                        {% endif %}
+                    </strong>
+                </p>
             </article>
+
+
             <article class="selected-date">
-                <p>Mostrando tickets creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
+                <p>Mostrando el número de tickets y boletines creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
+            </article>
+
+            <article class="two-grids-section">
+                <form class="general-form" action="/users/user/{{ user.id }}/delete" method="POST" id="delete-user">
+                    
+                    <h2>Eliminar usuario</h2>
+                    <div class="two-columns-grid">
+                        <div>
+                            <p>Esta acción es irreversible</p>
+                        </div>
+                        <button class="default-button" id="delete-user-button">Eliminar Usuario</button>
+                    </div>
+                </form>
             </article>
         </div>
-        <article class="form-container">
-            <h2>Editar usuario</h2>
-            <form action="/users/user/{{ user.id }}/edit" method="POST" class="general-form">
-                <label for="name">Nombre de usuario</label>
-                <input type="text" name="name" id="name" value="{{ user.name }}">
-                <label for="password">Nueva Contraseña</label>
-                <input type="text" name="password" id="password">
-                <label for="email">Cambiar correo electrónico</label>
-                <input type="email" name="email" id="email" value="{{ user.email }}">
-                <label for="role">Cambiar Rol</label>
-                <select name="role" id="role">
-                    <option value="ADMIN" {% if user.role.value == 'ADMIN' %} selected {% endif %}>Administrador</option>
-                    <option value="MANAGER" {% if user.role.value == 'MANAGER' %} selected {% endif %}>Manager</option>
-                    <option value="EMPLOYEE" {% if user.role.value == 'EMPLOYEE' %} selected {% endif %}>Empleado</option>
-                </select>
-                <input class="default-button" type="submit" value="Actualizar">
-            </form>
-        </article>
 
         <div class="default-box">
             <article>
-                <h2>Zona asignada</h2>
+                <h2>Zona asignada: </h2>
                 <p>Acualmente en <strong>{{ user.associated_zone.name }}</strong></p>
                 <form class="general-form" action="/users/user/{{ user.id }}/assign-zone" method="POST">
                     <label for="zone">
-                        Asignar nueva zona
+                        Asignar nueva zona: 
                     </label>
                     <select name="zone" value="{{ user.associated_zone.name }}">
                         {% for zone in zones %}
@@ -77,13 +75,57 @@
                 </form>
             </article>
             <article>
-                <form class="general-form" action="/users/user/{{ user.id }}/delete" method="POST" id="delete-user">
-                    <h2>Eliminar usuario</h2>
-                    <p>Esta acción es irreversible</p>
-                    <button class="default-button">Eliminar Usuario</button>
+                <h2>Generación de reportes</h2>
+                <p>Selecciona la fecha y zona sobre la cual quieres realizar el reporte de {{ user.name }} </p>
+                <form class="general-form" action="/users/user/{{ user.id }}/generate-report" method="GET">
+                    <div class="two-columns-flex">
+                        <div class="input-container">
+                            <label for="start_date">Fecha de inicio: </label>
+                            <input type="date" name="start_date">
+                        </div>
+                            
+                        <div class="input-container">
+                            <label for="end_date">Fecha de fin: </label>
+                            <input type="date" name="end_date">   
+                        </div>
+                    </div>
+                    
+                    <label for="zone">Objeto del reporte: </label>
+                    <select name="zone" value="Tickets">
+                        <option value="Tickets" selected>
+                            Tickets
+                        </option>
+                        <option value="Bulletins">
+                            Boletines
+                        </option>
+                        <option value="Both">
+                            Ambos
+                        </option>
+                    </select>
+                        
+                    <input class="default-button" type="submit" value="Generar Reporte">
                 </form>
             </article>
         </div>
+
+        <article class="form-wrapper">
+            <h2>Editar usuario</h2>
+            <form action="/users/user/{{ user.id }}/edit" method="POST" class="general-form">
+                <label for="name">Nombre de usuario</label>
+                <input type="text" name="name" id="name" value="{{ user.name }}">
+                <label for="password">Nueva Contraseña</label>
+                <input type="text" name="password" id="password">
+                <label for="email">Cambiar correo electrónico</label>
+                <input type="email" name="email" id="email" value="{{ user.email }}">
+                <label for="role">Cambiar Rol</label>
+                <select name="role" id="role">
+                    <option value="ADMIN" {% if user.role.value == 'ADMIN' %} selected {% endif %}>Administrador</option>
+                    <option value="MANAGER" {% if user.role.value == 'MANAGER' %} selected {% endif %}>Manager</option>
+                    <option value="EMPLOYEE" {% if user.role.value == 'EMPLOYEE' %} selected {% endif %}>Empleado</option>
+                </select>
+                <input class="default-button" type="submit" value="Actualizar">
+            </form>
+        </article>
 
     </section>
 
@@ -91,14 +133,14 @@
 
     <div class="blanck-height"></div>
     
-    <h1>Registro de Tickets y boletines impresos por {{ user.name }}</h1>
+    <h1 class="center-text">Registro de Tickets y boletines impresos por {{ user.name }}</h1>
 
     <script type="module" src="{{ url_for('static', filename='js/user_details.js') }}"></script>
 
     <section class="filter-section">
         <article class="filter-options">
             <h2>Filtrar resultados</h2>
-            <form action="" method="GET">
+            <form action="#results-form" id="results-form" method="GET">
                 <div class="input-container">
                     <label for="start_date">Fecha de inicio</label>
                     <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
@@ -135,9 +177,18 @@
                 </button>
             </form>
         </article>
+        <div class="default-box">
+            <article class="selected-date">
+                <p>Mostrando tickets creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
+            </article>
+            <article class="selected-date">
+                <p>Cantidad de tickets impresos: <strong>{{ tickets_data["tickets_amount"] }}</strong></p>
+                <p>Cantidad de boletines impresos: <strong>{{ bulletins_data["bulletins_amount"] }}</strong></p>
+            </article>
+        </div>
     </section>
     
-    <section class="two-columns-grid">
+    <section>
         <article class="selector">
             <div>
                 <h2>Selección</h2>
@@ -151,23 +202,6 @@
                     Boletines
                 </button>
             </div>
-        </article>
-
-        <article class="filter-options">
-            <h2>Generación de reportes</h2>
-            <form action="/users/user/{{ user.id }}/generate-report" method="GET">
-                <div class="input-container">
-                    <label for="start_date">Fecha de inicio</label>
-                    <input type="date" name="start_date">
-                </div>
-                    
-                <div class="input-container">
-                    <label for="end_date">Fecha de fin</label>
-                    <input type="date" name="end_date">   
-                </div>
-                    
-                <input class="default-button" type="submit" value="Generar Reporte">
-            </form>
         </article>
     </section>
 

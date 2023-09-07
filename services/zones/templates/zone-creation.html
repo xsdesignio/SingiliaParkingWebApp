@@ -10,30 +10,12 @@
         <span>Volver</span>
     </a>
 
-    <h1>Administración de zonas</h1>
-
     <section>
-        <h2>Crear zona</h2>
         <div class="form-wrapper">
+            <h2>Crear zona</h2>
             <form action="/zones/create-zone" method="post" class="general-form">
-                <div>
-                    <label for="name">Nombre</label>
-                    <br/>
-                    <input type="text" name="name" id="name" required>
-                </div>
-                <div>
-                    <!-- 
-                    <label for="role">Añadir responsables</label>
-                    <br/>
-                    {% if users|length != 0 %}
-                        {% for user in users %}
-                            <input type="checkbox" name="users[]" value="{{ user.id }}"> {{ user.name }} <br/>
-                        {% endfor %}
-                    {% else %}
-                        <span style="font-size: 12px;">No hay usuarios creados</span>
-                    {% endif %}
-                     -->
-                </div>
+                <label for="name">Nombre</label>
+                <input type="text" name="name" id="name" placeholder="Introduce el nombre de la zona" required>
                 
                 <input class="default-button" type="submit" value="Crear">
             </form>

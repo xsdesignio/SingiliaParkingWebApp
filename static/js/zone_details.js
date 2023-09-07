@@ -33,3 +33,16 @@ function selectBulletins() {
 
 document.getElementById("tickets-button").addEventListener("click", selectTickets);
 document.getElementById("bulletins-button").addEventListener("click", selectBulletins);
+
+
+
+const deleteButton = document.getElementById('delete-zone-button');
+const deleteForm = document.getElementById('delete-zone')
+
+deleteButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    const confirmation = confirm('¿Estás seguro que quieres eliminar este usuario?');
+    if (confirmation) {
+        deleteForm.submit();
+    }
+});
