@@ -5,6 +5,9 @@ import os
 security_code = os.environ.get('SECURITY_CODE')
 
 
+
+# gunicorn app:app -w 1 -b 0.0.0.0:5400 --daemon
+
 class setUpAccounts():
     def __init__(self):
         app.testing = True
@@ -30,3 +33,6 @@ if __name__ == '__main__':
     setup = setUpAccounts()
     setup.create_admin_user()
         
+
+#dbadmin
+# 'l3jzn8_M'

@@ -12,8 +12,12 @@ from services.resumeController import get_resume_information
 from services.zones.models.zone_model import ZoneModel
 from services.zones.entities.zone import Zone
 
-import os
 from datetime import datetime, timedelta
+
+from dotenv import load_dotenv
+
+load_dotenv()
+import os
 
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
@@ -72,5 +76,5 @@ def home():
 if __name__ == "__main__":
     host = os.environ.get('HOST', 'localhost')
     port = os.environ.get('PORT', 5000)
-    app.run(host='0.0.0.0',port=5000)
+    app.run(host=host,port=port)
     
