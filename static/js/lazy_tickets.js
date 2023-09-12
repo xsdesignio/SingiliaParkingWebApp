@@ -119,6 +119,9 @@ export class TicketsManager {
         let creation_date = data.created_at.split(' ')[0]
         let creation_time = data.created_at.split(' ')[1]
 
+        // Modifying creation_date to set in format of day-month-year
+        creation_date = creation_date.split('-').reverse().join('-')
+
         let payment_method = PAYMENT_METHODS[data.payment_method] || PAYMENT_METHODS.DEFAULT;
 
         return this.ticket.replace('[box_class]', data.box_class)

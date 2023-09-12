@@ -27,6 +27,25 @@ def role_required(role:str):
                 redirect_url = url_for('auth.login_page')
                 return redirect(redirect_url)
             
+            if 'role' not in session:
+                redirect_url = url_for('auth.login_page')
+                return redirect(redirect_url)
+
+        
+            session_role = session['role']
+            role = role.upper()
+            if role == 'EMPLOYEE':
+                if session_role != role and session_role != 'MANAGER' and session_role != 'ADMIN':
+                    return {}, 500
+                
+            elif role == 'MANAGER':
+                if session_role != role and session_role != 'ADMIN':
+                    return {}, 500
+            
+            elif role == 'ADMIN':
+                if session_role != role:
+                    return {}, 500
+                
             if session['role'] != role.upper():
                 return {}, 500 # Redirige a la página de inicio de sesión
             

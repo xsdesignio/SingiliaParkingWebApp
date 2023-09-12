@@ -2,7 +2,7 @@ from flask import Blueprint, flash, session, render_template, request, jsonify, 
 
 from services.utils.data_management import parse_date
 from .models.user_model import UserModel
-from auth.controllers.login import role_required
+from auth.controllers.login import login_required, role_required
 from datetime import datetime, timedelta
 
 from services.tickets.models.ticket_model import TicketModel
@@ -30,46 +30,31 @@ def users_page():
 @users_bp.get('/user/<id>/generate-report')
 def generate_report(id):
     """ Returns the tickets filtered by date or by zone. Filters are optional and can be combined. They are obtained by get arguments."""
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
-    request_zone = request.args.get('zone')
+    
+    """ Returns the tickets filtered by date or by zone. Filters are optional and can be combined. They are obtained by get arguments."""
+    report_object = request.args.get('report_object')
 
-
-    if end_date is not None and end_date != '':
-        end_date = datetime.strptime(end_date, '%Y-%m-%d')
-    else:
-        end_date = datetime.now()
-
-    if start_date is not None and start_date != '':
-        start_date = datetime.strptime(start_date, '%Y-%m-%d')
-    else:
-        start_date = datetime.now() - timedelta(days=30)
+    start_date = parse_date(request.args.get('start_date'), datetime.now() - timedelta(days=30))
+    end_date = parse_date(request.args.get('end_date'), datetime.now())
 
     user = UserModel.get_user(id)
-    query_values = {
-        "start_date": start_date, 
-        "end_date":  end_date, 
-        "responsible_id": user.id
-    }
+    
+    data: dict = {}
+    if report_object == 'Tickets' or report_object == 'Both':
+        #tickets = TicketModel.get_tickets(**query_values)
+        tickets_amount_by_data = get_tickets_attributes_count(start_date=start_date, end_date=end_date, user=user)
+        data["tickets"] = tickets_amount_by_data
 
-    if not (request_zone == 'all' or request_zone == None):
-        zone = ZoneModel.get_zone_by_name(request_zone)
-        if zone != None:
-            query_values["zone_id"] = zone.id
-
-    #tickets = TicketModel.get_tickets(**query_values)
-    tickets_amount_by_data = get_tickets_attributes_count()
-    bulletins_amount_by_data = get_bulletins_attributes_count()
-
-    data = {
-        "tickets":tickets_amount_by_data,
-        "bulletins":bulletins_amount_by_data
-    }
+    if report_object == 'Bulletins' or report_object == 'Both':
+        #bulletins = BulletinModel.get_bulletins(**query_values)
+        bulletins_amount_by_data = get_bulletins_attributes_count(start_date=start_date, end_date=end_date, user=user)
+        data["bulletins"] = bulletins_amount_by_data
+    
 
     created_report_url = create_report_for_user(data, user, start_date, end_date)
 
     return send_file(created_report_url, as_attachment=True)
-
+    
 
 @role_required('ADMIN')
 @users_bp.get('/user/<id>')
@@ -95,8 +80,8 @@ def user_details(id):
     all_bulletins_count = get_bulletins_attributes_count(start_date, end_date, zone, user)
 
     # Convert dates to string in order to pass them to the template
-    start_date = start_date.strftime('%Y-%m-%d')
-    end_date = end_date.strftime('%Y-%m-%d')
+    start_date = start_date.strftime('%d-%m-%Y')
+    end_date = end_date.strftime('%d-%m-%Y')
     zones = ZoneModel.get_zones_list()
 
     return render_template('user-details.html', user=user, start_date = start_date, end_date = end_date, tickets_data=all_tickets_count, bulletins_data=all_bulletins_count, zones=zones, zone=zone)
@@ -129,7 +114,7 @@ def asign_zone(id):
 
 
 
-@role_required('ADMIN')
+@login_required
 @users_bp.get('/get-assigned-zone')
 def get_user_zone():
     print("fetching zone")

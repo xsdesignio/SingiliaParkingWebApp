@@ -43,9 +43,11 @@ class TicketModel(BaseModel):
     
 
     @classmethod
-    def get_tickets(cls, range: tuple = None, **kwargs) -> list[dict]:
+    def get_tickets(cls, interval: tuple = None, **kwargs) -> list[dict]:
         
-        result = cls.get_elements('tickets', range, **kwargs)
+        result = cls.get_elements('tickets', interval, **kwargs)
+
+        print(interval)
         tickets: list[Ticket] = []
 
         for ticket in result:

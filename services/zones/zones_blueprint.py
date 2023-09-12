@@ -44,8 +44,8 @@ def zone_details(id):
 
     zones = ZoneModel.get_zones_list()
 
-    start_date = start_date.strftime('%Y-%m-%d')
-    end_date = end_date.strftime('%Y-%m-%d')
+    start_date = start_date.strftime('%d-%m-%Y')
+    end_date = end_date.strftime('%d-%m-%Y')
 
     if zone != None:
         return render_template('zone-details.html', zone=zone, zones=zones,  start_date = start_date, end_date = end_date, tickets_data=tickets_data, bulletins_data=bulletins_data)
@@ -87,41 +87,24 @@ def create_zone_page():
 @zones_bp.get('/zone/<id>/generate-report')
 def generate_report(id):
     """ Returns the tickets filtered by date or by zone. Filters are optional and can be combined. They are obtained by get arguments."""
-    start_date = request.args.get('start_date')
-    end_date = request.args.get('end_date')
-    request_zone = request.args.get('zone')
+    report_object = request.args.get('report_object')
 
-
-    if end_date is not None and end_date != '':
-        end_date = datetime.strptime(end_date, '%Y-%m-%d')
-    else:
-        end_date = datetime.now()
-
-    if start_date is not None and start_date != '':
-        start_date = datetime.strptime(start_date, '%Y-%m-%d')
-    else:
-        start_date = datetime.now() - timedelta(days=30)
+    start_date = parse_date(request.args.get('start_date'), datetime.now() - timedelta(days=30))
+    end_date = parse_date(request.args.get('end_date'), datetime.now())
 
     zone = ZoneModel.get_zone(id)
-    query_values = {
-        "start_date": start_date, 
-        "end_date":  end_date, 
-        "zone_id": zone.id
-    }
+    
+    data: dict = {}
+    if report_object == 'Tickets' or report_object == 'Both':
+        #tickets = TicketModel.get_tickets(**query_values)
+        tickets_amount_by_data = get_tickets_attributes_count(start_date=start_date, end_date=end_date, zone=zone)
+        data["tickets"] = tickets_amount_by_data
 
-    if not (request_zone == 'all' or request_zone == None):
-        zone = ZoneModel.get_zone_by_name(request_zone)
-        if zone != None:
-            query_values["zone_id"] = zone.id
-
-    #tickets = TicketModel.get_tickets(**query_values)
-    tickets_amount_by_data = get_tickets_attributes_count()
-    bulletins_amount_by_data = get_bulletins_attributes_count()
-
-    data = {
-        "tickets":tickets_amount_by_data,
-        "bulletins":bulletins_amount_by_data
-    }
+    if report_object == 'Bulletins' or report_object == 'Both':
+        #bulletins = BulletinModel.get_bulletins(**query_values)
+        bulletins_amount_by_data = get_bulletins_attributes_count(start_date=start_date, end_date=end_date, zone=zone)
+        data["bulletins"] = bulletins_amount_by_data
+    
 
     created_report_url = create_report_for_zone(data, zone, start_date, end_date)
 

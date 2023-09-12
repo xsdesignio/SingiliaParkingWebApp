@@ -12,6 +12,7 @@ from services.resumeController import get_resume_information
 from services.zones.models.zone_model import ZoneModel
 from services.zones.entities.zone import Zone
 
+import os
 from datetime import datetime, timedelta
 
 
@@ -23,8 +24,6 @@ cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.secret_key = 'tu_clave_secreta_aqui'
 
-host = 'localhost'
-port = '5432'
 
 app.register_blueprint(auth_bp, url_prefix ='/auth')
 app.register_blueprint(tickets_bp, url_prefix ='/tickets')
@@ -58,8 +57,8 @@ def home():
 
     info = get_resume_information(start_date, end_date, zone)
 
-    start_date = start_date.strftime('%Y-%m-%d')
-    end_date = end_date.strftime('%Y-%m-%d')
+    start_date = start_date.strftime('%d-%m-%Y')
+    end_date = end_date.strftime('%d-%m-%Y')
 
 
     zones = ZoneModel.get_zones_list()
@@ -71,5 +70,7 @@ def home():
 
 
 if __name__ == "__main__":
+    host = os.environ.get('HOST', 'localhost')
+    port = os.environ.get('PORT', 5000)
     app.run(host='0.0.0.0',port=5000)
     

@@ -33,7 +33,7 @@
 
 
             <article class="selected-date">
-                <p>Mostrando el número de tickets y boletines creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
+                <p>Mostrando resultados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
             </article>
 
             <article class="two-grids-section">
@@ -91,7 +91,7 @@
                     </div>
                     
                     <label for="zone">Objeto del reporte: </label>
-                    <select name="zone" value="Tickets">
+                    <select name="report_object" value="Tickets">
                         <option value="Tickets" selected>
                             Tickets
                         </option>
@@ -179,7 +179,7 @@
         </article>
         <div class="default-box">
             <article class="selected-date">
-                <p>Mostrando tickets creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
+                <p>Mostrando resultados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
             </article>
             <article class="selected-date">
                 <p>Cantidad de tickets impresos: <strong>{{ tickets_data["tickets_amount"] }}</strong></p>

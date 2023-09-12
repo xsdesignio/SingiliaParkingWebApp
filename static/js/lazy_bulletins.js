@@ -98,6 +98,9 @@ export class BulletinsManager {
         let creation_date = data.created_at.split(' ')[0]
         let creation_time = data.created_at.split(' ')[1]
 
+        // Modifying creation_date to set in format of day-month-year
+        creation_date = creation_date.split('-').reverse().join('-')
+
         let formatted_bulletin = this.bulletin.replace('[creation_date]', creation_date)
                     .replace('[creation_time]', creation_time)
                     .replace('[responsible]', data.responsible)

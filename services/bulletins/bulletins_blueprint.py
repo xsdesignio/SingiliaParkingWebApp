@@ -36,8 +36,8 @@ def bulletins_page():
     all_bulletins_count = get_bulletins_attributes_count(start_date, end_date)
 
     # Convert dates to string in order to pass them to the template
-    start_date = start_date.strftime('%Y-%m-%d')
-    end_date = end_date.strftime('%Y-%m-%d')
+    start_date = start_date.strftime('%d-%m-%Y')
+    end_date = end_date.strftime('%d-%m-%Y')
     zones = ZoneModel.get_zones_list()
 
     return render_template('bulletins.html', start_date = start_date, end_date = end_date, bulletins_data = all_bulletins_count, available_zones = zones, zone = zone)

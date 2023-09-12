@@ -34,8 +34,8 @@ def tickets_page():
     all_tickets_count = get_tickets_attributes_count(start_date, end_date, zone)
 
     # Convert dates to string in order to pass them to the template
-    start_date = start_date.strftime('%Y-%m-%d')
-    end_date = end_date.strftime('%Y-%m-%d')
+    start_date = start_date.strftime('%d-%m-%Y')
+    end_date = end_date.strftime('%d-%m-%Y')
     zones = ZoneModel.get_zones_list()
 
     return render_template('tickets.html', start_date = start_date, end_date = end_date, tickets_data = all_tickets_count, available_zones = zones, zone = zone)

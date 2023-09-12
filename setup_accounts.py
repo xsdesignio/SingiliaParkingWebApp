@@ -1,5 +1,9 @@
 import json
 from app import app
+import os
+
+security_code = os.environ.get('SECURITY_CODE')
+
 
 class setUpAccounts():
     def __init__(self):
@@ -12,7 +16,7 @@ class setUpAccounts():
             'name': 'pablo',
             'email': 'cortesrodriguezpablo3@gmail.com',
             'password': '12345678',
-            'secret_code': 4578
+            'security_code': security_code
         }
         headers = {
             'Content-Type': 'application/json'

@@ -24,14 +24,19 @@ class BaseModel:
         return result
 
     @classmethod
-    def get_elements(cls, table: str, range: Optional[tuple] = [0, 50], **kwargs) -> list[dict]:
-        """Get a list with the elements of the table that match the provided parameters (kwargs)
+    def get_elements_from_start(cls, table: str, interval: Optional[tuple[int, int]] = None, **kwargs) -> list[dict]:
+        """Get a list with the elements of the table that match the provided parameters (kwargs). It starts from the first element in the table is ascending order. (so the first element shown if exists is the oldest one added, the one with id = 0)
         
         Keyword arguments:
         table -- the name of the table to query
-        range -- an optional tuple with the start and end index of the elements to return
+        interval -- an optional tuple with the start and end index of the elements to return
+        kwargs -- the parameters to filter the query
         Return: the list with the elements
         """
+
+
+        if interval is None:
+            interval = (0, 50)
         
         query = f'SELECT * FROM { table }'
         params = []
@@ -55,29 +60,90 @@ class BaseModel:
                 if index < len(kwargs) - 1:
                     query += ' AND '
 
+
         # Add LIMIT and OFFSET if a range is provided
-        if range:
-            limit = range[1] - range[0]
-            offset = range[0]
+        if interval:
+            limit = interval[1] - interval[0]
+            offset = interval[0]
             query += f' LIMIT %s OFFSET %s'
             params.extend([limit, offset])
 
         # Execute the query
         try:
-            conn = get_connection()
-            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-            
-            cursor.execute(query, tuple(params))
-            result = cursor.fetchall()
-            
-            conn.close()
+            with get_connection() as conn:
+                cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+                cursor.execute(query, tuple(params))
+                result = cursor.fetchall()
+
         except Exception as exception:
             print("get_elements: ", exception)
             return None
         
         return result
 
-    
+
+
+    @classmethod
+    def get_elements(cls, table: str, interval: Optional[tuple[int, int]] = None, **kwargs) -> list[dict]:
+        """Get a list with the elements of the table that match the provided parameters (kwargs) in descending order (so the first elements is the newest one added)
+        
+        Keyword arguments:
+        table -- the name of the table to query
+        interval -- an optional tuple with the start and end index of the elements to return
+        kwargs -- the parameters to filter the query
+        Return: the list with the elements
+        """
+
+
+        if interval is None:
+            interval = (0, 50)
+
+        
+        query = f'SELECT * FROM { table }'
+        params = []
+
+        # Build the SQL query dynamically based on the provided parameters
+        if kwargs:
+            query += ' WHERE '
+
+            for index, (key, value) in enumerate(kwargs.items()):
+                if key == 'start_date':
+                    query += f'created_at >= %s'
+                    value -= timedelta(days=1)
+                elif key == 'end_date':
+                    query += f'created_at <= %s'
+                    value += timedelta(days=1)
+                else:
+                    query += f'{key} = %s'
+
+                params.append(value)
+
+                if index < len(kwargs) - 1:
+                    query += ' AND '
+
+
+        query += ' ORDER BY created_at DESC'
+
+        # Add LIMIT and OFFSET if a range is provided
+        if interval :
+            limit = interval[1] - interval[0]
+            offset = interval[0]
+            query += f' LIMIT %s OFFSET %s'
+            params.extend([limit, offset])
+
+        # Execute the query
+        try:
+            with get_connection() as conn:
+                cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+                cursor.execute(query, tuple(params))
+                result = cursor.fetchall()
+
+        except Exception as exception:
+            print("get_elements: ", exception)
+            return []
+        
+        return result
+
     
     @classmethod
     def count_elements(cls, table, **kwargs) -> int:
@@ -130,3 +196,4 @@ class BaseModel:
             return None
 
         return count
+    

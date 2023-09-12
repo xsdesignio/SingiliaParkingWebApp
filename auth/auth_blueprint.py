@@ -5,6 +5,8 @@ from .controllers.signup import signup_user
 
 from services.users.entities.user import User
 
+import os
+
 
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth', template_folder='./templates')
@@ -59,9 +61,11 @@ def signup():
     email = data['email']
     password = data['password']
 
-    secret_code = data['secret_code']
+    security_code_sent = data['security_code'] 
 
-    if secret_code != 4578:
+    security_code = os.environ.get('SECURITY_CODE')
+    
+    if security_code_sent != security_code:
         return(jsonify({
             "message": "You need the secret code to create an account"
         })), 500
