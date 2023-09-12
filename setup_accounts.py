@@ -6,8 +6,6 @@ security_code = os.environ.get('SECURITY_CODE')
 
 
 
-# gunicorn app:app -w 1 -b 0.0.0.0:5400 --daemon
-
 class setUpAccounts():
     def __init__(self):
         app.testing = True
