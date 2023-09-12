@@ -32,7 +32,4 @@ class setUpAccounts():
 if __name__ == '__main__':
     setup = setUpAccounts()
     setup.create_admin_user()
-        
-
-#dbadmin
-# 'l3jzn8_M'
+    
