@@ -87,14 +87,14 @@ def _create_content(subject_name, subject_type, data_categories, data, start_dat
         
         table_data += [
             ['Duración de 30 minutos', category_data['duration_of_30']],
-            ['Ingresos por tickets de 30 minutos', f"{category_data['total_income_by_30']} €"],
+            ['Ingresos por tickets de 30 minutos', f"{category_data['total_income_by_30']}0 €"],
             ['Duración de 60 minutos', category_data['duration_of_60']],
-            ['Ingresos por tickets de 60 minutos', f"{category_data['total_income_by_60']} €"],
+            ['Ingresos por tickets de 60 minutos', f"{category_data['total_income_by_60']}0 €"],
             ['Duración de 90 minutos', category_data['duration_of_90']],
-            ['Ingresos por tickets de 90 minutos', f"{category_data['total_income_by_90']} €"],
+            ['Ingresos por tickets de 90 minutos', f"{category_data['total_income_by_90']}0 €"],
             ['Duración de 120 minutos', category_data['duration_of_120']],
-            ['Ingresos por tickets de 120 minutos', f"{category_data['total_income_by_120']} €"],
-            ['Total de ingresos', f"{category_data['total_income']} €"],
+            ['Ingresos por tickets de 120 minutos', f"{category_data['total_income_by_120']}0 €"],
+            ['Total de ingresos', f"{category_data['total_income']}0 €"],
         ]
 
         
@@ -121,13 +121,6 @@ def create_report_for_user(data, user, start_date, end_date):
 
 def create_report_for_zone(data, zone, start_date, end_date):
     return create_report(zone, start_date, end_date, data, "zona")
-
-
-
-
-
-
-
 
 
 

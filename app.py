@@ -13,7 +13,6 @@ from services.zones.models.zone_model import ZoneModel
 from services.zones.entities.zone import Zone
 
 from datetime import datetime, timedelta
-
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -25,7 +24,7 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(weeks=8)
 app.secret_key = 'tu_clave_secreta_aqui'
 
 

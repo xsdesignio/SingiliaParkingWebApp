@@ -87,7 +87,7 @@ export class TicketsManager {
                 <p>
                     Método de pago: 
                     <strong> 
-                        <payment-method>
+                        [payment_method]
                     </strong>
                 </p>
                 <p>Matrícula: <strong>[registration]</strong></p>

@@ -97,13 +97,14 @@ def create_ticket():
     """
     ticket_json = request.get_json()
     ticket: Ticket
-    
+    print("session_id", session.get("id"))
 
     responsible_id = ticket_json.get('responsible_id', session["id"])
     responsible = UserModel.get_user(responsible_id)
 
+    print("Responsible", responsible)
     requested_zone: str = ticket_json.get('zone')
-
+    
     if requested_zone == None:
         requested_zone = ticket_json.get('zone_name')
 
@@ -113,6 +114,7 @@ def create_ticket():
 
     created_at = ticket_json.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M"))
 
+    print("The error is above")
     try:
         
         ticket = TicketModel.create_ticket(

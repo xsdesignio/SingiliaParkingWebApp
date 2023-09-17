@@ -26,8 +26,8 @@ class Ticket:
     def to_json(self):
         return {
             'id': self.id,
-            'responsible': self.responsible.name,
-            'zone': self.zone.name,
+            'responsible': self.responsible.name if self.responsible else 'Usuario eliminado',
+            'zone': self.zone.name if self.zone else 'Zona eliminada',
             'duration': self.duration,
             'registration': self.registration,
             'price': self.price,

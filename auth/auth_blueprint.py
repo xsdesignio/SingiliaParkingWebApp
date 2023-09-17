@@ -35,12 +35,8 @@ def login():
     logged_in_user: User = login_user(email, password)
         
     if(logged_in_user != None):
-        return {
-            "id": logged_in_user.id,
-            "role": logged_in_user.role.value,
-            "name": logged_in_user.name,
-            "email": logged_in_user.email,
-        }, 200
+        user_data = logged_in_user.to_json()
+        return user_data, 200
     else:
         return jsonify({
             "message": "Data introduced isn't correct"
@@ -74,12 +70,7 @@ def signup():
     signed_up_user = signup_user(role, name, email, password)
 
     if signed_up_user != None:
-        return jsonify({
-            "id": signed_up_user.id,
-            "role": signed_up_user.role.value,
-            "name": data['name'],
-            "email": signed_up_user.email,
-        }), 200
+        return signed_up_user.to_json(), 200
     else:
         return jsonify({
             "message": "Data introduced isn't correct"
@@ -103,19 +94,26 @@ def get_session():
 
     Return: session data (user info)
     """
-    session_data: dict[int, str, str, str] = {}
+    print("session: ", session)
     
-    if 'username' in session:
-        session_data = {
-            "id": session['id'],
-            "role": session['role'],
-            "name": session['name'],
-            "email": session['email']
-        }
-    else:
+    if 'name' not in session:  
+        print("the error may be here")
         return jsonify({"ERROR": "There is no session active"}), 500
-    
+        
+
+    session_data: dict[int, str, str, str, str] = {
+        "id": session['id'],
+        "role": session['role'],
+        "name": session['name'],
+        "email": session['email']
+    }
+
+    print("session data: ", session_data)
+    if 'associated_zone' in session:
+        session_data['associated_zone'] = session['associated_zone']
+
     session_data = jsonify(session_data)
+    print("session data jsonified: ", session_data)
     return session_data, 200
 
 

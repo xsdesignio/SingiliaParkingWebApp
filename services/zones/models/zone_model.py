@@ -84,6 +84,11 @@ class ZoneModel:
         try:
             conn = get_connection()
             cursor = conn.cursor()
+
+            cursor.execute('UPDATE tickets SET zone_id = NULL WHERE zone_id = %s', (id,))
+            cursor.execute('UPDATE bulletins SET zone_id = NULL WHERE zone_id = %s', (id,))
+            cursor.execute('UPDATE users SET associated_zone_id = NULL WHERE associated_zone_id = %s', (id,))
+
             cursor.execute('DELETE FROM zones WHERE id = %s', (id,))
             conn.commit()
             conn.close()

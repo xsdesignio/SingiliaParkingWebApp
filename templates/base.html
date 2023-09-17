@@ -18,6 +18,8 @@
                     <img class="img-logo" src="{{ url_for('static', filename='/assets/logo.png') }}" alt="">
                 </header>
                 <nav class="menu">
+
+                    <p class="session-name">Registrado como <b>{{ session["name"] }}</b></p>
                     <ul>
                         <li>
                             <a class="{{ 'selected' if request.path == '/' else '' }}" href="/">Resumen</a>
@@ -36,6 +38,7 @@
                         </li>
     
                     </ul>
+
                 </nav>
                 <div class="logout-container">
                     <a href="/auth/logout">Cerrar Sesión</a>

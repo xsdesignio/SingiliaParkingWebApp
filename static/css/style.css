@@ -109,6 +109,12 @@ nav a.selected {
   text-transform: capitalize;
 }
 
+.session-name {
+  font-size: 12px;
+  padding: 8px 16px;
+  font-style: italic;
+}
+
 .logout-container {
   display: flex;
   align-items: flex-end;
@@ -117,7 +123,7 @@ nav a.selected {
 .logout-container a {
   display: block;
   color: var(--dark_green);
-  padding: 10px 20px;
+  padding: 8px 16px;
 }
 
 .logout-container a:hover {

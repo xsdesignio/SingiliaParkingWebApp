@@ -170,6 +170,10 @@ class UserModel(BaseModel):
             conn =  get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
 
+            cursor.execute('UPDATE tickets SET responsible_id = NULL WHERE responsible_id = %s', (id,))
+            cursor.execute('UPDATE bulletins SET responsible_id = NULL WHERE responsible_id = %s', (id,))
+
+
             cursor.execute('DELETE FROM users WHERE id = %s RETURNING *', (id,))
 
             result = cursor.fetchone()
@@ -181,6 +185,8 @@ class UserModel(BaseModel):
         
         return cls.create_user_from_result(result)
         
+
+
     @classmethod
     def asign_zone_to_user(cls, user_id, zone: Zone) -> bool:
         

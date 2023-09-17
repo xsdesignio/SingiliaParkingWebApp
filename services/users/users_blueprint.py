@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, session, render_template, request, jsonify, redirect, send_file
+from flask import Blueprint, flash, session, render_template, request, jsonify, redirect, send_file, after_this_request
 
 from services.utils.data_management import parse_date
 from .models.user_model import UserModel
@@ -13,6 +13,7 @@ from services.zones.models.zone_model import ZoneModel
 from services.users.entities.user import User
 from services.utils.reports.generation import create_report_for_user 
 
+import os
 
 
 users_bp = Blueprint('users', __name__, url_prefix='/users', template_folder='./templates')
@@ -53,6 +54,11 @@ def generate_report(id):
 
     created_report_url = create_report_for_user(data, user, start_date, end_date)
 
+    @after_this_request
+    def remove_file(response):
+        os.remove(created_report_url)
+        return response
+    
     return send_file(created_report_url, as_attachment=True)
     
 

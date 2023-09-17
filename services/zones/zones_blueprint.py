@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, send_file, render_template, request, jsonify, redirect, url_for
+from flask import Blueprint, flash, send_file, render_template, request, jsonify, redirect, url_for, after_this_request
 from services.bulletins.controllers.bulletins_controller import get_bulletins_attributes_count
 
 from services.tickets.controllers.tickets_controller import get_tickets_attributes_count
@@ -17,6 +17,8 @@ from services.tickets.models.ticket_model import TicketModel
 from services.tickets.entities.ticket import Ticket
 
 from datetime import datetime, timedelta
+
+import os
 
 
 
@@ -108,6 +110,11 @@ def generate_report(id):
 
     created_report_url = create_report_for_zone(data, zone, start_date, end_date)
 
+    @after_this_request
+    def remove_file(response):
+        os.remove(created_report_url)
+        return response
+    
     return send_file(created_report_url, as_attachment=True)
 
 
@@ -129,8 +136,13 @@ def create_zone():
 @role_required('ADMIN')
 @zones_bp.get('/delete/<id>')
 def delete_zone(id):
-    ZoneModel.delete_zone(id)
-    return redirect(url_for('zones.zones_page'))
+    zone_deleted = ZoneModel.delete_zone(id)
+    if zone_deleted:
+        flash('Zona eliminada correctamente', 'success')
+        return redirect(url_for('zones.zones_page'))
+    
+    flash('Ha ocurrido un error eliminando la zona', 'error')
+    return redirect(url_for('zones.zone_details', id=id))
 
 
 
