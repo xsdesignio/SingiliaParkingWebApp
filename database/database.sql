@@ -8,6 +8,7 @@ CREATE TABLE users(
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
+    withheld DECIMAL(10, 2) NOT NULL DEFAULT 0,
     associated_zone_id INTEGER REFERENCES zones(id),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

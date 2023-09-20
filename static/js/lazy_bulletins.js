@@ -47,7 +47,8 @@ export class BulletinsManager {
                 <p>Fecha: <strong>[creation_date]</strong></p>
                 <p>Hora: <strong>[creation_time]</strong></p>
                 <p>Duración: <strong>[duration] min</strong></p>
-                <p>Precio: <strong>[price] €</strong></p>
+                <p>Precio: <strong>[price]0 €</strong></p>
+                <p>Estado: <strong>[paid]</strong></p>
                 <p>
                     Método de pago: 
                     <strong> 
@@ -92,8 +93,9 @@ export class BulletinsManager {
 
     format_bulletin(data) {
 
-        let payment_method = PAYMENT_METHODS[data.payment_method] || PAYMENT_METHODS.DEFAULT;
+        let payment_method = PAYMENT_METHODS[data.payment_method] || "Aún no ha sido pagado";
         
+        console.log(data)
         //Extract the date and the time from the created_at field
         let creation_date = data.created_at.split(' ')[0]
         let creation_time = data.created_at.split(' ')[1]
@@ -101,11 +103,14 @@ export class BulletinsManager {
         // Modifying creation_date to set in format of day-month-year
         creation_date = creation_date.split('-').reverse().join('-')
 
+        let paid = data.paid ? 'Pagado' : 'No pagado'
+
         let formatted_bulletin = this.bulletin.replace('[creation_date]', creation_date)
                     .replace('[creation_time]', creation_time)
                     .replace('[responsible]', data.responsible)
                     .replace('[duration]', data.duration)
                     .replace('[price]', data.price)
+                    .replace('[paid]', paid)
                     .replace('[payment_method]', payment_method)
                     .replace('[registration]', data.registration)
                     .replace('[zone_name]', data.zone)

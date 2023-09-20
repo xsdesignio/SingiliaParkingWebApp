@@ -1,4 +1,6 @@
+from decimal import Decimal
 from flask import Blueprint, flash, session, render_template, request, jsonify, redirect, send_file, after_this_request
+from services.users.controllers.withheld import pay_withheld_to_user, substract_withheld_to_user
 
 from services.utils.data_management import parse_date
 from .models.user_model import UserModel
@@ -197,6 +199,42 @@ def delete_user(id):
     else:
         return {'message': 'Ha ocurrido un error eliminando el usuario.'}, 500
 
+
+@role_required('ADMIN')
+@users_bp.post('user/<id>/pay-withheld-amount')
+def pay_withheld_amount(id):
+    # Get withheld amount from the request form and substract_withheld_to_user
+    withheld_amount = Decimal(request.form.get('withheld_amount'))
+
+    user = UserModel.get_user(id)
+
+    if user == None:
+        flash('Ha ocurrido un error obteniendo el usuario.', 'error')
+        return redirect('/users', code=302)
+    
+    if withheld_amount > user.withheld:
+        flash('La cantidad a pagar es mayor que la cantidad retenida.', 'error')
+        return redirect(f"/users/user/{str(user.id)}", code=302)
+    
+    flash('Ingresos retenidos actualizados con éxito', 'success')
+    user = substract_withheld_to_user(user, withheld_amount)
+
+    return redirect(f"/users/user/{str(user.id)}", code=302)
+
+
+@role_required('ADMIN')
+@users_bp.post('user/<id>/pay-withheld')
+def pay_withheld(id):
+    # Get withheld amount from the request form and substract_withheld_to_user
+    user = UserModel.get_user(id)
+    if user == None:
+        flash('Ha ocurrido un error obteniendo el usuario.', 'error')
+        return redirect('/users', code=302)
+    
+    flash('Ingresos retenidos actualizados con éxito', 'success')
+    user = pay_withheld_to_user(user)
+
+    return redirect(f"/users/user/{str(user.id)}", code=302)
 
 
 

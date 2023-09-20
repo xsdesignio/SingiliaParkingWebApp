@@ -141,6 +141,10 @@ class UserModel(BaseModel):
                 query += 'password = %s, '
                 query_values.append(generate_password_hash(new_user_data['password']))
 
+            if new_user_data.get('withheld') != None:
+                query += 'withheld = %s, '
+                query_values.append(new_user_data['withheld'])
+
             if query[-2:] == ', ':
                 query = query[:-2]
 
@@ -226,6 +230,7 @@ class UserModel(BaseModel):
             name=result['name'], 
             email=result['email'], 
             associated_zone=associated_zone,
+            withheld=result['withheld'],
             password=result['password'],
             created_at=result['created_at']
         )

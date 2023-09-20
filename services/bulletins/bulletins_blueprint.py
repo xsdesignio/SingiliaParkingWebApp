@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, session
 from auth.controllers.login import login_required
+from services.users.controllers.withheld import add_withheld_to_user
 
 from .models.bulletin_model import BulletinModel
 from .entities.bulletin import Bulletin
@@ -101,7 +102,6 @@ def create_bulletin():
 
     Json arguments on request body:
 
-    responsible_id -- id of the user who created the bulletin
     zone -- zone where the bulletin was created
     duration -- duration of the bulletin in minutes
     registration -- registration of the vehicle
@@ -118,9 +118,10 @@ def create_bulletin():
     """
 
     bulletin_json = request.get_json()
+    print(bulletin_json)
     bulletin: Bulletin
 
-    responsible = UserModel.get_user(bulletin_json['responsible_id'])
+    responsible = UserModel.get_user(session.get("id"))
 
     zone: Zone = ZoneModel.get_zone_by_name(bulletin_json["zone_name"])
 
@@ -174,6 +175,8 @@ def pay_bulletin(id: int):
         
         payment_method = request.form.get('payment_method')
 
+        payment_method_used: PaymentMethod
+
         if not payment_method:
             payment_method_used = None
         else:
@@ -181,8 +184,13 @@ def pay_bulletin(id: int):
 
         if not payment_method_used:
             return jsonify({'message': "El metodo de pago indicado no existe"}), 400
-        else:
-            BulletinModel.pay_bulletin(bulletin_id, payment_method_used)
+        
+        paid_bulletin = BulletinModel.pay_bulletin(bulletin_id, payment_method_used)
+        if(paid_bulletin == None):
+            return jsonify({'message': "El boletin no pudo ser pagado"}), 400
+        
+        print("paid bulletin: ", paid_bulletin)
+        add_withheld_to_user(paid_bulletin.responsible, paid_bulletin.price)
         
         return jsonify({'message': 'El boletin ha sido pagado con exito'}), 200
     except Exception as e:

@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, jsonify, session
 from auth.controllers.login import login_required
 from datetime import datetime, timedelta
+
+from services.users.controllers.withheld import add_withheld_to_user
 from .models.ticket_model import TicketModel
 from .entities.ticket import Ticket
 from services.users.models.user_model import UserModel
@@ -111,6 +113,9 @@ def create_ticket():
     zone = ZoneModel.get_zone_by_name(requested_zone)
 
     payment_method = PaymentMethod.get_enum_value(ticket_json['payment_method'])
+
+    if payment_method == PaymentMethod.CASH:
+        add_withheld_to_user(responsible, ticket_json['price'])
 
     created_at = ticket_json.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M"))
 

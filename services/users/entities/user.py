@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 import datetime
 from enum import Enum
+from decimal import Decimal, getcontext
+
+getcontext().prec = 2 # Set decimal precision to 2
+
 
 from services.zones.entities.zone import Zone
 
@@ -25,6 +29,7 @@ class User:
     email: str
     password: str
     associated_zone: Zone = None
+    withheld: Decimal = Decimal(0)
     created_at: datetime = datetime.datetime.now()
 
     def to_json(self):
@@ -33,6 +38,7 @@ class User:
             'role': self.role.name,
             'name': self.name,
             'email': self.email,
+            'withheld': self.withheld,
             'created_at': self.created_at.strftime("%Y-%m-%d %H:%M:%S")
         }
         if self.associated_zone != None:

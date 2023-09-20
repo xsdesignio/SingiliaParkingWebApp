@@ -327,6 +327,29 @@ form .default-button {
 }
 
 
+.secundary-button {
+  display: block;
+  width: 100%;
+  padding: 10px 20px;
+  margin: 8px 0;
+  height: fit-content;
+  background-color: white;
+  border-radius: 24px;
+  border: 1px solid #35523e;
+  color: #35523e;
+  line-height: 1em;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+  cursor: pointer !important;
+  font-size: 16px;
+  transition: color .2s ease;
+}
+
+.secundary-button:hover {
+  background: linear-gradient(40deg, rgb(206, 255, 210) 0%, rgb(238, 255, 240) 50%, rgb(190, 255, 235) 100%);
+  color: black;
+}
 
 .default-button {
   display: block;
