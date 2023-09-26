@@ -436,7 +436,8 @@ form .default-button {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   place-items: flex-start center;
   gap: 20px;
-  width: 100%;
+  width: fit-content;
+  max-width: 100%;
 }
 
 
@@ -546,6 +547,7 @@ form .default-button {
 
 .ticket {
   width: 100%;
+  max-width: 400px;
   position: relative;
   margin: 20px 0;
   text-align: center;
@@ -774,4 +776,71 @@ form .default-button {
 
 .hidden {
   display: none;
+}
+
+
+
+.available-tickets-wrapper {
+  max-width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.available-tickets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  place-items: center;
+  gap: 20px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 20px 0;
+}
+
+.available-ticket {
+  border: 2px solid #45a583b9;
+  background-color: white;
+  padding: 20px;
+}
+
+.available-tickets-creation {
+  max-width: 400px;
+}
+
+
+.color-picker-wrapper {
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px #09954886;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  place-items: space-between;
+  width: 100%;
+}
+
+.color-picker-wrapper label {
+  display: block;
+  font-size: 16px;
+  color: #333;
+}
+
+.color-picker {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 16px !important;
+  overflow: hidden;
+  width: 60px !important;
+  height: 60px;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 2px 4px #09954886;
+  transition: transform 0.3s ease;
+}
+
+.color-picker:focus {
+  transform: scale(1.2);
 }

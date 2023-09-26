@@ -32,15 +32,19 @@ export class TicketsManager {
     initializeDOMElements() {
         this.ticket = this.ticketTemplate()
 
-        let start_date = document.getElementById('start_date').value
+        const urlParams = new URLSearchParams(window.location.search);
+
+        let start_date = urlParams.get('start_date')
+        
         if(start_date != undefined && start_date != '')
             this.filter['start_date'] = start_date
 
-        let end_date = document.getElementById('end_date').value
+        let end_date = urlParams.get('end_date')
+        
         if(end_date != undefined && end_date != '')
             this.filter['end_date'] = end_date
 
-        let zone = document.getElementById('zone')?.value
+        let zone = urlParams.get('zone')
         if(zone != undefined && zone != '')
             this.filter['zone'] = zone
     }
@@ -83,7 +87,7 @@ export class TicketsManager {
                 <p>Fecha: <strong>[creation_date]</strong></p>
                 <p>Hora: <strong>[creation_time]</strong></p>
                 <p>Duración: <strong>[duration] min</strong></p>
-                <p>Precio: <strong>[price]0 €</strong></p>
+                <p>Precio: <strong>[price] €</strong></p>
                 <p>
                     Método de pago: 
                     <strong> 

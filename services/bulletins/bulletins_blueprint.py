@@ -189,8 +189,8 @@ def pay_bulletin(id: int):
         if(paid_bulletin == None):
             return jsonify({'message': "El boletin no pudo ser pagado"}), 400
         
-        print("paid bulletin: ", paid_bulletin)
-        add_withheld_to_user(paid_bulletin.responsible, paid_bulletin.price)
+        if payment_method_used == PaymentMethod.CASH:
+            add_withheld_to_user(paid_bulletin.responsible, paid_bulletin.price)
         
         return jsonify({'message': 'El boletin ha sido pagado con exito'}), 200
     except Exception as e:

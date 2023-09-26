@@ -46,10 +46,15 @@
                 </button>
             </form>
         </article>
-
-        <article class="selected-date">
-            <p>Mostrando tickets creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
-        </article>
+        <div>
+            <article class="selected-date">
+                <p>Mostrando tickets creados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
+            </article>
+            <article>
+                <h2>Administrar Tickets Disponibles</h2>
+                <a href="/tickets/available-tickets" class="default-button" style="margin: 0 0 0 auto;">Administrar</a>
+            </article>
+        </div>
     </section>
     
     <section>
@@ -74,7 +79,7 @@
             </p>
 
             <p>
-                <b>Ingresos totales:</b> <strong>{{ tickets_data.total_income }}0 €</strong>
+                <b>Ingresos totales:</b> <strong>{{ tickets_data.total_income }} €</strong>
             </p>
         </article>
     </section>
@@ -88,7 +93,7 @@
                 </p>
                 <p>
                     <strong>Ingresos por tickets de 30 min: </strong>
-                    {{ tickets_data["total_income_by_30"] }}0 €
+                    {{ tickets_data["total_income_by_30"] }} €
                 </p>
             </article>
             <article class="data-shown green-box">
@@ -99,7 +104,7 @@
                 </p>
                 <p>
                     <strong>Ingresos por tickets de 60 min: </strong>
-                    {{ tickets_data["total_income_by_60"] }}0 €
+                    {{ tickets_data["total_income_by_60"] }} €
                 </p>
             </article>
             <article class="data-shown orange-box">
@@ -111,7 +116,7 @@
 
                 <p>
                     <strong>Ingresos por tickets de 90 min: </strong>
-                    {{ tickets_data["total_income_by_90"] }}0 €
+                    {{ tickets_data["total_income_by_90"] }} €
                 </p>
             </article>
             <article class="data-shown pink-box">
@@ -123,7 +128,7 @@
 
                 <p>
                     <strong>Ingresos por tickets de 120 min: </strong>
-                    {{ tickets_data["total_income_by_120"] }}0 €
+                    {{ tickets_data["total_income_by_120"] }} €
                 </p>
 
             </article>

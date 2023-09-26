@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %} Tickets {% endblock %}
+
+{% block content %}
+
+    <a class="come-back-button" href="/tickets"> 
+        <!-- Create an image linking to static/assets/icons/ -->
+        <img src="{{ url_for('static', filename='/assets/icons/arrow-left.svg') }}" alt="Volver">
+        <span>Volver</span>
+    </a>
+
+    <h1 class="center-text">Administración de Tickets</h1>
+
+    <section>
+
+            
+        <article  class="available-tickets-creation">
+            <h2>Crear Nuevo Ticket Disponible</h2>
+            <form action="/tickets/available-tickets/create" method="post" class="general-form">
+                <div>
+                    <label for="duration">Duración:</label>
+                    <input type="text" name="duration" id="duration" placeholder="ej: UNA HORA, HORA Y MEDIA" required>
+                </div>
+                <div>
+                    <label for="price">Precio en €:</label>
+                    <input type="number" step="0.01" name="price" id="price" placeholder="ej: 0.90" required>
+                </div>
+                <div class="color-picker-wrapper">
+                    <label for="color-input">Elige un color:</label>
+                    <input type="color" id="color-input" class="color-picker" value="#099548">
+                </div>
+                <input class="default-button" type="submit" value="Crear">
+        </article>
+
+        <article class="available-tickets-wrapper">
+            <h2>Tickets Disponibles</h2>
+            <div class="available-tickets">
+                {% if available_tickets|length == 0 %}
+                    <p>No hay tickets disponibles</p>
+                {% endif %}
+                {% for ticket in available_tickets %}
+                    <div class="available-ticket">
+                        <p>Duración: <b>{{ ticket.duration }}</b></p>
+                        <p>Precio: <b>{{ ticket.price }} €</b></p>
+                        <form action="" class="default-form">
+                            <label for="duration">Modificar duración:</label>
+                            <input type="text" name="duration" id="duration" placeholder="ej: UNA HORA, HORA Y MEDIA" required>
+                            <label for="price">Modificar Precio: </label>
+                            <input type="number" step="0.01" name="price" id="price" placeholder="ej: 0.90" required>
+                            <input class="default-button" type="submit" value="Modificar">
+                        </form>
+                        <form action="" class="default-form">
+                            <input class="default-button" type="submit" value="delete">
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        </article>
+    
+    </section>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let inputElement = document.getElementById("duration");
+            inputElement.addEventListener("keyup", function() {
+                toUppercase(inputElement);
+            });
+        });
+
+        function toUppercase(inputElement) {
+            inputElement.value = inputElement.value.toUpperCase();
+        }
+    </script>
+
+{% endblock %}

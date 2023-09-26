@@ -3,6 +3,7 @@ from services.zones.entities.zone import Zone
 from services.users.entities.user import User
 from ..models.ticket_model import TicketModel
 from datetime import datetime
+from decimal import Decimal
 
 
 
@@ -43,13 +44,13 @@ def get_tickets_attributes_count(start_date: datetime = None, end_date: datetime
         "paid_by_card": paid_by_card,
         "paid_by_cash": paid_by_cash,
         "duration_of_30": duration_of_30,
-        "total_income_by_30": round(duration_of_30 * get_prices_by_duration(30), 2),
+        "total_income_by_30": duration_of_30 * get_prices_by_duration(30),
         "duration_of_60": duration_of_60,
-        "total_income_by_60": round(duration_of_60 * get_prices_by_duration(60), 2),
+        "total_income_by_60": duration_of_60 * get_prices_by_duration(60),
         "duration_of_90": duration_of_90,
-        "total_income_by_90": round(duration_of_90 * get_prices_by_duration(90), 2),
+        "total_income_by_90": duration_of_90 * get_prices_by_duration(90),
         "duration_of_120": duration_of_120,
-        "total_income_by_120": round(duration_of_120 * get_prices_by_duration(120), 2),
+        "total_income_by_120": duration_of_120 * get_prices_by_duration(120),
     }
     total_income = round(tickets_amount["total_income_by_30"] + tickets_amount["total_income_by_60"] + tickets_amount["total_income_by_90"] + tickets_amount["total_income_by_120"], 2)
     tickets_amount["total_income"] = total_income
@@ -64,14 +65,14 @@ def get_prices_by_duration(duration):
     """Return a dictionary with the prices by duration"""
     
     if duration <= 30:
-        return 0.7
+        return Decimal("0.70")
     elif duration <= 60:
-        return 0.9
+        return Decimal("0.90")
     elif duration <= 90:
-        return 1.4
+        return Decimal("1.40")
     elif duration <= 120:
-        return 1.8
+        return Decimal("1.80")
     elif duration <= 180:
-        return 3.6
+        return Decimal("3.60")
     elif duration <= 240:
-        return 4.5
+        return Decimal("4.50")

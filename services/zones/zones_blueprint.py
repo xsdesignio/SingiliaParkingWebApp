@@ -56,7 +56,7 @@ def zone_details(id):
         return render_template('zone-details.html', error=error_message)
         
 
-@role_required('ADMIN')
+@role_required('EMPLOYEE')
 @zones_bp.post('/zone/<id>/edit')
 def zone_editing(id):
     zone = ZoneModel.get_zone(id)
@@ -77,6 +77,18 @@ def get_zone(id: int):
         return jsonify(zone.to_json()), 200
     else:
         return {'message': 'Ha ocurrido un error obteniendo la zona indicada'}, 500
+
+
+
+@role_required('ADMIN')
+@zones_bp.get('/get-available-zones/')
+def get_available_zones(id: int):
+    zone = ZoneModel.get_zone(id)
+    if zone != None:
+        return jsonify(zone.to_json()), 200
+    else:
+        return {'message': 'Ha ocurrido un error obteniendo la zona indicada'}, 500
+
 
 
 @role_required('ADMIN')

@@ -5,7 +5,6 @@ load_dotenv()
 import os
 
 
-
 dbname = os.environ.get('DB_NAME')
 dbuser = os.environ.get('DB_USER')
 password = os.environ.get('DB_PASSWORD')

@@ -3,9 +3,6 @@ import datetime
 from enum import Enum
 from decimal import Decimal, getcontext
 
-getcontext().prec = 2 # Set decimal precision to 2
-
-
 from services.zones.entities.zone import Zone
 
 class UserRole(Enum):

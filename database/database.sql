@@ -21,36 +21,24 @@ CREATE TABLE zones(
 );
 
 
-
-CREATE TABLE withhelds(
-    id SERIAL PRIMARY KEY NOT NULL,
-    responsible_id INTEGER REFERENCES users(id) NOT NULL,
-    amount DECIMAL(10, 2) NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-
-
-CREATE TABLE available_tickets(
-    id SERIAL PRIMARY KEY NOT NULL,
-    duration INTEGER NOT NULL UNIQUE,
-    price DECIMAL NOT NULL UNIQUE,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-
 CREATE TABLE tickets(
     id SERIAL PRIMARY KEY NOT NULL,
     responsible_id INTEGER REFERENCES users(id),
     zone_id INTEGER REFERENCES zones(id),
     duration INTEGER NOT NULL,
     registration VARCHAR(12) NOT NULL,
-    price DECIMAL NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
     payment_method payment_method_type NOT NULL,
     paid BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE available_tickets(
+    id SERIAL PRIMARY KEY NOT NULL,
+    duration VARCHAR(40) NOT NULL UNIQUE,
+    price DECIMAL(10, 2) NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE bulletins(
     id SERIAL PRIMARY KEY NOT NULL,
@@ -58,13 +46,21 @@ CREATE TABLE bulletins(
     zone_id INTEGER REFERENCES zones(id),
     duration INTEGER NOT NULL,
     registration VARCHAR(60) NOT NULL,
-    price DECIMAL NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
     payment_method payment_method_type,
     paid BOOLEAN NOT NULL DEFAULT false,
     precept VARCHAR(255) NOT NULL DEFAULT 'Estacionar sin ticket de aparcamiento',
     brand VARCHAR(60), 
     model VARCHAR(60), 
     color VARCHAR(80), 
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE available_bulletins(
+    id SERIAL PRIMARY KEY NOT NULL,
+    duration VARCHAR(40) NOT NULL UNIQUE,
+    price DECIMAL NOT NULL UNIQUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

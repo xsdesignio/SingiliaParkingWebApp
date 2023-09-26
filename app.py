@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 from flask_cors import CORS
 from auth.controllers.login import login_required
 
@@ -25,7 +25,7 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(weeks=8)
-app.secret_key = 'tu_clave_secreta_aqui'
+app.secret_key = os.environ.get('FLASK_APP_SECRET_KEY')
 
 
 app.register_blueprint(auth_bp, url_prefix ='/auth')
@@ -33,6 +33,11 @@ app.register_blueprint(tickets_bp, url_prefix ='/tickets')
 app.register_blueprint(users_bp, url_prefix ='/users')
 app.register_blueprint(bulletins_bp, url_prefix="/bulletins")
 app.register_blueprint(zones_bp, url_prefix="/zones")
+
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
 
 
 @app.get('/')

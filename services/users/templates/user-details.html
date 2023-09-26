@@ -13,20 +13,11 @@
     <h1 class="center-text">Información sobre {{ user.name }}</h1>
     <section class="three-columns-grid">
         <div>
-            <!-- 
-            <article class="selected-date">
-                <p>Mostrando resultados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
-            </article>
-             -->
             <article>
                 <h2>Datos de {{ user.name }}</h2>
                 <p>Nombre de usuario: <strong>{{ user.name }}</strong></p>
                 <p>Email: <strong>{{ user.email }}</strong></p>
                 <p>Rol: <strong>{{ user.role.value }}</strong></p>
-                <!-- 
-                <p>Cantidad de tickets impresos: <strong>{{ tickets_data["tickets_amount"] }}</strong></p>
-                <p>Cantidad de boletines impresos: <strong>{{ bulletins_data["bulletins_amount"] }}</strong></p>
-                 -->
                 <p>Zona Asignada: 
                     <strong>
                         {% if user.associated_zone.name == None %}

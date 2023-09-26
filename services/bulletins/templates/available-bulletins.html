@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %} Tickets {% endblock %}
+
+{% block content %}
+
+    <h1 class="center-text">Administración de Tickets</h1>
+
+    <section>
+        <article class="available-tickets-wrapper">
+            <h2>Boletines disponibles</h2>
+            <div>
+                {% for bulletin in available_bulletins %}
+                    <div>
+                        <p>Duración: <b>{{ bulletin.duration }}</b></p>
+                        <p>Precio: <b>{{ bulletin.price }}</b></p>
+                    </div>
+                {% endfor %}
+            </div>
+            <form action="/zones/available_zones/create" method="post" class="general-form">
+                <div>
+                    <label for="duration">Duración:</label>
+                    <input 
+                        type="text" name="duration" id="duration" 
+                        placeholder="ej: UNA HORA, HORA Y MEDIA" required
+                    >
+                </div>
+                <div>
+                    <label for="price">Precio en €:</label>
+                    <input type="number" step="0.01" name="price" id="price" placeholder="ej: 0.90" required>
+                </div>
+            </form>
+
+        </article>
+
+    </section>
+
+{% endblock %}

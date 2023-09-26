@@ -108,10 +108,10 @@ class BaseModel:
 
             for index, (key, value) in enumerate(kwargs.items()):
                 if key == 'start_date':
-                    query += f'created_at >= %s'
+                    query += f'created_at > %s'
                     value -= timedelta(days=1)
                 elif key == 'end_date':
-                    query += f'created_at <= %s'
+                    query += f'created_at < %s'
                     value += timedelta(days=1)
                 else:
                     query += f'{key} = %s'
@@ -135,6 +135,7 @@ class BaseModel:
         try:
             with get_connection() as conn:
                 cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+                print(query, tuple(params))
                 cursor.execute(query, tuple(params))
                 result = cursor.fetchall()
 

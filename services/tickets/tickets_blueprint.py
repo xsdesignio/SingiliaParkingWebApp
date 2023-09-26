@@ -1,9 +1,13 @@
-from flask import Blueprint, render_template, request, jsonify, session
+from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, flash
 from auth.controllers.login import login_required
 from datetime import datetime, timedelta
 
+from decimal import Decimal
+
 from services.users.controllers.withheld import add_withheld_to_user
 from .models.ticket_model import TicketModel
+from .models.available_tickets_model import AvailableTicketsModel
+from .entities.available_ticket import AvailableTicket
 from .entities.ticket import Ticket
 from services.users.models.user_model import UserModel
 from services.zones.entities.zone import Zone
@@ -67,6 +71,7 @@ def get_tickets_by_page(page = 0):
     if(request.content_type == 'application/json') and (request.json != None):
         query_values = get_queries_from_request_data(request.json)
 
+    print("Query values: ", query_values)
     # Get tickets from database
     tickets_json = TicketModel.get_tickets(tickets_range, **query_values)
 
@@ -99,12 +104,10 @@ def create_ticket():
     """
     ticket_json = request.get_json()
     ticket: Ticket
-    print("session_id", session.get("id"))
 
     responsible_id = ticket_json.get('responsible_id', session["id"])
     responsible = UserModel.get_user(responsible_id)
 
-    print("Responsible", responsible)
     requested_zone: str = ticket_json.get('zone')
     
     if requested_zone == None:
@@ -119,7 +122,8 @@ def create_ticket():
 
     created_at = ticket_json.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M"))
 
-    print("The error is above")
+    created_at = ensure_date_format(created_at)
+
     try:
         
         ticket = TicketModel.create_ticket(
@@ -145,6 +149,10 @@ def create_ticket():
         return {'message': 'El ticket no pudo ser creado.'}, 500
 
 
+def ensure_date_format(date: str) -> str:
+    correct_date = datetime.strptime(date)
+    return correct_date.strftime("%Y-%m-%d %H:%M")
+
 
 @tickets_bp.post('/pay/<id>')
 @login_required
@@ -169,3 +177,45 @@ def pay_ticket(id: int):
         return jsonify({'message': exception.__str__()}), 400
 
 
+
+""" ------------------------ AVAILABLE ZONES ------------------------ """
+
+@tickets_bp.get('/available-tickets')
+@login_required
+def available_tickets_page():
+    available_tickets: list(AvailableTicket)
+    available_tickets = AvailableTicketsModel.get_available_tickets()
+    print("available tickets:", available_tickets)
+    return render_template('available-tickets.html', available_tickets = available_tickets);
+
+
+
+@tickets_bp.post('/available-tickets/create')
+@login_required
+def create_available_ticket():
+    # get request infor from post form
+    request_info = request.form
+    ticket_duration = request_info.get('duration')
+    ticket_price = Decimal(request_info.get('price'))
+
+    if ticket_duration == None or ticket_price == None:
+        flash('No se ha podido crear un nuevo modelo de ticket.', 'error')
+        return redirect(url_for('tickets.available_tickets_page')), 301
+    
+    print("ticket duration and price")
+    print(ticket_duration, ticket_price)
+    
+    try:
+        ticket = AvailableTicketsModel.create_available_ticket(ticket_duration, float(ticket_price))
+    except Exception as e:
+        print("create_available_ticket: ", e)
+        flash('No se ha podido crear un nuevo modelo de ticket.', 'error')
+        return redirect(url_for('tickets.available_tickets_page')), 301
+    
+    if ticket == None:
+        flash('No se ha podido crear un nuevo modelo de ticket.', 'error')
+        return redirect(url_for('tickets.available_tickets_page')), 301
+
+    print("ticket: ", ticket)
+    flash('El ticket ha sido creado con éxito', 'success')
+    return redirect(url_for('tickets.available_tickets_page')), 301

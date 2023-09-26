@@ -184,8 +184,6 @@ class BulletinModel(BaseModel):
 
 
         bulletin: Bulletin = cls.get_bulletin(bulletin_id)
-        print("bulletin: ", bulletin)
-        print("bulletin pagado?: ", bulletin.paid)
         if bulletin.paid:
             raise Exception("El boletín introducido ya ha sido pagado")
 
