@@ -57,10 +57,7 @@ def _create_content(subject_name, subject_type, data_categories, data, start_dat
 
     content.append(Spacer(1, 8))
 
-    print(data_categories)
-
     for category in data_categories:
-        print(category)
         subtitle = f'Cuadrante {translation(category)} de aparcamiento {subject_name}'
         content.append(Paragraph(subtitle, subtitle_style))
 

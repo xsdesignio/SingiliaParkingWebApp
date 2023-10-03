@@ -16,7 +16,7 @@ class AvailableTicketModel(BaseModel):
             Returns an AvailableTicket object with params id.
             Returns an exception if it is not found.
         """
-        available_bulletin: AvailableTicket
+        available_ticket: AvailableTicket
         db_result = cls.get_element('available_tickets', id)
 
         if db_result == None:
@@ -31,14 +31,12 @@ class AvailableTicketModel(BaseModel):
             Returns a list of available tickets
         """
         db_results = cls.get_elements('available_tickets')
-        print("db_results", db_results)
         available_tickets: list[AvailableTicket] = []
 
         for result in db_results:
             available_ticket: AvailableTicket = AvailableTicket.from_dict(result)
             available_tickets.append(available_ticket.to_json())
         
-        print("available_tickets: ", available_tickets)
         return available_tickets
     
     @classmethod

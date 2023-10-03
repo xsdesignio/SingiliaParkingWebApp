@@ -71,7 +71,6 @@ def get_tickets_by_page(page = 0):
     if(request.content_type == 'application/json') and (request.json != None):
         query_values = get_queries_from_request_data(request.json)
 
-    print("Query values: ", query_values)
     # Get tickets from database
     tickets_json = TicketModel.get_tickets(tickets_range, **query_values)
 
@@ -184,7 +183,6 @@ def pay_ticket(id: int):
 @login_required
 def available_tickets():
     available_tickets: list(AvailableTicket) = AvailableTicketModel.get_available_tickets()
-    print("available tickets:", available_tickets)
     return jsonify(available_tickets)
 
 
@@ -194,7 +192,6 @@ def available_tickets():
 def available_tickets_page():
     available_tickets: list(AvailableTicket)
     available_tickets = AvailableTicketModel.get_available_tickets()
-    print("available tickets:", available_tickets)
     return render_template('available-tickets.html', available_tickets = available_tickets);
 
 
@@ -211,8 +208,6 @@ def create_available_ticket():
         flash('No se ha podido crear un nuevo modelo de ticket.', 'error')
         return redirect(url_for('tickets.available_tickets_page')), 301
     
-    print("ticket duration and price")
-    print(ticket_duration, ticket_price)
     
     try:
         ticket = AvailableTicketModel.create_available_ticket(ticket_duration, float(ticket_price))
@@ -225,7 +220,6 @@ def create_available_ticket():
         flash('No se ha podido crear un nuevo modelo de ticket.', 'error')
         return redirect(url_for('tickets.available_tickets_page')), 301
 
-    print("ticket: ", ticket)
     flash('El ticket ha sido creado con éxito', 'success')
     return redirect(url_for('tickets.available_tickets_page')), 301
 

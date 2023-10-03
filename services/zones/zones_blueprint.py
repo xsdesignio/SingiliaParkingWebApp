@@ -86,7 +86,6 @@ def get_available_zones():
     zones = ZoneModel.get_zones_list()
 
     if zones != None:
-        print("zones: ", zones)
         return jsonify(zones), 200
     else:
         return {'message': 'Ha ocurrido un error obteniendo las zonas disponibles'}, 500
