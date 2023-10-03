@@ -29,7 +29,6 @@ CREATE TABLE tickets(
     registration VARCHAR(12) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     payment_method payment_method_type NOT NULL,
-    paid BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -44,9 +43,9 @@ CREATE TABLE bulletins(
     id SERIAL PRIMARY KEY NOT NULL,
     responsible_id INTEGER REFERENCES users(id),
     zone_id INTEGER REFERENCES zones(id),
-    duration INTEGER NOT NULL,
+    duration INTEGER,
     registration VARCHAR(60) NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
+    price DECIMAL(10, 2),
     payment_method payment_method_type,
     paid BOOLEAN NOT NULL DEFAULT false,
     precept VARCHAR(255) NOT NULL DEFAULT 'Estacionar sin ticket de aparcamiento',

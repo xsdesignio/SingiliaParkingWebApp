@@ -7,6 +7,7 @@
     
     <section class="filter-section">
         <article class="filter-options">
+            <h2>Filtrar Resultados: </h2>
             <form action="/" method="GET">
                 <div class="input-container">
                     <label for="start_date">Fecha de inicio</label>
@@ -53,41 +54,51 @@
         <article class="data-shown">
             <h2 class="title">Resumen de Tickets</h2>
             {% if info.tickets %}
-            
                 <p>
-                    <b>Tickets impresos:</b>
-                    <strong>{{ info.tickets.tickets_amount }} </strong>
-                    
+                    <b>Tickets impresos: </b>
+                    <strong>{{ info.tickets.tickets_amount }}</strong>
                 </p>
                 <p>
-                    Pagados con tarjeta: 
+                    Pagados con tarjeta:
                     <strong>{{ info.tickets.paid_by_card }}</strong>
                 </p>
                 <p>
                     Pagados con efectivo: 
                     <strong>{{ info.tickets.paid_by_cash }}</strong>
                 </p>
-                <p id="tickets-amount">
-                    Tickets de 30 minutos: 
-                    <strong>{{ info.tickets.duration_of_30 }}</strong>
-                </p>
-                <p id="tickets-amount">
-                    Tickets de 60 minutos: 
-                    <strong>{{ info.tickets.duration_of_60 }}</strong>
-                </p>
-                <p id="tickets-amount">
-                    Tickets de 90 minutos: 
-                    <strong>{{ info.tickets.duration_of_90 }}</strong>
-                </p>
-                <p id="tickets-amount">
-                    Tickets de 120 minutos: 
-                    <strong>{{ info.tickets.duration_of_120 }}</strong>
-                </p>
 
                 <p>
-                    <b>Ingresos totales: </b>
-                    <strong>{{ info.tickets.total_income }}0 €</strong>
+                    <b>
+                        Ingresos totales: 
+                    </b>
+                    <strong>{{ info.tickets.total_income }} €</strong>
                 </p>
+
+                <div class="tickets-resume">
+                    {% for tickets_data_by_duration in info.tickets.data_by_duration %}
+                        <div class="tickets-resume-by-duration green-box">
+                            <p>
+                                <b>{{ tickets_data_by_duration.duration }}: </b>
+                                <strong>{{ tickets_data_by_duration.amount }}</strong>
+                            </p>
+                            <p>
+                                Pagados con tarjeta:
+                                <strong>{{ tickets_data_by_duration.paid_by_card }}</strong>
+                            </p>
+                            <p>
+                                Pagados con efectivo: 
+                                <strong>{{ tickets_data_by_duration.paid_by_cash }}</strong>
+                            </p>
+
+                            <p>
+                                Integresos totales: 
+                                <strong>{{ tickets_data_by_duration.total_income }}</strong>
+                            </p>
+                        </div>
+                    
+
+                    {% endfor %}
+                </div>
 
             {% else %}
                 <h2 id="tickets-amount">
@@ -105,40 +116,58 @@
                     <strong>{{ info.bulletins.bulletins_amount }}</strong>
                 </p>
                 <p>
-                    Pagados con tarjeta:
-                    <strong>{{ info.bulletins.paid }}</strong>
+                    Anulados:
+                    <strong>{{ info.bulletins.paid_amount }}</strong>
+                </p>
+                <p>
+                    Aún por anular:
+                    <strong>{{ info.bulletins.not_paid_amount }}</strong>
                 </p>
                 <p>
                     Pagados con efectivo: 
-                    <strong>{{ info.bulletins.not_paid }}</strong>
-                </p>
-    
-                <p>
-                    Tickets de 30 minutos: 
-                    <strong>{{ info.bulletins.duration_of_30 }}</strong>
-                </p>
-        
-                <p>
-                    Tickets de 60 minutos: 
-                    <strong>{{ info.bulletins.duration_of_60 }}</strong>
-                </p>
-        
-                <p>
-                    Tickets de 90 minutos: 
-                    <strong>{{ info.bulletins.duration_of_90 }}</strong>
-                </p>
-        
-                <p id="tickets-amount">
-                    Tickets de 120 minutos: 
-                    <strong>{{ info.bulletins.duration_of_120 }}</strong>
+                    <strong>{{ info.bulletins.paid_by_cash }}</strong>
                 </p>
 
                 <p>
                     <b>
                         Ingresos totales: 
                     </b>
-                    <strong>{{ info.bulletins.total_income }}0 €</strong>
+                    <strong>{{ info.bulletins.total_income }} €</strong>
                 </p>
+
+                <div class="tickets-resume">
+                    {% for bulletins_data_by_duration in info.bulletins.data_by_duration %}
+                        <div class="tickets-resume-by-duration bulletin-box">
+                            <p>
+                                <b>{{ bulletins_data_by_duration.duration }}: </b>
+                                <strong>{{ bulletins_data_by_duration.amount }}</strong>
+                            </p>
+                            <p>
+                                Anulados:
+                                <strong>{{ bulletins_data_by_duration.paid_amount }}</strong>
+                            </p>
+                            <p>
+                                Aún por anular:
+                                <strong>{{ bulletins_data_by_duration.not_paid_amount }}</strong>
+                            </p>
+                            <p>
+                                Pagados con tarjeta:
+                                <strong>{{ bulletins_data_by_duration.paid_by_card }}</strong>
+                            </p>
+                            <p>
+                                Pagados con efectivo: 
+                                <strong>{{ bulletins_data_by_duration.paid_by_cash }}</strong>
+                            </p>
+
+                            <p>
+                                Integresos totales: 
+                                <strong>{{ bulletins_data_by_duration.total_income }}</strong>
+                            </p>
+                        </div>
+                       
+
+                    {% endfor %}
+                </div>
 
             {% else %}
                 <h3>

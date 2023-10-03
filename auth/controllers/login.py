@@ -10,7 +10,7 @@ def login_required(function):
     def wrapper(*args, **kwargs):
         if 'name' not in session:
             redirect_url = url_for('auth.login_page')
-            return redirect(redirect_url)
+            return redirect(redirect_url), 301
         return function(*args, **kwargs)
     return wrapper
 
@@ -68,6 +68,7 @@ def login_user(email, password) -> bool:
         session['role'] = user.role.name
         session['email'] = user.email
         session['name'] = user.name
+
         if user.associated_zone != None:
             session['associated_zone'] = user.associated_zone.name
 

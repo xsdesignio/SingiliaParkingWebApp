@@ -82,13 +82,15 @@ def get_zone(id: int):
 
 @role_required('ADMIN')
 @zones_bp.get('/get-available-zones/')
-def get_available_zones(id: int):
-    zone = ZoneModel.get_zone(id)
-    if zone != None:
-        return jsonify(zone.to_json()), 200
-    else:
-        return {'message': 'Ha ocurrido un error obteniendo la zona indicada'}, 500
+def get_available_zones():
+    zones = ZoneModel.get_zones_list()
 
+    if zones != None:
+        print("zones: ", zones)
+        return jsonify(zones), 200
+    else:
+        return {'message': 'Ha ocurrido un error obteniendo las zonas disponibles'}, 500
+    
 
 
 @role_required('ADMIN')

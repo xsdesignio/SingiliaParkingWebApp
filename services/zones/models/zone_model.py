@@ -7,8 +7,8 @@ from services.zones.entities.zone import Zone
 class ZoneModel:
     
     @classmethod
-    def get_zones_list(cls) -> list[Zone]:
-        result: list[Zone]
+    def get_zones_list(cls) -> list[dict]:
+        result: list[dict]
         try:
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
@@ -18,6 +18,9 @@ class ZoneModel:
         except Exception as exception:
             print("get_zones_list: ", exception)
             return None
+        
+        result = [Zone(zone["id"], zone["name"]).to_json() for zone in result]
+
         return result
     
     @classmethod

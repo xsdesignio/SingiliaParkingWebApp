@@ -13,9 +13,9 @@ class Bulletin:
     id: int
     responsible: User
     zone: Zone
-    duration: int # in minutes
     registration: str
-    price: Decimal
+    duration: int = None
+    price: Decimal = None
     payment_method: PaymentMethod = None
     paid: bool = True
     created_at: datetime = datetime.now() 
@@ -25,28 +25,30 @@ class Bulletin:
     model: str = None
     color: str = None
 
-
-
+    """ 
     def __post_init__(self):
         if not isinstance(self.price, Decimal):
             self.price = Decimal(self.price)
-
+    """
 
     def to_json(self):
         json_obj =  {
             "id": self.id,
             "responsible": self.responsible.name if self.responsible else "Usuario eliminado",
             "zone": self.zone.name if self.zone else "Zona eliminada",
-            "duration": self.duration, 
             "registration": self.registration,
-            "price": self.price,
             "paid": self.paid,
             "brand": self.brand,
             "model": self.model,
             "color": self.color,
-
             "created_at": self.created_at.strftime("%Y-%m-%d %H:%M")
         }
+        if self.price:
+            json_obj["price"] = self.price
+
+        if self.duration:
+            json_obj["duration"] = self.duration
+
         if self.payment_method:
             json_obj["payment_method"] = self.payment_method.value
         else:

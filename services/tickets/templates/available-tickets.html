@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} Tickets {% endblock %}
+{% block title %} Tickets Disponibles {% endblock %}
 
 {% block content %}
 
@@ -12,25 +12,21 @@
 
     <h1 class="center-text">Administración de Tickets</h1>
 
-    <section>
+    <section class="available-tickets-page">
 
-            
         <article  class="available-tickets-creation">
-            <h2>Crear Nuevo Ticket Disponible</h2>
+            <h2>Crear Nuevo Modelo de Ticket Disponible</h2>
             <form action="/tickets/available-tickets/create" method="post" class="general-form">
                 <div>
                     <label for="duration">Duración:</label>
-                    <input type="text" name="duration" id="duration" placeholder="ej: UNA HORA, HORA Y MEDIA" required>
+                    <input type="text" name="duration" id="duration" placeholder="ej: UNA HORA, HORA Y MEDIA">
                 </div>
                 <div>
                     <label for="price">Precio en €:</label>
-                    <input type="number" step="0.01" name="price" id="price" placeholder="ej: 0.90" required>
-                </div>
-                <div class="color-picker-wrapper">
-                    <label for="color-input">Elige un color:</label>
-                    <input type="color" id="color-input" class="color-picker" value="#099548">
+                    <input type="number" step="0.01" name="price" id="price" placeholder="ej: 0.90">
                 </div>
                 <input class="default-button" type="submit" value="Crear">
+            </form>
         </article>
 
         <article class="available-tickets-wrapper">
@@ -41,17 +37,19 @@
                 {% endif %}
                 {% for ticket in available_tickets %}
                     <div class="available-ticket">
-                        <p>Duración: <b>{{ ticket.duration }}</b></p>
-                        <p>Precio: <b>{{ ticket.price }} €</b></p>
-                        <form action="" class="default-form">
-                            <label for="duration">Modificar duración:</label>
-                            <input type="text" name="duration" id="duration" placeholder="ej: UNA HORA, HORA Y MEDIA" required>
-                            <label for="price">Modificar Precio: </label>
-                            <input type="number" step="0.01" name="price" id="price" placeholder="ej: 0.90" required>
-                            <input class="default-button" type="submit" value="Modificar">
-                        </form>
-                        <form action="" class="default-form">
-                            <input class="default-button" type="submit" value="delete">
+                        <p>Duración: <br/><b>{{ ticket.duration }}</b></p>
+                        <p>Precio: <br/><b>{{ ticket.price }} €</b></p>
+                        <div>
+                            <form action="/tickets/available-tickets/edit/{{ ticket.id }}" method="post">
+                                <label for="duration">Modificar duración:</label>
+                                <input type="text" name="duration" placeholder="ej: UNA HORA, HORA Y MEDIA">
+                                <label for="price">Modificar Precio: </label>
+                                <input type="number" step="0.01" name="price" placeholder="ej: 0.90">
+                                <input class="default-button" type="submit" value="Modificar">
+                            </form>
+                        </div>
+                        <form action="/tickets/available-tickets/delete/{{ ticket.id }}" class="delete-form" method="post">
+                            <input class="secundary-button delete-button" type="submit" value="Eliminar">
                         </form>
                     </div>
                 {% endfor %}
@@ -61,17 +59,6 @@
     </section>
 
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            let inputElement = document.getElementById("duration");
-            inputElement.addEventListener("keyup", function() {
-                toUppercase(inputElement);
-            });
-        });
-
-        function toUppercase(inputElement) {
-            inputElement.value = inputElement.value.toUpperCase();
-        }
-    </script>
+    <script src="{{ url_for('static', filename='/js/available_tickets.js') }}"></script>
 
 {% endblock %}

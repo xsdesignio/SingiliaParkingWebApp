@@ -1,12 +1,12 @@
 from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for, flash
-from auth.controllers.login import login_required
+from auth.controllers.login import login_required, role_required
 from datetime import datetime, timedelta
 
 from decimal import Decimal
 
 from services.users.controllers.withheld import add_withheld_to_user
 from .models.ticket_model import TicketModel
-from .models.available_tickets_model import AvailableTicketsModel
+from .models.available_ticket_model import AvailableTicketModel
 from .entities.available_ticket import AvailableTicket
 from .entities.ticket import Ticket
 from services.users.models.user_model import UserModel
@@ -122,8 +122,6 @@ def create_ticket():
 
     created_at = ticket_json.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M"))
 
-    created_at = ensure_date_format(created_at)
-
     try:
         
         ticket = TicketModel.create_ticket(
@@ -132,8 +130,7 @@ def create_ticket():
             duration = ticket_json['duration'], 
             registration = ticket_json['registration'], 
             price = ticket_json['price'], 
-            payment_method = payment_method,
-            paid = bool(ticket_json.get("paid", False)), 
+            payment_method = payment_method, 
             created_at = created_at
         )
 
@@ -150,11 +147,15 @@ def create_ticket():
 
 
 def ensure_date_format(date: str) -> str:
-    correct_date = datetime.strptime(date)
-    return correct_date.strftime("%Y-%m-%d %H:%M")
+    try:
+        input_date = datetime.strptime(date, "%Y-%m-%d %H:%M")
+        return input_date.strftime("%Y-%m-%d %H:%M")
+    except ValueError:
+        # Handle the case where the input date is not in the expected format.
+        return "Invalid date format"
 
 
-@tickets_bp.post('/pay/<id>')
+""" @tickets_bp.post('/pay/<id>')
 @login_required
 def pay_ticket(id: int):
     try:
@@ -175,23 +176,31 @@ def pay_ticket(id: int):
     except Exception as exception:
         print("pay_ticket: ", exception)
         return jsonify({'message': exception.__str__()}), 400
+ """
 
 
+""" ------------------------ AVAILABLE TICKETS ------------------------ """
+@tickets_bp.get('/available')
+@login_required
+def available_tickets():
+    available_tickets: list(AvailableTicket) = AvailableTicketModel.get_available_tickets()
+    print("available tickets:", available_tickets)
+    return jsonify(available_tickets)
 
-""" ------------------------ AVAILABLE ZONES ------------------------ """
+
 
 @tickets_bp.get('/available-tickets')
 @login_required
 def available_tickets_page():
     available_tickets: list(AvailableTicket)
-    available_tickets = AvailableTicketsModel.get_available_tickets()
+    available_tickets = AvailableTicketModel.get_available_tickets()
     print("available tickets:", available_tickets)
     return render_template('available-tickets.html', available_tickets = available_tickets);
 
 
 
+@role_required("ADMIN")
 @tickets_bp.post('/available-tickets/create')
-@login_required
 def create_available_ticket():
     # get request infor from post form
     request_info = request.form
@@ -206,7 +215,7 @@ def create_available_ticket():
     print(ticket_duration, ticket_price)
     
     try:
-        ticket = AvailableTicketsModel.create_available_ticket(ticket_duration, float(ticket_price))
+        ticket = AvailableTicketModel.create_available_ticket(ticket_duration, float(ticket_price))
     except Exception as e:
         print("create_available_ticket: ", e)
         flash('No se ha podido crear un nuevo modelo de ticket.', 'error')
@@ -219,3 +228,54 @@ def create_available_ticket():
     print("ticket: ", ticket)
     flash('El ticket ha sido creado con éxito', 'success')
     return redirect(url_for('tickets.available_tickets_page')), 301
+
+
+@role_required("ADMIN")
+@tickets_bp.post('/available-tickets/edit/<id>')
+def edit_available_ticket(id):
+    available_ticket_id = int(id)
+    request_info = request.form
+    ticket_duration = request_info.get('duration')
+
+    available_ticket = AvailableTicketModel.get_available_ticket(available_ticket_id)
+
+
+    ticket_duration = request_info.get('duration', available_ticket.duration)
+    if ticket_duration == '':
+        ticket_duration = available_ticket.duration
+
+    ticket_price = request_info.get('price')
+    if ticket_price == None or request_info.get('price') == '':
+        ticket_price = available_ticket.price
+    else:
+        ticket_price = Decimal(ticket_price)
+
+
+    if ticket_duration == None or ticket_price == None:
+        flash('Ha ocurrido un error editando el modelo de ticket.', 'error')
+        return redirect(url_for('tickets.available_tickets_page')), 301
+    
+    edited_ticket = AvailableTicketModel.edit_available_ticket(available_ticket_id, ticket_duration, ticket_price);
+
+    if edited_ticket:
+        flash('El modelo de ticket ha sido editado con éxito', 'success')
+        return redirect(url_for('tickets.available_tickets_page')), 301
+    else:
+        flash('Ha ocurrido un error editando el modelo de ticket.', 'error')
+        return redirect(url_for('tickets.available_tickets_page')), 301
+
+
+
+
+@role_required("ADMIN")
+@tickets_bp.post('/available-tickets/delete/<id>')
+def delete_available_ticket(id):
+    available_ticket_id = int(id)
+    ticket_deleted = AvailableTicketModel.delete_available_ticket(available_ticket_id)
+
+    if ticket_deleted:
+        flash('El modelo de ticket ha sido eliminado con éxito', 'success')
+        return redirect(url_for('tickets.available_tickets_page')), 301
+    else:
+        flash('No se ha podido eliminar el modelo de ticket.', 'error')
+        return redirect(url_for('tickets.available_tickets_page')), 301

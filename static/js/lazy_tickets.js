@@ -79,7 +79,7 @@ export class TicketsManager {
 
     ticketTemplate() {
         return `
-            <div class="ticket [box_class]">
+            <div class="ticket green-box">
                 <img class="icon-logo" src="/static/assets/icons/logo.png" alt="ticket" />
                 <h3>Ticket Estacionamiento Regulado</h3>
                 <p>Responsable: <strong class="capital-letter">[responsible]</strong></p>
@@ -103,22 +103,6 @@ export class TicketsManager {
 
     format_ticket(data) {
 
-        switch (data.duration) {
-            case 30:
-                data.box_class = 'yellow-box'
-                break;
-            case 60:
-                data.box_class = 'green-box'
-                break;
-            case 90:
-                data.box_class = 'orange-box'
-                break;
-            case 120:
-                data.box_class = 'pink-box'
-                break;
-        }
-
-
         //Extract the date and the time from the created_at field
         let creation_date = data.created_at.split(' ')[0]
         let creation_time = data.created_at.split(' ')[1]
@@ -128,8 +112,7 @@ export class TicketsManager {
 
         let payment_method = PAYMENT_METHODS[data.payment_method] || PAYMENT_METHODS.DEFAULT;
 
-        return this.ticket.replace('[box_class]', data.box_class)
-                    .replace('[creation_date]', creation_date)
+        return this.ticket.replace('[creation_date]', creation_date)
                     .replace('[creation_time]', creation_time)
                     .replace('[responsible]', data.responsible)
                     .replace('[duration]', data.duration)

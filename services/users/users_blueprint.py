@@ -95,7 +95,7 @@ def user_details(id):
     return render_template('user-details.html', user=user, start_date = start_date, end_date = end_date, tickets_data=all_tickets_count, bulletins_data=all_bulletins_count, zones=zones, zone=zone)
 
 
-@role_required('ADMIN')
+@login_required
 @users_bp.post('/user/<id>/assign-zone/')
 def asign_zone(id):
 
@@ -112,6 +112,7 @@ def asign_zone(id):
     
     user.zone_id = zone.id
     zone_assigned = UserModel.asign_zone_to_user(user.id, zone)
+    
     if zone_assigned:
         flash('Zona asignada correctamente.', 'success')
         return redirect(f"/users/user/{str(user.id)}", code=302)
@@ -128,8 +129,11 @@ def get_user_zone():
     print("fetching zone")
     print(session)
     if session.get("associated_zone") == None:
-        user = UserModel.get_user(session["id"])
-        print(user.to_json())
+        user = UserModel.get_user(session.get("id"))
+        
+        if user == None:
+            return jsonify({"error": "error obteniendo el usuario"}), 500
+        
         if user.associated_zone == None:
             return jsonify({"error": "zona no asignada"}), 500
         

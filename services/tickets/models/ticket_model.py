@@ -37,7 +37,6 @@ class TicketModel(BaseModel):
             registration = result["registration"], 
             price = result["price"], 
             payment_method = payment_method, 
-            paid = result["paid"],
             created_at = result["created_at"]
         )
     
@@ -66,7 +65,6 @@ class TicketModel(BaseModel):
                     registration = ticket["registration"], 
                     price = ticket["price"], 
                     payment_method = payment_method, 
-                    paid = ticket["paid"],
                     created_at = ticket["created_at"]
                 ).to_json()
             )
@@ -83,11 +81,10 @@ class TicketModel(BaseModel):
     def create_ticket(cls, 
                 responsible: User, 
                 zone: Zone,
-                duration: int, 
+                duration: str, 
                 registration:str, 
                 price: float, 
                 payment_method: PaymentMethod,
-                paid: bool,
                 created_at: datetime.datetime
             ) -> Ticket:
         
@@ -96,19 +93,18 @@ class TicketModel(BaseModel):
         ticket: Ticket
 
         query = '''
-                INSERT INTO tickets(responsible_id, zone_id, duration, registration, price, payment_method, paid, created_at) 
-                VALUES(%s, %s, %s, %s, %s, %s, %s, %s) 
+                INSERT INTO tickets(responsible_id, zone_id, duration, registration, price, payment_method, created_at) 
+                VALUES(%s, %s, %s, %s, %s, %s, %s) 
                 RETURNING *
             '''
         
-        values = (responsible.id, zone.id, duration, registration, price, payment_method.value, paid, created_at)
+        values = (responsible.id, zone.id, duration, registration, price, payment_method.value, created_at)
 
         try:
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
             
             cursor.execute(query, values)
-
             
             result = cursor.fetchone()
 
@@ -123,7 +119,6 @@ class TicketModel(BaseModel):
                 registration = result["registration"], 
                 price = result["price"], 
                 payment_method = payment_method, 
-                paid = result["paid"],
                 created_at = result["created_at"])
             
             conn.commit()
@@ -156,7 +151,7 @@ class TicketModel(BaseModel):
             return None
 
         return deleted_ticket
-
+""" 
 
     @classmethod
     def pay_ticket(cls, ticket_id: int) -> Ticket:
@@ -208,6 +203,6 @@ class TicketModel(BaseModel):
             print("pay_ticket: ", exception)
             return None
 
-
+ """
 
     

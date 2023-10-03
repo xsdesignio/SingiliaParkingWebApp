@@ -6,6 +6,23 @@ from typing import Optional
 
 
 class BaseModel:
+
+
+    @classmethod
+    def delete_element(cls, table, id):
+        try:
+            conn = get_connection()
+            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+            cursor.execute(f'DELETE FROM { table } WHERE id= %s', (id,))
+            conn.commit()
+            conn.close()
+        except Exception as exception:
+            print("delete_element: ", exception)
+            return False
+        
+        return True
+
+
     @classmethod
     def get_element(cls, table, id):
         result: dict

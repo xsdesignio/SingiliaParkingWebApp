@@ -389,7 +389,7 @@ form .default-button {
   grid-template-columns: 1fr 1fr;
   justify-content: center;
   align-items: start;
-  width: fit-content;
+  width: 100%;
   margin-left: auto;
   margin-right: auto;
   gap: 10px;
@@ -441,8 +441,28 @@ form .default-button {
 }
 
 
-.data-shown {
+.tickets-resume {
+  display: grid;
+  place-items: flex-start flex-start;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 20px;
+  gap: 12px;
   width: 100%;
+}
+
+
+.tickets-resume-by-duration {
+  width: 100%;
+  font-size: 14px;
+  padding: 20px;
+  width: minmax(200px, 300px);
+  border: 1px solid #008b21;
+}
+
+
+.data-shown {
+  max-width: 100%;
+  min-width: 200px;
   background-color: white;
 }
 .data-shown h3 {
@@ -781,6 +801,7 @@ form .default-button {
 
 
 .available-tickets-wrapper {
+  box-sizing: border-box;
   max-width: 100%;
   display: grid;
   place-items: center;
@@ -792,27 +813,58 @@ form .default-button {
   place-items: center;
   gap: 20px;
   width: fit-content;
-  max-width: 100%;
+  max-width: 80%;
   margin: 20px 0;
 }
 
 .available-ticket {
+  max-width: 100%;
+  overflow: hidden;
   border: 2px solid #45a583b9;
   background-color: white;
   padding: 20px;
 }
 
-.available-tickets-creation {
-  max-width: 400px;
+.available-ticket p {
+  margin-top: 20px;
 }
 
+.available-tickets-creation {
+  max-width: 400px;
+  margin-bottom: 60px;
+}
 
+.available-ticket form * {
+  display: grid;
+  place-items: left;
+  width: 100%;
+
+}
+.available-ticket form label {
+  margin-top: 20px;
+  margin-bottom: 12px;
+  width: 100%;
+}
+.available-ticket form input {
+  width: 100%;
+  padding: 6px 18px;
+  margin: 0 0 10px 0;
+  border-radius: 24px;
+  border: 1px solid var(--green)
+}
+
+.available-ticket form input[type="submit"] {
+  margin: 20px 0;
+}
+
+/* 
 .color-picker-wrapper {
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 2px 4px #09954886;
   background-color: #ffffff;
   display: flex;
+  margin-top: 16px;
   align-items: center;
   gap: 12px;
   display: grid;
@@ -843,4 +895,5 @@ form .default-button {
 
 .color-picker:focus {
   transform: scale(1.2);
-}
+} 
+*/

@@ -74,8 +74,10 @@ def _create_content(subject_name, subject_type, data_categories, data, start_dat
         if(category == "bulletins"):
             table_data += [
                 ['Cantidad total', category_data['bulletins_amount']],
-                ['Pagados', category_data['paid']],
-                ['Aún por pagar', category_data['not_paid']],
+                ['Pagados', category_data['paid_amount']],
+                ['Aún por pagar', category_data['not_paid_amount']],
+                ['Pagados con tarjeta', category_data['paid_by_card']],
+                ['Pagados en efectivo', category_data['paid_by_cash']]
             ]
 
         if(category == "tickets"):
@@ -84,24 +86,53 @@ def _create_content(subject_name, subject_type, data_categories, data, start_dat
                 ['Pagados con tarjeta', category_data['paid_by_card']],
                 ['Pagados en efectivo', category_data['paid_by_cash']]
             ]
-        
-        table_data += [
-            ['Duración de 30 minutos', category_data['duration_of_30']],
-            ['Ingresos por tickets de 30 minutos', f"{category_data['total_income_by_30']}0 €"],
-            ['Duración de 60 minutos', category_data['duration_of_60']],
-            ['Ingresos por tickets de 60 minutos', f"{category_data['total_income_by_60']}0 €"],
-            ['Duración de 90 minutos', category_data['duration_of_90']],
-            ['Ingresos por tickets de 90 minutos', f"{category_data['total_income_by_90']}0 €"],
-            ['Duración de 120 minutos', category_data['duration_of_120']],
-            ['Ingresos por tickets de 120 minutos', f"{category_data['total_income_by_120']}0 €"],
-            ['Total de ingresos', f"{category_data['total_income']}0 €"],
-        ]
 
         
         table = Table(table_data, colWidths=[260, 200], rowHeights=30)
 
         table.setStyle(table_style)
         content.append(table)
+
+
+        content.append(Spacer(1, 28))
+
+
+        subtitle = f'Resultados según duración'
+        content.append(Paragraph(subtitle, subtitle_style))
+
+        content.append(Spacer(1, 18))
+
+        
+        for duration_data in category_data["data_by_duration"]:
+            content.append(Spacer(1, 18))
+            subtitle = f'Resultados de { duration_data["duration"] }'
+
+            content.append(Paragraph(subtitle, subtitle_style))
+
+            table_data = [
+                    [f'Cantidad de {translation(category)}: ', duration_data["amount"]],
+                    [f'Pagados con tarjeta: ', duration_data["paid_by_card"]],
+                    [f'Pagados en efectivo: ', duration_data["paid_by_cash"]],
+                    [f'Ingresos por {translation(category)}: ', f"{duration_data['total_income']} €"],
+                ]
+            
+            duration_table_style = TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.white),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+                ('PADDING', (0, 0), (-1, 0), 20),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, 0), 12),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.toColor('#E1FFFF')),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.toColor('#00240a')),
+                ('PADDING', (0, 0), (-1, -1), 10),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ])
+        
+            table = Table(table_data, colWidths=[260, 200], rowHeights=30)
+
+            table.setStyle(duration_table_style)
+            content.append(table)
 
         content.append(Spacer(1, 40))
 

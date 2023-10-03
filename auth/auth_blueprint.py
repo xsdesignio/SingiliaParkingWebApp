@@ -108,7 +108,6 @@ def get_session():
         "email": session['email']
     }
 
-    print("session data: ", session_data)
     if 'associated_zone' in session:
         session_data['associated_zone'] = session['associated_zone']
 
