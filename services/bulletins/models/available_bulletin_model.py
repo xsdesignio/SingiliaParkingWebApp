@@ -14,7 +14,7 @@ class AvailableBulletinModel(BaseModel):
             Returns a list of available bulletins
         """
         db_results = cls.get_elements('available_bulletins')
-        print("db_results", db_results)
+        
         available_bulletins: list[AvailableBulletin] = []
 
         for result in db_results:
@@ -93,8 +93,6 @@ class AvailableBulletinModel(BaseModel):
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
             
-            print("query: ", query)
-            print("values: ", values)
             cursor.execute(query, values)
             
             result = cursor.fetchone()
@@ -102,7 +100,6 @@ class AvailableBulletinModel(BaseModel):
             # Creating available_bulletin object from database bulletin data
             available_bulletin = AvailableBulletin.from_dict(result)
 
-            print("Available Bulletin: ", available_bulletin.to_json())
             conn.commit()
             conn.close()
 

@@ -172,7 +172,7 @@ class BulletinModel(BaseModel):
     @classmethod
     def pay_bulletin(cls, bulletin_id:int, payment_method: PaymentMethod, price: str, duration: str) -> Bulletin:
         updated_bulletin: Bulletin
-        print(payment_method.value, price, duration, bulletin_id)
+        
 
 
         bulletin: Bulletin = cls.get_bulletin(bulletin_id)

@@ -126,8 +126,7 @@ def asign_zone(id):
 @login_required
 @users_bp.get('/get-assigned-zone')
 def get_user_zone():
-    print("fetching zone")
-    print(session)
+    
     if session.get("associated_zone") == None:
         user = UserModel.get_user(session.get("id"))
         
@@ -181,7 +180,6 @@ def update_user(user_id):
         new_user_data['password'] = new_password
     
     updated_user = UserModel.update_user(user_id, new_user_data)
-    print(updated_user)
     
     if updated_user:
         flash('Usuario actualizado correctamente.', 'success')
