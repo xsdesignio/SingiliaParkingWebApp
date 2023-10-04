@@ -46,7 +46,6 @@ class TicketModel(BaseModel):
         
         result = cls.get_elements('tickets', interval, **kwargs)
 
-        print(interval)
         tickets: list[Ticket] = []
 
         for ticket in result:
