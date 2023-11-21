@@ -25,7 +25,7 @@ CREATE TABLE tickets(
     id SERIAL PRIMARY KEY NOT NULL,
     responsible_id INTEGER REFERENCES users(id),
     zone_id INTEGER REFERENCES zones(id),
-    duration INTEGER NOT NULL,
+    duration VARCHAR(60) NOT NULL,
     registration VARCHAR(12) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     payment_method payment_method_type NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE bulletins(
     id SERIAL PRIMARY KEY NOT NULL,
     responsible_id INTEGER REFERENCES users(id),
     zone_id INTEGER REFERENCES zones(id),
-    duration INTEGER,
+    duration VARCHAR(60),
     registration VARCHAR(60) NOT NULL,
     price DECIMAL(10, 2),
     payment_method payment_method_type,
@@ -59,7 +59,7 @@ CREATE TABLE bulletins(
 CREATE TABLE available_bulletins(
     id SERIAL PRIMARY KEY NOT NULL,
     duration VARCHAR(40) NOT NULL UNIQUE,
-    price DECIMAL NOT NULL UNIQUE,
+    price DECIMAL(10, 2) NOT NULL UNIQUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

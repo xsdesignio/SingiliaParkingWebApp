@@ -86,7 +86,7 @@ export class TicketsManager {
                 <p>Zona: <strong>[zone_name]</strong></p>
                 <p>Fecha: <strong>[creation_date]</strong></p>
                 <p>Hora: <strong>[creation_time]</strong></p>
-                <p>Duración: <strong>[duration] min</strong></p>
+                <p>Duración: <strong>[duration]</strong></p>
                 <p>Precio: <strong>[price] €</strong></p>
                 <p>
                     Método de pago: 

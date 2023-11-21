@@ -4,9 +4,11 @@
 
 {% block content %}
     
-    <h1 class="center-text">Administración de Boletines</h1>
-    {# PAGE DATA #}
+    <div class="page-title">
+        <h1>Administración de Boletines</h1>
+    </div>
 
+    {# PAGE DATA #}
     <section class="filter-section">
         <article class="filter-options">
             <h2>Filtrar Resultados: </h2>
@@ -99,7 +101,7 @@
 
 
         <article>
-            <h2 class="title">Resumen por duración</h2>
+            <h2 class="title">Resumen por duración de boletines pagados.</h2>
             <div class="tickets-resume">
                 {% if bulletins_data %}
                     {% for bulletins_data_by_duration in bulletins_data.data_by_duration %}

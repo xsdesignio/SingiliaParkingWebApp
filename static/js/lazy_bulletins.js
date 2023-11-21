@@ -7,6 +7,8 @@ const PAYMENT_METHODS = {
 };
 
 
+// Modificar this.bulletin para que no haya ninguno definido, ya que el template varía según se haya pagado o aún no
+
 export class BulletinsManager {
     constructor(element, record_wrapper_id = "record", extra_filters = {}) {
         this.page = 0
@@ -38,8 +40,10 @@ export class BulletinsManager {
     }
 
 
-    bulletinTemplate() {
-        return `
+    bulletinTemplate(paid) {
+
+
+        let template =  `
             <div class="ticket bulletin-box">
                 <img class="icon-logo" src="/static/assets/icons/logo.png" alt="ticket" />
                 <h3>Boletín Estacionamiento Regulado</h3>
@@ -48,18 +52,22 @@ export class BulletinsManager {
                 <p>Zona: <strong>[zone_name]</strong></p>
                 <p>Fecha: <strong>[creation_date]</strong></p>
                 <p>Hora: <strong>[creation_time]</strong></p>
-                <p>Duración: <strong>[duration] min</strong></p>
-                <p>Precio: <strong>[price] €</strong></p>
                 <p>Estado: <strong>[paid]</strong></p>
+                <p>Matrícula: <strong>[registration]</strong></p>
+        `
+
+        if(paid)
+            template+=`<p>Duración: <strong>[duration]</strong></p>
+                <p>Precio: <strong>[price] €</strong></p>
                 <p>
                     Método de pago: 
                     <strong> 
                         [payment_method]
                     </strong>
-                </p>
-                <p>Matrícula: <strong>[registration]</strong></p>
-            </div>
-        `
+                </p>`
+
+        template += '</div>'
+
     }
 
 

@@ -105,6 +105,18 @@ nav a.selected {
 }
 
 
+.page-title {
+  display: grid;
+  grid-template-columns: auto auto;
+  width: fit-content;
+  color: var(--dark_green);
+  margin-bottom: 10px;
+}
+
+.page-title h1 {
+  margin-left: 20px;
+}
+
 .capital-letter {
   text-transform: capitalize;
 }
@@ -133,24 +145,16 @@ nav a.selected {
 }
 
 main {
+  height: fit-content;
   grid-area: content;
   background: linear-gradient(-60deg, rgb(243, 255, 244) 0%, rgb(255, 255, 255) 50%, rgb(225, 255, 246) 100%);
-  padding: 40px 20px;
+  padding: 20px;
   display: grid;
   overflow-y: scroll;
 }
 
 main > h1, h2 {
   color: var(--dark_green);
-}
-
-
-main h1 {
-  margin-bottom: 40px;
-}
-
-main > h2, h3 {
-  margin-top: 40px;
 }
 
 
@@ -161,6 +165,11 @@ main section {
   margin: 10px 0 10px 0;
 }
 
+.left-section {
+  place-items: flex-start !important;
+  margin: 0 !important;
+  height: fit-content;
+}
 
 main h2 {
   margin-bottom: 20px;

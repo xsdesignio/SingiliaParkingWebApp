@@ -48,6 +48,9 @@ def get_tickets_attributes_count(start_date: datetime = None, end_date: datetime
         paid_by_card = TicketModel.count_tickets(**query_dict, duration = duration, payment_method = "CARD")
         paid_by_cash = TicketModel.count_tickets(**query_dict, duration = duration, payment_method = "CASH")
 
+        if count_by_duration == None:
+            count_by_duration = 0
+
         data_by_duration_dict = {
             "duration": duration,
             "amount": count_by_duration,

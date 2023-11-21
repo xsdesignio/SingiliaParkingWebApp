@@ -35,7 +35,7 @@ def get_bulletins_attributes_count(start_date: datetime.datetime = None, end_dat
     paid_by_cash = BulletinModel.count_bulletins(**query_dict, payment_method = "CASH")
 
     bulletins_amount = {
-        "bulletins_amount": paid_by_card + paid_by_cash,
+        "bulletins_amount": paid + not_paid,
         "paid_amount": paid,
         "not_paid_amount": not_paid,
         "paid_by_cash": paid_by_cash,
@@ -55,6 +55,9 @@ def get_bulletins_attributes_count(start_date: datetime.datetime = None, end_dat
         paid_by_card = BulletinModel.count_bulletins(**query_dict, duration = duration, payment_method = "CARD")
         paid_by_cash = BulletinModel.count_bulletins(**query_dict, duration = duration, payment_method = "CASH")
 
+        if count_by_duration == None:
+            count_by_duration = 0
+            
         data_by_duration_dict = {
             "duration": duration,
             "amount": count_by_duration,
