@@ -21,9 +21,6 @@ export class BulletinsManager {
     }
 
     initializeDOMElements() {
-
-        this.bulletin = this.bulletinTemplate()
-
         const urlParams = new URLSearchParams(window.location.search);
 
         let start_date = urlParams.get('start_date')
@@ -68,6 +65,7 @@ export class BulletinsManager {
 
         template += '</div>'
 
+        return template
     }
 
 
@@ -101,31 +99,32 @@ export class BulletinsManager {
         this.page += 1
     }
 
-    format_bulletin(data) {
+    format_bulletin(bulletin) {
 
-        let payment_method = PAYMENT_METHODS[data.payment_method] || "Aún no ha sido pagado";
-        
-        console.log(data)
+        let payment_method = PAYMENT_METHODS[bulletin.payment_method] || "Aún no ha sido pagado";
         //Extract the date and the time from the created_at field
-        let creation_date = data.created_at.split(' ')[0]
-        let creation_time = data.created_at.split(' ')[1]
+        let creation_date = bulletin.created_at.split(' ')[0]
+        let creation_time = bulletin.created_at.split(' ')[1]
 
         // Modifying creation_date to set in format of day-month-year
         creation_date = creation_date.split('-').reverse().join('-')
 
-        let paid = data.paid ? 'Pagado' : 'No pagado'
-
-        let formatted_bulletin = this.bulletin.replace('[creation_date]', creation_date)
+        let bulletin_template = this.bulletinTemplate(bulletin.paid)
+        let formatted_bulletin = bulletin_template.replace('[creation_date]', creation_date)
                     .replace('[creation_time]', creation_time)
-                    .replace('[responsible]', data.responsible)
-                    .replace('[duration]', data.duration)
-                    .replace('[price]', data.price)
-                    .replace('[paid]', paid)
-                    .replace('[payment_method]', payment_method)
-                    .replace('[registration]', data.registration)
-                    .replace('[zone_name]', data.zone)
+                    .replace('[responsible]', bulletin.responsible)
+                    .replace('[registration]', bulletin.registration)
+                    .replace('[zone_name]', bulletin.zone)
+                    .replace('[paid]', bulletin.paid ? 'Pagado' : 'No pagado')
 
-        let car_data = this.format_bulletin_car_info(data) 
+        console.log(formatted_bulletin)
+        if(bulletin.paid == true)
+            formatted_bulletin = formatted_bulletin.replace('[duration]', bulletin.duration)
+                    .replace('[price]', bulletin.price)
+                    .replace('[payment_method]', payment_method)
+
+        console.log(formatted_bulletin)
+        let car_data = this.format_bulletin_car_info(bulletin) 
         let formatted_element = formatted_bulletin.replace('</div>', car_data + '</div>')
         
         return formatted_element

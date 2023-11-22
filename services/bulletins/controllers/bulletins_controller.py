@@ -65,7 +65,7 @@ def get_bulletins_attributes_count(start_date: datetime.datetime = None, end_dat
             "not_paid_amount": paid_by_cash,
             "paid_by_card": paid_by_card,
             "paid_by_cash": paid_by_cash,
-            "total_income": count_by_duration * price,
+            "total_income": paid * price,
         }
 
         bulletins_amount["data_by_duration"].append(data_by_duration_dict)
