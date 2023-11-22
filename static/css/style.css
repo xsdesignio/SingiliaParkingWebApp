@@ -146,6 +146,7 @@ nav a.selected {
 
 main {
   height: fit-content;
+  max-height: 100%;
   grid-area: content;
   background: linear-gradient(-60deg, rgb(243, 255, 244) 0%, rgb(255, 255, 255) 50%, rgb(225, 255, 246) 100%);
   padding: 20px;
