@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, send_file, render_template, request, session
 from flask_cors import CORS
 from auth.controllers.login import login_required
 
@@ -76,6 +76,13 @@ def home():
 
 
 
+
+@app.get("/printer-logo")
+@login_required
+def printerLogo():
+    imageUrl = "./static/assets/mobile/logos.bmp"
+
+    return send_file(imageUrl, mimetype='image/jpeg')
 
 if __name__ == "__main__":
     host = os.environ.get('HOST', 'localhost')
