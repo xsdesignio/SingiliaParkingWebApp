@@ -65,7 +65,6 @@ class BaseModel:
             for index, (key, value) in enumerate(kwargs.items()):
                 if key == 'start_date':
                     query += f'created_at >= %s'
-                    value -= timedelta(days=1)
                 elif key == 'end_date':
                     query += f'created_at <= %s'
                     value += timedelta(days=1)
@@ -126,7 +125,6 @@ class BaseModel:
             for index, (key, value) in enumerate(kwargs.items()):
                 if key == 'start_date':
                     query += f'created_at > %s'
-                    value -= timedelta(days=1)
                 elif key == 'end_date':
                     query += f'created_at < %s'
                     value += timedelta(days=1)
@@ -182,8 +180,7 @@ class BaseModel:
                     
                 if key == 'start_date':
                     query += 'created_at > %s'
-                    value_copy = value - timedelta(days=1)
-                    params.append(value_copy)
+                    params.append(value)
                 elif key == 'end_date':
                     query += 'created_at < %s'
                     value_copy = value + timedelta(days=1)
