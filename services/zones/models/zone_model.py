@@ -19,9 +19,59 @@ class ZoneModel:
             print("get_zones_list: ", exception)
             return None
         
-        result = [Zone(zone["id"], zone["name"]).to_json() for zone in result]
+        result = [Zone(
+                zone["id"], 
+                zone["name"],  
+                zone["identifier"], 
+                zone["tickets"], 
+                zone["bulletins"]
+            ).to_json() for zone in result]
 
         return result
+    
+    @classmethod
+    def count_ticket(cls, zone_id):
+        tickets_amount: int
+        try:
+            conn = get_connection()
+            
+            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+            
+            cursor.execute('SELECT * FROM zones WHERE id = %s', (zone_id,))
+            result = cursor.fetchone()
+            
+            tickets_amount = result["tickets"]+1
+
+            cursor.execute('UPDATE zones SET tickets = %s WHERE id = %s', (tickets_amount, zone_id))
+            conn.commit()
+            conn.close()
+
+        except Exception as exception:
+            print("update_zone: ", exception)
+            return -1
+        return tickets_amount
+    
+
+    @classmethod
+    def count_bulletin(cls, id):
+        bulletins_amount: int
+        try:
+            conn = get_connection()
+            
+            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+            cursor.execute('SELECT * FROM zones WHERE id = %s', (id,))
+            result = cursor.fetchone()
+            
+            bulletins_amount = result["bulletins"]+1
+            cursor.execute('UPDATE zones SET bulletins = %s WHERE id = %s', (bulletins_amount, id))
+            conn.commit()
+            conn.close()
+
+        except Exception as exception:
+            print("update_zone: ", exception)
+            return -1
+        return bulletins_amount
+    
     
     @classmethod
     def get_zone_by_name(cls, name) -> Zone:
@@ -35,8 +85,13 @@ class ZoneModel:
             if result is None:
                 return None
             
-            zone = Zone(result["id"], result["name"])
-
+            zone = Zone(
+                result["id"], 
+                result["name"],  
+                result["identifier"], 
+                result["tickets"], 
+                result["bulletins"]
+            )
             conn.close()
         except Exception as exception:
             print("get_zone_by_name: ", exception)
@@ -52,7 +107,13 @@ class ZoneModel:
             cursor.execute('SELECT * FROM zones WHERE id = %s', (id,))
             result = cursor.fetchone()
 
-            zone = Zone(result["id"], result["name"])
+            zone = Zone(
+                result["id"], 
+                result["name"],  
+                result["identifier"], 
+                result["tickets"], 
+                result["bulletins"]
+            )
 
             conn.close()
         except Exception as exception:
@@ -61,15 +122,21 @@ class ZoneModel:
         return zone
     
     @classmethod
-    def create_zone(cls, name) -> bool:
+    def create_zone(cls, name, identifier) -> bool:
         try:
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cursor.execute('INSERT INTO zones (name) VALUES (%s) RETURNING *', (name,))
+            cursor.execute('INSERT INTO zones (name, identifier) VALUES (%s, %s) RETURNING *', (name, identifier))
             
             result = cursor.fetchone()
 
-            zone = Zone(result["id"], result["name"])
+            zone = Zone(
+                result["id"], 
+                result["name"], 
+                result["identifier"],
+                result["tickets"], 
+                result["bulletins"]
+            )
             
             conn.commit()
             conn.close()

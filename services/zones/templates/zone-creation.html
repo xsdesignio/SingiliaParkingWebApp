@@ -15,8 +15,14 @@
         <div class="form-wrapper">
             <h2>Crear zona</h2>
             <form action="/zones/create-zone" method="post" class="general-form">
-                <label for="name">Nombre</label>
-                <input type="text" name="name" id="name" placeholder="Introduce el nombre de la zona" required>
+                <div>
+                    <label for="name">Nombre</label>
+                    <input type="text" name="name" id="name" placeholder="Introduce el nombre de la zona" required>
+                </div>
+                <div>
+                   <label for="identifier">Identificador</label>
+                    <input type="text" id="identifier" name="identifier" id="name"  maxlength="2" placeholder="Introduce el identificador de la zona" required>
+                </div>
                 
                 <input class="default-button" type="submit" value="Crear">
             </form>

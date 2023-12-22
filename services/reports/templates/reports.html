@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %} Usuarios {% endblock %}
+
+{% block content %}
+    <div class="page-title">
+        <h1>Generación de Liquidaciones</h1>
+    </div>
+    
+    <section>
+
+        <div class="default-box">
+            <article>
+                <h2>Generar liquidación</h2>
+                <form class="general-form" action="/reports/generate-report" method="POST">
+                    <div class="two-columns-flex">
+                        <div class="input-container">
+                            <label for="start_date">Fecha de inicio: </label>
+                            <input type="date" name="start_date">
+                        </div>
+                            
+                        <div class="input-container">
+                            <label for="end_date">Fecha de fin: </label>
+                            <input type="date" name="end_date">   
+                        </div>
+                    </div>
+
+                    <div class="two-columns-flex">
+                        <div class="input-container">
+                            <label for="user_name">Seleccionar Usuario: </label>
+                            <select name="user_name" value="Tickets">
+                                {% for user in users %}
+                                    <option value="{{ user.name }}" selected>
+                                        {{ user.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                            
+                        <div class="input-container">
+                            <label for="zone_name">Seleccionar Zona: </label>
+                            <select name="zone_name" value="Tickets">
+                                {% for zone in zones %}
+                                    <option value="{{ zone.name }}" selected>
+                                        {{ zone.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>   
+                        </div>
+                    </div>
+
+                    <input class="default-button" type="submit" value="Generar Pdf">
+                </form>
+            </article>
+        </div>
+
+    </section>
+    
+{% endblock %}

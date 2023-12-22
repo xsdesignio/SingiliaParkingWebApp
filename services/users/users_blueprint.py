@@ -34,7 +34,6 @@ def users_page():
 def generate_report(id):
     """ Returns the tickets filtered by date or by zone. Filters are optional and can be combined. They are obtained by get arguments."""
     
-    """ Returns the tickets filtered by date or by zone. Filters are optional and can be combined. They are obtained by get arguments."""
     report_object = request.args.get('report_object')
 
     start_date = parse_date(request.args.get('start_date'), datetime.now() - timedelta(days=30))
@@ -52,7 +51,6 @@ def generate_report(id):
         #bulletins = BulletinModel.get_bulletins(**query_values)
         bulletins_amount_by_data = get_bulletins_attributes_count(start_date=start_date, end_date=end_date, user=user)
         data["bulletins"] = bulletins_amount_by_data
-    
 
     created_report_url = create_report_for_user(data, user, start_date, end_date)
 

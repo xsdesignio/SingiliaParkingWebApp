@@ -37,7 +37,6 @@ def zones_page():
 def zone_details(id):
     zone = ZoneModel.get_zone(id)
 
-
     start_date = parse_date(request.args.get('start_date'), datetime.now() - timedelta(days=30))
     end_date = parse_date(request.args.get('end_date'), datetime.now())
 
@@ -56,7 +55,17 @@ def zone_details(id):
         return render_template('zone-details.html', error=error_message)
         
 
-@role_required('EMPLOYEE')
+
+
+@role_required('ADMIN')
+@zones_bp.get('/zone/<id>/edit')
+def zone_editing_view(id):
+    zone = ZoneModel.get_zone(id)
+
+    return render_template('zone-editing.html', zone=zone)
+
+
+@role_required('ADMIN')
 @zones_bp.post('/zone/<id>/edit')
 def zone_editing(id):
     zone = ZoneModel.get_zone(id)
@@ -135,8 +144,9 @@ def generate_report(id):
 @zones_bp.post('/create-zone')
 def create_zone():
     name = request.form['name']
+    identifier = request.form['identifier']
 
-    zone: Zone = ZoneModel.create_zone(name)
+    zone: Zone = ZoneModel.create_zone(name, identifier)
 
     if zone != None:
         flash('Zona creada correctamente', 'success')

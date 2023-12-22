@@ -43,6 +43,14 @@ def login():
         }), 500
 
 
+@auth_bp.get('/signup')
+def signup_page():
+    """Signup page"""
+    if 'id' in session:
+        return redirect('/')
+    return render_template('signup.html')
+
+
 @auth_bp.post('/signup')
 def signup():
     """Signup user by a json request and return user data if signup is successful

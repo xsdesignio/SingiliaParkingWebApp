@@ -31,6 +31,11 @@
   font-family: 'Poppins', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
+body {
+  background: linear-gradient(-60deg, rgb(243, 255, 244) 0%, rgb(255, 255, 255) 50%, rgb(225, 255, 246) 100%);
+  
+}
+
 
 .container {
   display: grid;
@@ -51,6 +56,12 @@
   padding: 0px;
   max-height: 100vh;
   border-right: 1px solid #45a583b9;
+}
+
+h1 {
+  max-width: 600px;
+  margin-left: 20px;
+  margin-bottom: 40px;
 }
 
 header {
@@ -113,9 +124,6 @@ nav a.selected {
   margin-bottom: 10px;
 }
 
-.page-title h1 {
-  margin-left: 20px;
-}
 
 .capital-letter {
   text-transform: capitalize;
@@ -144,12 +152,20 @@ nav a.selected {
   width: 100%;
 }
 
+
+.max-width--400 {
+  max-width: 400px;
+}
+
+.max-width--600 {
+  max-width: 600px;
+}
+
 main {
   height: fit-content;
   max-height: 100%;
-  grid-area: content;
-  background: linear-gradient(-60deg, rgb(243, 255, 244) 0%, rgb(255, 255, 255) 50%, rgb(225, 255, 246) 100%);
-  padding: 20px;
+  
+  grid-area: content;padding: 20px;
   display: grid;
   overflow-y: scroll;
 }
@@ -182,6 +198,7 @@ article {
   padding: 32px 20px;
   border: 1px solid #45a583b9;
   background-color: white;
+  border-radius: 12px;
   width: 100%;
 }
 
@@ -334,6 +351,7 @@ form .default-button {
 
 .default-box {
   width: 100%;
+  max-width: 600px;
 }
 
 
@@ -760,6 +778,7 @@ form .default-button {
 
 .yellow-box {
   border: 2px solid rgba(253, 246, 50, 0.8);
+  border-radius: 8px;
   transition: transform .1s ease;
 }
 .yellow-box:hover {
@@ -769,6 +788,7 @@ form .default-button {
 
 .green-box {
   border: 2px solid rgba(58, 175, 25, 0.8);
+  border-radius: 8px;
   transition: transform .1s ease;
 }
 .green-box:hover {
@@ -778,6 +798,7 @@ form .default-button {
 
 .orange-box {
   border: 2px solid rgba(255, 141, 3, 0.8);
+  border-radius: 8px;
   transition: transform .1s ease;
 }
 .orange-box:hover {
@@ -787,6 +808,7 @@ form .default-button {
 
 .pink-box {
   border: 2px solid rgba(228, 68, 121, 0.8);
+  border-radius: 8px;
   transition: transform .1s ease;
 }
 .pink-box:hover {
@@ -796,6 +818,7 @@ form .default-button {
 
 .bulletin-box {
   border: 2px solid rgba(63, 77, 202, 0.8);
+  border-radius: 8px;
   transition: transform .1s ease;
 }
 .bulletin-box:hover {

@@ -82,6 +82,7 @@ export class TicketsManager {
             <div class="ticket green-box">
                 <img class="icon-logo" src="/static/assets/icons/logo.png" alt="ticket" />
                 <h3>Ticket Estacionamiento Regulado</h3>
+                <p>Id: <strong>[id]</strong></p>
                 <p>Responsable: <strong class="capital-letter">[responsible]</strong></p>
                 <p>Zona: <strong>[zone_name]</strong></p>
                 <p>Fecha: <strong>[creation_date]</strong></p>
@@ -112,7 +113,8 @@ export class TicketsManager {
 
         let payment_method = PAYMENT_METHODS[data.payment_method] || PAYMENT_METHODS.DEFAULT;
 
-        return this.ticket.replace('[creation_date]', creation_date)
+        return this.ticket.replace('[id]', data.id)
+                    .replace('[creation_date]', creation_date)
                     .replace('[creation_time]', creation_time)
                     .replace('[responsible]', data.responsible)
                     .replace('[duration]', data.duration)

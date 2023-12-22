@@ -7,7 +7,7 @@ from services.utils.payment_methods import PaymentMethod
 
 @dataclass
 class Ticket:
-    id: int
+    id: str
     responsible: User
     zone: Zone
     duration: int # in minutes

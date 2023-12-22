@@ -15,10 +15,7 @@ def login_required(function):
     return wrapper
 
 
-
-
 # Create the enum for the roles so the decorator can check if the user has the required role or a higher one
-
 
 def role_required(role:str):
     def decorator(function):
@@ -63,6 +60,7 @@ def login_user(email, password) -> bool:
     # Obtaining user
     user: User = UserModel.get_validated_user(email, password)
 
+    print(user)
     if user != None:
         session['id'] = user.id
         session['role'] = user.role.name

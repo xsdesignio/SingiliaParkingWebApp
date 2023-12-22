@@ -44,7 +44,7 @@ export class BulletinsManager {
             <div class="ticket bulletin-box">
                 <img class="icon-logo" src="/static/assets/icons/logo.png" alt="ticket" />
                 <h3>Boletín Estacionamiento Regulado</h3>
-
+                <p>Id: <strong class="capital-letter">[id]</strong></p>
                 <p>Responsable: <strong class="capital-letter">[responsible]</strong></p>
                 <p>Zona: <strong>[zone_name]</strong></p>
                 <p>Fecha: <strong>[creation_date]</strong></p>
@@ -110,7 +110,8 @@ export class BulletinsManager {
         creation_date = creation_date.split('-').reverse().join('-')
 
         let bulletin_template = this.bulletinTemplate(bulletin.paid)
-        let formatted_bulletin = bulletin_template.replace('[creation_date]', creation_date)
+        let formatted_bulletin = bulletin_template.replace('[id]', bulletin.id)
+                    .replace('[creation_date]', creation_date)
                     .replace('[creation_time]', creation_time)
                     .replace('[responsible]', bulletin.responsible)
                     .replace('[registration]', bulletin.registration)

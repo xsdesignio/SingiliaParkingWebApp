@@ -25,6 +25,9 @@
                             <a class="{{ 'selected' if request.path == '/' else '' }}" href="/">Resumen</a>
                         </li>
                         <li>
+                            <a class="{{ 'selected' if '/reports/' in request.path else '' }}" href="/reports/">Liquidaciones</a>
+                        </li>
+                        <li>
                             <a class="{{ 'selected' if '/tickets/' in request.path else '' }}" href="/tickets/">Tickets</a>
                         </li>
                         <li>
@@ -36,7 +39,6 @@
                         <li>
                             <a class="{{ 'selected' if '/zones/' in request.path else '' }}" href="/zones/">Zonas</a>
                         </li>
-    
                     </ul>
 
                 </nav>

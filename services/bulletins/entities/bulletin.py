@@ -10,10 +10,14 @@ from services.utils.payment_methods import PaymentMethod
 
 @dataclass
 class Bulletin:
-    id: int
+    # Creation Properties
+    id: str
     responsible: User
     zone: Zone
     registration: str
+    precept: str 
+
+    # Anulation Properties
     duration: int = None
     price: Decimal = None
     payment_method: PaymentMethod = None
@@ -37,6 +41,7 @@ class Bulletin:
             "responsible": self.responsible.name if self.responsible else "Usuario eliminado",
             "zone": self.zone.name if self.zone else "Zona eliminada",
             "registration": self.registration,
+            "precept": self.precept,
             "paid": self.paid,
             "brand": self.brand,
             "model": self.model,

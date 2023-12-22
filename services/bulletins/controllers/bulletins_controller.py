@@ -57,9 +57,11 @@ def get_bulletins_attributes_count(start_date: datetime.datetime = None, end_dat
 
         if count_by_duration == None:
             count_by_duration = 0
-            
+        
+        price = available_bulletin["price"]
         data_by_duration_dict = {
             "duration": duration,
+            "price": price,
             "amount": count_by_duration,
             "paid_amount": paid_by_card,
             "not_paid_amount": paid_by_cash,

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Auth</title>
+        <link href="{{ url_for('static', filename='/css/style.css')}}" rel="stylesheet" type="text/css">
+    </head>
+    <body>
+        <!-- Create a html body for a login page with a fake form in the center and a button that calls a javascript function in order to convert the data into a json and sent it to server -->
+        <div class="login-container">
+            <div class="login">
+                <div class="img-container">
+                    <img class="img-logo" src="{{ url_for('static', filename='/assets/logo.png')}}" alt="">
+                </div>
+
+                <h1>Crear cuenta</h1>
+                
+                <form id="signup-form" action="javascript:signup()">
+                    <input type="text" name="name" placeholder="Nombre" required="required" />
+                    <select name="role" id="role" style="margin-bottom: 20px;">
+                        <option value="ADMIN">Administrador</option>
+                        <option value="MANAGER">Manager</option>
+                        <option value="EMPLOYEE">Encargado</option>
+                    </select>
+                    <input type="text" name="email" placeholder="Email" required="required" />
+                    <input type="password" name="password" placeholder="Contraseña" required="required" />
+                    <input type="password" name="security_code" placeholder="Código de seguridad" required="required" />
+                    <button class="default-button" type="submit">Acceder</button>
+                </form>
+                <div>
+                    <p>Administración de zona azul de parking en Antequera.</p>
+                    <span>Página solo disponible para Administradores.</span>
+                </div>
+                
+            </div>
+        </div>
+        <source>
+            <script src="{{ url_for('static', filename='/js/session.js') }}"></script>
+        </source>
+
+    </body>
+
+        
+</html>
+ 

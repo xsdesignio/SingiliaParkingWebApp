@@ -17,12 +17,15 @@ CREATE TABLE users(
 CREATE TABLE zones(
     id SERIAL PRIMARY KEY NOT NULL,
     name VARCHAR(100) NOT NULL UNIQUE,
+    identifier VARCHAR(2) DEFAULT 'AA' NOT NULL UNIQUE,
+    tickets INTEGER NOT NULL DEFAULT 0,
+    bulletins INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 
 CREATE TABLE tickets(
-    id SERIAL PRIMARY KEY NOT NULL,
+    id VARCHAR(8) PRIMARY KEY NOT NULL CONSTRAINT chk_id_format CHECK (id ~ '^[A-Z]{2}/\d{5}$'),
     responsible_id INTEGER REFERENCES users(id),
     zone_id INTEGER REFERENCES zones(id),
     duration VARCHAR(60) NOT NULL,
@@ -32,15 +35,9 @@ CREATE TABLE tickets(
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE available_tickets(
-    id SERIAL PRIMARY KEY NOT NULL,
-    duration VARCHAR(40) NOT NULL UNIQUE,
-    price DECIMAL(10, 2) NOT NULL UNIQUE,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
 
 CREATE TABLE bulletins(
-    id SERIAL PRIMARY KEY NOT NULL,
+    id VARCHAR(8) PRIMARY KEY NOT NULL CONSTRAINT chk_id_format CHECK (id ~ '^[A-Z]{2}/\d{5}$'),
     responsible_id INTEGER REFERENCES users(id),
     zone_id INTEGER REFERENCES zones(id),
     duration VARCHAR(60),
@@ -55,6 +52,14 @@ CREATE TABLE bulletins(
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+
+
+CREATE TABLE available_tickets(
+    id SERIAL PRIMARY KEY NOT NULL,
+    duration VARCHAR(40) NOT NULL UNIQUE,
+    price DECIMAL(10, 2) NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE available_bulletins(
     id SERIAL PRIMARY KEY NOT NULL,

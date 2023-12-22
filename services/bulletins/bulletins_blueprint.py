@@ -49,14 +49,16 @@ def bulletins_page():
 
 
 
-@bulletins_bp.get('/get-bulletin/<id>')
+@bulletins_bp.get('/get-bulletin/<path:id>')
 @login_required
-def get_bulletin(id: int):
+def get_bulletin(id: str):
     bulletin = BulletinModel.get_bulletin(id)
+    
     if bulletin != None:
         return jsonify(bulletin.to_json()), 200
     else:
-        return {'message': 'Ha ocurrido un error obteniendo el boletin indicado'}, 500
+        return jsonify({}), 200
+
 
 
 @bulletins_bp.post('/get-bulletins/<page>')
@@ -149,7 +151,7 @@ def create_bulletin():
     
 
 
-@bulletins_bp.post('/pay/<id>')
+@bulletins_bp.post('/pay/<path:id>')
 @login_required
 def pay_bulletin(id: str):
     """Pay a bulletin
@@ -164,8 +166,7 @@ def pay_bulletin(id: str):
     """
     try:
         # Get the bulletin
-        bulletin_id = int(id)
-        bulletin = BulletinModel.get_bulletin(bulletin_id)
+        bulletin = BulletinModel.get_bulletin(id)
 
         # Check if the bulletin exists and if it has been paid
         if not bulletin:
@@ -195,7 +196,7 @@ def pay_bulletin(id: str):
 
 
         # Pay the bulletin
-        paid_bulletin = BulletinModel.pay_bulletin(bulletin_id, payment_method_used, price, duration)
+        paid_bulletin = BulletinModel.pay_bulletin(id, payment_method_used, price, duration)
         if(paid_bulletin == None):
             return jsonify({'message': "El boletin no pudo ser pagado"}), 400
         
@@ -312,7 +313,7 @@ def edit_available_bulletin(id):
 
 
 @role_required("ADMIN")
-@bulletins_bp.post('/available-bulletins/delete/<id>')
+@bulletins_bp.post('/available-bulletins/delete/<path:id>')
 def delete_available_bulletin(id):
     available_bulletin_id = int(id)
     bulletin_deleted = AvailableBulletinModel.delete_available_bulletin(available_bulletin_id)

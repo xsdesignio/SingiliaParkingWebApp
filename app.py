@@ -7,6 +7,7 @@ from services.users.users_blueprint import users_bp
 from services.tickets.tickets_blueprint import tickets_bp
 from services.bulletins.bulletins_blueprint import bulletins_bp
 from services.zones.zones_blueprint import zones_bp
+from services.reports.reports_blueprint import reports_bp
 
 from services.resumeController import get_resume_information
 from services.zones.models.zone_model import ZoneModel
@@ -33,6 +34,7 @@ app.register_blueprint(tickets_bp, url_prefix ='/tickets')
 app.register_blueprint(users_bp, url_prefix ='/users')
 app.register_blueprint(bulletins_bp, url_prefix="/bulletins")
 app.register_blueprint(zones_bp, url_prefix="/zones")
+app.register_blueprint(reports_bp, url_prefix="/reports")
 
 
 @app.before_request

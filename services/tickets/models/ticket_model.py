@@ -18,7 +18,7 @@ from database.base_model import BaseModel
 class TicketModel(BaseModel):
 
     @classmethod
-    def get_ticket(cls, id:int) -> Ticket:
+    def get_ticket(cls, id:str) -> Ticket:
         """
             Returns a ticket object with the data saved on the database for the introduced id.
             Returns None if the ticket id doesn't exists
@@ -90,14 +90,20 @@ class TicketModel(BaseModel):
         """Returns the created Ticket if is successfully created."""
 
         ticket: Ticket
+        zone_tickets_amount = ZoneModel.count_ticket(zone.id)
+
+        if(zone_tickets_amount < 0):
+            return None;
+    
+        id = f"{zone.identifier}/{str(zone_tickets_amount).zfill(5)}"
 
         query = '''
-                INSERT INTO tickets(responsible_id, zone_id, duration, registration, price, payment_method, created_at) 
-                VALUES(%s, %s, %s, %s, %s, %s, %s) 
+                INSERT INTO tickets(id, responsible_id, zone_id, duration, registration, price, payment_method, created_at) 
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s) 
                 RETURNING *
             '''
         
-        values = (responsible.id, zone.id, duration, registration, price, payment_method.value, created_at)
+        values = (id, responsible.id, zone.id, duration, registration, price, payment_method.value, created_at)
 
         try:
             conn = get_connection()
@@ -131,7 +137,7 @@ class TicketModel(BaseModel):
     
 
     @classmethod
-    def delete_ticket(cls, id: int) -> Ticket:
+    def delete_ticket(cls, id: str) -> Ticket:
         """
             Delete the ticket with params id and returns it.
             Returns an exception if it is not found.

@@ -48,7 +48,7 @@ def tickets_page():
 
 
 
-@tickets_bp.get('/get-ticket/<id>')
+@tickets_bp.get('/get-ticket/<path:id>')
 @login_required
 def get_ticket(id: int):
     ticket = TicketModel.get_ticket(id)

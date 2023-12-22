@@ -7,7 +7,6 @@ from typing import Optional
 
 class BaseModel:
 
-
     @classmethod
     def delete_element(cls, table, id):
         try:
@@ -26,10 +25,11 @@ class BaseModel:
     @classmethod
     def get_element(cls, table, id):
         result: dict
+        query: str = f'SELECT * FROM { table } WHERE id= %s'
         try:
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-            cursor.execute(f'SELECT * FROM { table } WHERE id= %s', (id,))
+            cursor.execute(query, (id,))
 
             result = cursor.fetchone()
 
@@ -150,7 +150,6 @@ class BaseModel:
         try:
             with get_connection() as conn:
                 cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-                print(query, tuple(params))
                 cursor.execute(query, tuple(params))
                 result = cursor.fetchall()
 

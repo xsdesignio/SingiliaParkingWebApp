@@ -31,6 +31,7 @@ class BulletinModel(BaseModel):
                     zone = zone,
                     duration = bulletin.get("duration"),
                     registration = bulletin["registration"],
+                    precept = bulletin["precept"],
                     price = bulletin.get("price"),
                     payment_method = payment_method,
                     paid = bulletin.get("paid"),
@@ -45,13 +46,15 @@ class BulletinModel(BaseModel):
 
 
     @classmethod
-    def get_bulletin(cls, id:int) -> Bulletin:
+    def get_bulletin(cls, id:str) -> Bulletin|None:
         """
             Returns a bulletin object with the data saved on the database for the introduced id.
             Returns None if the bulletin id doesn't exists
         """
         result = cls.get_element('bulletins', id)
-
+        
+        if (result == None):
+            return None
 
         responsible: User = UserModel.get_user(result["responsible_id"])
         zone: Zone = ZoneModel.get_zone(result["zone_id"])
@@ -69,6 +72,7 @@ class BulletinModel(BaseModel):
             zone = zone, 
             duration = result.get("duration"), 
             registration = result["registration"], 
+            precept = result["precept"],
             price = result.get("price"), 
             payment_method= payment_method_obj,
             paid = result.get("paid"), 
@@ -97,25 +101,25 @@ class BulletinModel(BaseModel):
         """Returns the created Bulletin if is successfully created."""
 
         bulletin: Bulletin
+        zone_bulletins_amount = ZoneModel.count_bulletin(zone.id)
+        
+        if(zone_bulletins_amount < 0):
+            return None;
+
+        id = f"{zone.identifier}/{str(zone_bulletins_amount).zfill(5)}"
+        
+        query = '''
+                INSERT INTO bulletins(id, responsible_id, zone_id, registration,
+                    precept, brand, model, color, created_at) 
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s) 
+                RETURNING *
+            '''
+
+        values = (id, responsible.id, zone.id, registration, precept, brand, model, color, created_at)
 
         try:
             conn = get_connection()
             cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-
-            query = '''
-                INSERT INTO bulletins(responsible_id, zone_id, registration,
-                    precept, brand, model, color, created_at) 
-                VALUES(%s, %s, %s, %s, %s, %s, %s, %s) 
-                RETURNING *
-            '''
-
-            """ if payment_method is not None:
-                payment_method = payment_method.value
-            else:
-                payment_method = None """
-
-            values = (responsible.id, zone.id, registration, precept, brand, model, color, created_at)
-            
             cursor.execute(query, values)
 
             
@@ -124,17 +128,18 @@ class BulletinModel(BaseModel):
             """ 
             # Creating bulletin object from database bulletin data
             payment_method: PaymentMethod = PaymentMethod.get_enum_value(result["payment_method"])
-             """
+            """
 
             bulletin: bulletin = Bulletin(
                 id = result["id"],
-                responsible = responsible, 
-                zone = zone, 
+                responsible =responsible, 
+                zone = zone,
                 registration = result["registration"],
+                precept = result["precept"],
                 created_at = result["created_at"],
                 brand = result.get("brand"), 
                 model = result.get("model"), 
-                color = result.get("color") 
+                color = result.get("color")
             )
 
             
@@ -203,6 +208,7 @@ class BulletinModel(BaseModel):
                 zone = zone, 
                 duration = result["duration"], 
                 registration = result["registration"], 
+                precept = result["precept"],
                 price = result["price"], 
                 payment_method= payment_method,
                 paid = result["paid"], 

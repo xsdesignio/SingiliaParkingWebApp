@@ -55,13 +55,34 @@ class UserModel(BaseModel):
             return None
         
     
-    # This method doesn't return the User class for the objects to improve eficiency
-    # I am supossing that listing multiple users is just for informational purposes 
-    # so instantiate a User class for every result is not useful (and do increase considerably the time of execution when the users database grows)
     @classmethod
-    def get_users_list(cls):
-        results: list(dict)
-
+    def get_user_by_name(cls, name) -> User:
+        user: User = None
+        try:
+            conn = get_connection()
+            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+            cursor.execute('SELECT * FROM users WHERE name = %s', (name,))
+            result = cursor.fetchone()
+            
+            if result != None:
+                user = cls.create_user_from_result(result)
+            conn.close()
+        except Exception as exception:
+            print("get_zone_by_name: ", exception)
+            return None
+        return user
+    
+    
+    @classmethod
+    def get_users_list(cls) -> list:
+        """
+        This method doesn't return the User class for the objects to improve eficiency
+        I am supossing that listing multiple users is just for informational purposes 
+        so instantiate a User class for every result is not useful (and do increase considerably the time of execution when the users database grows)
+    
+        Return: return_description
+        """
+        
         result = cls.get_elements('users')
         users: list[User] = []
 
