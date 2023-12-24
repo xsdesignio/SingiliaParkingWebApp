@@ -22,31 +22,16 @@
                 <p>Rol: <strong>{{ user.role.value }}</strong></p>
                 <p>Zona Asignada: 
                     <strong>
-                        {% if user.associated_zone.name == None %}
-                            No tiene zona asignada
-                        {% else %}
+                        {% if user.associated_zone %}
                             {{ user.associated_zone.name }}
+                        {% else %}
+                            No tiene zona asignada
                         {% endif %}
                     </strong>
                 </p>
+
+                <a class="default-button" href="/users/user/{{ user.id }}/edit" style="margin-top: 20px;">Editar Usuario</a>
             </article>
-
-            <article>
-                <h2>Ingresos retenidos:</h2>
-                <p>Actualmente tiene <strong>{{ user.withheld }}</strong> € retenidos</p>
-                <form class="general-form" action="/users/user/{{ user.id }}/pay-withheld-amount" method="POST">
-                    <label for="withheld_amount">Cantidad devuelta por el responsable:</label>
-                    <div class="two-columns-grid" style="align-items: center;">
-                        <input type="number" step="0.01" name="withheld_amount" id="withheld_amount" placeholder="0.00€" style="margin: 0;">
-                        <button class="default-button" type="submit">Devolver</button>
-                    </div>
-                </form>
-                <form class="general-form" action="/users/user/{{ user.id }}/pay-withheld" method="POST">
-                    <button class="secundary-button" type="submit">Pagar todos los ingresos retenidos</button>
-                </form>
-
-            </article>
-
             <article class="two-grids-section">
                 <form class="general-form" action="/users/user/{{ user.id }}/delete" method="POST" id="delete-user">
                     
@@ -60,16 +45,22 @@
                 </form>
             </article>
         </div>
-
         <div class="default-box">
             <article>
                 <h2>Zona asignada: </h2>
-                <p>Acualmente en <strong>{{ user.associated_zone.name }}</strong></p>
+                {% if user.associated_zone %}
+                    <p>Acualmente en <strong>{{ user.associated_zone.name }}</strong></p>
+                {% else %}
+                    <p>Acualmente <strong>No tiene zona asignada</strong></p>
+                {% endif %}
                 <form class="general-form" action="/users/user/{{ user.id }}/assign-zone" method="POST">
                     <label for="zone">
                         Asignar nueva zona: 
                     </label>
                     <select name="zone" value="{{ user.associated_zone.name }}">
+                        <option>
+                            Sin zona asignada
+                        </option>
                         {% for zone in zones %}
                             {% if zone.name == user.associated_zone.name %} 
                                 <option value="{{ zone.name }}" selected>
@@ -84,59 +75,25 @@
                     </select>
                     <button class="default-button" type="submit">Asignar</button>
                 </form>
-            </article>
+            </article> 
+        </div>
+        <div>
             <article>
-                <h2>Generación de reportes</h2>
-                <p>Selecciona la fecha y zona sobre la cual quieres realizar el reporte de {{ user.name }} </p>
-                <form class="general-form" action="/users/user/{{ user.id }}/generate-report" method="GET">
-                    <div class="two-columns-flex">
-                        <div class="input-container">
-                            <label for="start_date">Fecha de inicio: </label>
-                            <input type="date" name="start_date">
-                        </div>
-                            
-                        <div class="input-container">
-                            <label for="end_date">Fecha de fin: </label>
-                            <input type="date" name="end_date">   
-                        </div>
+                <h2>Ingresos retenidos:</h2>
+                <p>Actualmente tiene <strong>{{ user.withheld }}</strong> € retenidos</p>
+                <form class="general-form" action="/users/user/{{ user.id }}/pay-withheld-amount" method="POST" id="pay-witheld-amount">
+                    <label for="withheld_amount">Cantidad devuelta por el responsable:</label>
+                    <div class="two-columns-grid" style="align-items: center;">
+                        <input type="number" step="0.01" name="withheld_amount" id="withheld_amount" placeholder="0.00€" style="margin: 0;">
+                        <button class="default-button" id="pay-witheld-amount-button" type="submit">Devolver</button>
                     </div>
-                    
-                    <label for="zone">Objeto del reporte: </label>
-                    <select name="report_object" value="Tickets">
-                        <option value="Tickets" selected>
-                            Tickets
-                        </option>
-                        <option value="Bulletins">
-                            Boletines
-                        </option>
-                        <option value="Both">
-                            Ambos
-                        </option>
-                    </select>
-                        
-                    <input class="default-button" type="submit" value="Generar Reporte">
                 </form>
+                <form class="general-form" action="/users/user/{{ user.id }}/pay-withheld" method="POST" id="pay-withheld">
+                    <button class="secundary-button" id="pay-witheld-button" type="submit">Pagar todos los ingresos retenidos</button>
+                </form>
+
             </article>
         </div>
-
-        <article class="form-wrapper">
-            <h2>Editar usuario</h2>
-            <form action="/users/user/{{ user.id }}/edit" method="POST" class="general-form">
-                <label for="name">Nombre de usuario</label>
-                <input type="text" name="name" id="name" value="{{ user.name }}">
-                <label for="password">Nueva Contraseña</label>
-                <input type="text" name="password" id="password">
-                <label for="email">Cambiar correo electrónico</label>
-                <input type="email" name="email" id="email" value="{{ user.email }}">
-                <label for="role">Cambiar Rol</label>
-                <select name="role" id="role">
-                    <option value="ADMIN" {% if user.role.value == 'ADMIN' %} selected {% endif %}>Administrador</option>
-                    <option value="MANAGER" {% if user.role.value == 'MANAGER' %} selected {% endif %}>Manager</option>
-                    <option value="EMPLOYEE" {% if user.role.value == 'EMPLOYEE' %} selected {% endif %}>Empleado</option>
-                </select>
-                <input class="default-button" type="submit" value="Actualizar">
-            </form>
-        </article>
 
     </section>
 

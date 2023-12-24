@@ -36,11 +36,11 @@
                 Cantidad de boletines impresos: <strong> {{ bulletins_data["bulletins_amount"] }}</strong>
             </p>
 
-            <a class="default-button" href="/zones/zone/{{ zone.id }}/edit">Editar Zona</a>
+            <a class="default-button" href="/zones/zone/{{ zone.id }}/edit" style="margin-top: 20px;">Editar Zona</a>
         </article>
-        <div>
+        <div class="default-box">
             <article class="selected-date">
-                <p>Mostrando resultados desde el <strong>{{ start_date }}</strong> hasta el <strong>{{ end_date }}</strong> </p>
+                <p>Mostrando resultados desde el <strong> <time datetime="{{ start_date }}">{{ start_date }}</time></strong> hasta el <strong><time datetime="{{ end_date }}">{{ end_date }}</time></strong> </p>
             </article>
             <article>
                 <form action="/zones/delete/{{ zone.id }}" method="GET" id="delete-zone">

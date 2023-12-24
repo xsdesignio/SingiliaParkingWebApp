@@ -52,3 +52,31 @@ deleteButton.addEventListener('click', (event) => {
         deleteForm.submit();
     }
 });
+
+
+
+
+const payWitheldAmountButton = document.getElementById('pay-witheld-amount-button');
+const payWitheldAmountForm = document.getElementById('pay-witheld-amount')
+
+payWitheldAmountButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    const confirmation = confirm('Pagar ingresos retenidos');
+    if (confirmation) {
+        payWitheldAmountForm.submit();
+    }
+});
+
+
+
+const payWitheldButton = document.getElementById('pay-witheld-button');
+const payWitheldForm = document.getElementById('pay-witheld')
+
+payWitheldButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    const confirmation = confirm('Pagar Todos los ingresos retenidos');
+    if (confirmation) {
+        payWitheldForm.submit();
+    }
+});
+

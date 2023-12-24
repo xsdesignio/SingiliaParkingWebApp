@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} Zonas {% endblock %}
+{% block title %} Editar zona {% endblock %}
 
 {% block content %}
     <div class="page-title">
@@ -13,7 +13,7 @@
     </div>
     
     <section>
-        <article style="max-width: 400px !important;">
+        <article class="max-width--400">
             <h2>Editar zona: {{ zone.name }}</h2>
             <form class="general-form" action="/zones/zone/{{ zone.id }}/edit" method="post" class="general-form">
                 <label for="name">Actualizar nombre: </label>

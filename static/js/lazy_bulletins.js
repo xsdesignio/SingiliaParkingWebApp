@@ -56,6 +56,7 @@ export class BulletinsManager {
         if(paid)
             template+=`<p>Duración: <strong>[duration]</strong></p>
                 <p>Precio: <strong>[price] €</strong></p>
+                <p>Precepto: <strong>[precept]</strong></p>
                 <p>
                     Método de pago: 
                     <strong> 
@@ -123,6 +124,7 @@ export class BulletinsManager {
             formatted_bulletin = formatted_bulletin.replace('[duration]', bulletin.duration)
                     .replace('[price]', bulletin.price)
                     .replace('[payment_method]', payment_method)
+                    .replace('[precept]', bulletin.precept)
 
         console.log(formatted_bulletin)
         let car_data = this.format_bulletin_car_info(bulletin) 

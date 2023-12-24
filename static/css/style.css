@@ -154,11 +154,11 @@ nav a.selected {
 
 
 .max-width--400 {
-  max-width: 400px;
+  max-width: 400px !important;
 }
 
 .max-width--600 {
-  max-width: 600px;
+  max-width: 600px !important;
 }
 
 main {
@@ -351,7 +351,6 @@ form .default-button {
 
 .default-box {
   width: 100%;
-  max-width: 600px;
 }
 
 

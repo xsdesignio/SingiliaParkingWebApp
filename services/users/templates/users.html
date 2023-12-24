@@ -26,7 +26,13 @@
                 <div class="user-card">
                     <h3> <b>{{ user.name }}</b></h3>
                     <p> <b>Email:</b> {{ user.email }}</p>
-                    <p><b>Zona Asignada:</b> {{ user.associated_zone }}</p>
+                    <p><b>Zona Asignada:</b> 
+                        {% if user.associated_zone %}
+                            {{ user.associated_zone }}
+                        {% else %}
+                            Sin zona asignada
+                        {% endif %}
+                    </p>
                     <a href="/users/user/{{ user.id }}" class="default-button">Ver usuario</a>
                 </div>
             {% endfor %}

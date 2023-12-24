@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %} Editar Usuario {% endblock %}
+
+{% block content %}
+    <div class="page-title">
+        <a class="come-back-button" href="/users/user/{{ user.id }}"> 
+            <!-- Create an image linking to static/assets/icons/ -->
+            <img src="{{ url_for('static', filename='/assets/icons/arrow-left.svg') }}" alt="Volver">
+            <span>Volver</span>
+        </a>
+        <h1>Editar Usuario {{ user.name }}</h1>
+    </div>
+    
+    <section>
+        <article class="max-width--600">
+            <h2>Editar usuario</h2>
+            <form action="/users/user/{{ user.id }}/edit" method="POST" class="general-form">
+                <label for="name">Nombre de usuario</label>
+                <input type="text" name="name" id="name" value="{{ user.name }}">
+                <label for="password">Nueva Contraseña</label>
+                <input type="text" name="password" id="password">
+                <label for="email">Cambiar correo electrónico</label>
+                <input type="email" name="email" id="email" value="{{ user.email }}">
+                <label for="role">Cambiar Rol</label>
+                <select name="role" id="role">
+                    <option value="ADMIN" {% if user.role.value == 'ADMIN' %} selected {% endif %}>Administrador</option>
+                    <option value="MANAGER" {% if user.role.value == 'MANAGER' %} selected {% endif %}>Manager</option>
+                    <option value="EMPLOYEE" {% if user.role.value == 'EMPLOYEE' %} selected {% endif %}>Empleado</option>
+                </select>
+                <input class="default-button" type="submit" value="Actualizar">
+            </form>
+        </article>
+    </section>
+{% endblock %}
