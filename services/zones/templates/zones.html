@@ -22,8 +22,10 @@
         
         <div class="cards">
             {% if zones|length == 0 %}
-                <p>Aún no hay zonas creadas</p>
-                <a href="/zones/create" class="default-button">Crear Zona</a>
+                <div style="display:grid;place-items:center;">
+                    <p>Aún no hay zonas creadas</p>
+                    <a href="/zones/create" class="default-button">Crear Zona</a>
+                </div>
             {% endif %}
             {% for zone in zones %}
                 <div class="zone-card">
