@@ -15,9 +15,8 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/auth', template_folder='./tem
 @auth_bp.get('/login')
 def login_page():
     """Login page"""
-    if 'id' in session:
-        return redirect('/')
-    return render_template('login.html')
+    user_logged_in = 'id' in session
+    return redirect('/') if user_logged_in else render_template('login.html')
 
 
 @auth_bp.post('/login')
@@ -32,11 +31,10 @@ def login():
     password = data['password']
 
     # Loggin user. Get true or false depending on whether login is made successfully
-    logged_in_user: User = login_user(email, password)
+    user_logged_in: User = login_user(email, password)
         
-    if(logged_in_user != None):
-        user_data = logged_in_user.to_json()
-        return user_data, 200
+    if user_logged_in:
+        return user_logged_in.to_json(), 200
     else:
         return jsonify({
             "message": "Data introduced isn't correct"
@@ -46,9 +44,8 @@ def login():
 @auth_bp.get('/signup')
 def signup_page():
     """Signup page"""
-    if 'id' in session:
-        return redirect('/')
-    return render_template('signup.html')
+    user_logged_in = 'id' in session
+    return redirect('/') if user_logged_in else render_template('signup.html')
 
 
 @auth_bp.post('/signup')
@@ -64,18 +61,19 @@ def signup():
     name = data['name']
     email = data['email']
     password = data['password']
+    security_code_sent = data['security_code']
 
-    security_code_sent = data['security_code'] 
-
+    # Security code defined on enviroment variables
     security_code = os.environ.get('SECURITY_CODE')
     
-    if security_code_sent != security_code:
+    # Check if security codes coincide
+    if str(security_code_sent).strip() != str(security_code).strip():
         return(jsonify({
             "message": "You need the secret code to create an account"
         })), 500
 
-    # Signup user. Get true or false depending on whether login is made successfully
-    signed_up_user = signup_user(role, name, email, password)
+    # Signup the user and saves it into signed_up_user
+    signed_up_user: User = signup_user(role, name, email, password)
 
     if signed_up_user != None:
         return signed_up_user.to_json(), 200
@@ -102,10 +100,8 @@ def get_session():
 
     Return: session data (user info)
     """
-    print("session: ", session)
     
     if 'name' not in session:  
-        print("the error may be here")
         return jsonify({"ERROR": "There is no session active"}), 500
         
 
@@ -120,7 +116,6 @@ def get_session():
         session_data['associated_zone'] = session['associated_zone']
 
     session_data = jsonify(session_data)
-    print("session data jsonified: ", session_data)
     return session_data, 200
 
 

@@ -6,6 +6,7 @@ from decimal import Decimal
 def add_withheld_to_user(user: User, amount: float):
     #print the type of the amount and the type of the user.withheld
     updated_withheld = user.withheld + Decimal(amount);
+    
     updated_user = UserModel.update_user(user.id, {
         "withheld": updated_withheld
         }

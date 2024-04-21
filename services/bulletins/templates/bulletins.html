@@ -66,6 +66,7 @@
         <article class="data-shown">
 
             <h2 class="title">Resumen de Boletines</h2>
+            
             {% if bulletins_data %}
                 <p>
                     <b>Boletines impresos: </b>
@@ -148,6 +149,48 @@
         
         <h2>Registro de Boletines</h2>
         <div class="record" id="record">
+            <div class="record-header-bulletins">
+                <p>
+                    Id
+                </p>
+                <p>
+                    Responsable
+                </p>
+                
+                <p>
+                    Matrícula
+                </p>
+                <p>
+                    Zona
+                </p>
+                <p>
+                    Fecha
+                </p>
+                <p>
+                    Pagado
+                </p>
+                <p>
+                    Precio
+                </p>
+                <p style="width:100px">
+                    Duración
+                </p>
+                <p>
+                    Precepto
+                </p>
+                <p>
+                    Método de Pago
+                </p>
+                <p>
+                    Marca
+                </p>
+                <p>
+                    Modelo
+                </p>
+                <p>
+                    Color
+                </p>
+            </div>
             {% if bulletins_data %}
                 {% if bulletins_data["bulletins_amount"] == 0 %}
                     <p>No hay tickets que mostrar</p>

@@ -60,7 +60,6 @@ def login_user(email, password) -> bool:
     # Obtaining user
     user: User = UserModel.get_validated_user(email, password)
 
-    print(user)
     if user != None:
         session['id'] = user.id
         session['role'] = user.role.name
@@ -70,7 +69,6 @@ def login_user(email, password) -> bool:
         if user.associated_zone != None:
             session['associated_zone'] = user.associated_zone.name
 
-        print("session: " + str(session))
 
     return user
         

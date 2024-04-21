@@ -39,30 +39,33 @@ export class BulletinsManager {
 
     bulletinTemplate(paid) {
 
-
         let template =  `
-            <div class="ticket bulletin-box">
-                <img class="icon-logo" src="/static/assets/icons/logo.png" alt="ticket" />
-                <h3>Boletín Estacionamiento Regulado</h3>
-                <p>Id: <strong class="capital-letter">[id]</strong></p>
-                <p>Responsable: <strong class="capital-letter">[responsible]</strong></p>
-                <p>Zona: <strong>[zone_name]</strong></p>
-                <p>Fecha: <strong>[creation_date]</strong></p>
-                <p>Hora: <strong>[creation_time]</strong></p>
-                <p>Estado: <strong>[paid]</strong></p>
-                <p>Matrícula: <strong>[registration]</strong></p>
+            <div class="bulletin bulletin-box">
+                <p class="capital-letter">[id]</p>
+                <p class="capital-letter">[responsible]</p>
+                <p><strong>[registration]</strong></p>
+                <p><strong>[zone_name]</strong></p>
+                <p>[creation_date] [creation_time]</p>
+                <p><strong>[paid]</strong></p>
         `
 
         if(paid)
-            template+=`<p>Duración: <strong>[duration]</strong></p>
-                <p>Precio: <strong>[price] €</strong></p>
-                <p>Precepto: <strong>[precept]</strong></p>
+            template+=`
+                <p><strong>[price] €</strong></p>
+                <p>Duración: <strong>[duration]</strong></p>
+                <p style="width:100px"><strong>[precept]</strong></p>
                 <p>
-                    Método de pago: 
                     <strong> 
                         [payment_method]
                     </strong>
                 </p>`
+        else 
+            template+=`
+                <p></p>
+                <p></p>
+                <p style="width:100px"></p>
+                <p></p>
+            `
 
         template += '</div>'
 
@@ -126,7 +129,6 @@ export class BulletinsManager {
                     .replace('[payment_method]', payment_method)
                     .replace('[precept]', bulletin.precept)
 
-        console.log(formatted_bulletin)
         let car_data = this.format_bulletin_car_info(bulletin) 
         let formatted_element = formatted_bulletin.replace('</div>', car_data + '</div>')
         
@@ -142,14 +144,12 @@ export class BulletinsManager {
             (data.brand != null && data.brand != "") || 
             (data.color != null && data.color != "")
         ) {
-            car_data = `<span class="divider"></span>`
-
             if(data.brand != null && data.brand != "")
-                car_data += `<p>Marca: <strong>${data.brand}</strong></p>`
+                car_data += `<p>${data.brand}</p>`
             if(data.model != null && data.model != "") 
-                car_data += `<p>Modelo: <strong>${data.model}</strong></p>`
+                car_data += `<p>${data.model}</p>`
             if(data.color != null && data.color != "")
-                car_data += `<p>Color: <strong>${data.color}</strong></p>`
+                car_data += `<p>${data.color}</p>`
         }
 
         return car_data

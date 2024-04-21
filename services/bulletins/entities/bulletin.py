@@ -21,7 +21,7 @@ class Bulletin:
     duration: int = None
     price: Decimal = None
     payment_method: PaymentMethod = None
-    paid: bool = True
+    paid: bool = False
     created_at: datetime = datetime.now() 
 
     # Optional

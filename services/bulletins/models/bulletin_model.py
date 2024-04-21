@@ -65,7 +65,7 @@ class BulletinModel(BaseModel):
         if payment_method is not None:
             payment_method_obj = PaymentMethod(payment_method)
 
-            
+        
         return Bulletin(
             id = result["id"],
             responsible = responsible, 
@@ -75,7 +75,7 @@ class BulletinModel(BaseModel):
             precept = result["precept"],
             price = result.get("price"), 
             payment_method= payment_method_obj,
-            paid = result.get("paid"), 
+            paid = result.get("paid", False), 
             created_at = result["created_at"],
             brand = result.get("brand"), 
             model = result.get("model"), 
@@ -98,7 +98,7 @@ class BulletinModel(BaseModel):
                 color: str = None
             ) -> Bulletin:
         
-        """Returns the created Bulletin if is successfully created."""
+        """Create a bulletin and returns the created Bulletin if it is successfully created."""
 
         bulletin: Bulletin
         zone_bulletins_amount = ZoneModel.count_bulletin(zone.id)
@@ -107,6 +107,7 @@ class BulletinModel(BaseModel):
             return None;
 
         id = f"{zone.identifier}/{str(zone_bulletins_amount).zfill(5)}"
+
         
         query = '''
                 INSERT INTO bulletins(id, responsible_id, zone_id, registration,
@@ -125,12 +126,7 @@ class BulletinModel(BaseModel):
             
             result = cursor.fetchone()
             
-            """ 
-            # Creating bulletin object from database bulletin data
-            payment_method: PaymentMethod = PaymentMethod.get_enum_value(result["payment_method"])
-            """
-
-            bulletin: bulletin = Bulletin(
+            bulletin: Bulletin = Bulletin(
                 id = result["id"],
                 responsible =responsible, 
                 zone = zone,

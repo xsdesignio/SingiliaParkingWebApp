@@ -80,22 +80,14 @@ export class TicketsManager {
     ticketTemplate() {
         return `
             <div class="ticket green-box">
-                <img class="icon-logo" src="/static/assets/icons/logo.png" alt="ticket" />
-                <h3>Ticket Estacionamiento Regulado</h3>
-                <p>Id: <strong>[id]</strong></p>
-                <p>Responsable: <strong class="capital-letter">[responsible]</strong></p>
-                <p>Zona: <strong>[zone_name]</strong></p>
-                <p>Fecha: <strong>[creation_date]</strong></p>
-                <p>Hora: <strong>[creation_time]</strong></p>
-                <p>Duración: <strong>[duration]</strong></p>
-                <p>Precio: <strong>[price] €</strong></p>
-                <p>
-                    Método de pago: 
-                    <strong> 
-                        [payment_method]
-                    </strong>
-                </p>
-                <p>Matrícula: <strong>[registration]</strong></p>
+                <p>[id]</p>
+                <p class="capital-letter">[responsible]</p>
+                <p>[registration]</p>
+                <p>[zone_name]</p>
+                <p>[creation_date] [creation_time]</p>
+                <p>[duration]</p>
+                <p>[price] €</p>
+                <p>[payment_method]</p>
                         
             </div>
         `

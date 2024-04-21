@@ -1,3 +1,4 @@
+import re
 from flask import Blueprint, flash, send_file, render_template, request, jsonify, redirect, url_for, after_this_request
 from services.bulletins.controllers.bulletins_controller import get_bulletins_attributes_count
 
@@ -145,6 +146,12 @@ def generate_report(id):
 def create_zone():
     name = request.form['name']
     identifier = request.form['identifier']
+
+    identifier_pattern = r'^[a-zA-Z]{2}$'
+
+    if not re.match(identifier_pattern, identifier):
+        flash('El identificador no es correcto, debe estar compuesto de 2 letras', 'error')
+        return redirect(url_for('zones.create_zone_page'))
 
     zone: Zone = ZoneModel.create_zone(name, identifier)
 

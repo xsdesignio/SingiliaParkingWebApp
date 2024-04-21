@@ -61,9 +61,18 @@ def get_bulletin(id: str):
 
 
 
+@bulletins_bp.get('/get-bulletin-by-registration/<path:registration>')
+@login_required
+def get_bulletin_by_registration(registration: str):
+    bulletins_json = BulletinModel.get_bulletins(registration = registration) or {}
+    return jsonify(bulletins_json), 200
+
+
+
 @bulletins_bp.post('/get-bulletins/<page>')
 @login_required
 def get_bulletins_by_page(page = 0):
+    """Get bulletins based on its 'page', the page is used to obtain a range of the bulletins """
 
     # Getting and preparing the data
     bulletins_range = get_range_from_page(int(page))
@@ -109,7 +118,6 @@ def create_bulletin():
 
     zone -- zone where the bulletin was created
     registration -- registration of the vehicle
-    paid -- if the bulletin has been paid
     precept -- precept of the bulletin (Optional)
     created_at -- date when the bulletin was created
     brand -- brand of the vehicle (Optional)
@@ -122,9 +130,11 @@ def create_bulletin():
     bulletin_json = request.get_json()
     bulletin: Bulletin
 
-    responsible = UserModel.get_user(session.get("id"))
+    session_id: int = session.get("id")
+    user_id: int = bulletin_json.get("responsible_id", session_id)
+    responsible = UserModel.get_user(user_id)
 
-    zone: Zone = ZoneModel.get_zone_by_name(bulletin_json["zone_name"])
+    zone: Zone = ZoneModel.get_zone_by_name(bulletin_json.get("zone_name", None))
 
     try:
         bulletin = BulletinModel.create_bulletin(
@@ -139,7 +149,7 @@ def create_bulletin():
         )
         
     except Exception as exception:
-        print(exception)
+        print(exception.args[0])
         return {'message': 'El boletin no pudo ser creado en la base de datos.'}, 400
 
 
@@ -222,7 +232,7 @@ def pay_bulletin(id: str):
 @bulletins_bp.get('/available')
 @login_required
 def available_bulletins():
-    available_bulletins: list(AvailableBulletin) = AvailableBulletinModel.get_available_bulletins()
+    available_bulletins = AvailableBulletinModel.get_available_bulletins()
     return jsonify(available_bulletins)
 
 
@@ -231,7 +241,6 @@ def available_bulletins():
 @bulletins_bp.get('/available-bulletins')
 @login_required
 def available_bulletins_page():
-    available_bulletins: list(AvailableBulletin)
     available_bulletins = AvailableBulletinModel.get_available_bulletins()
     
     return render_template('available-bulletins.html', available_bulletins = available_bulletins);

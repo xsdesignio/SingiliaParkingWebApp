@@ -455,14 +455,15 @@ form .default-button {
   border: 1px solid #45a583b9;
   background-color: white;
   padding: 40px 28px;
+  overflow: scroll;
 }
 
 
 .record {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: 1fr;
   place-items: flex-start center;
-  gap: 20px;
+  gap: 10px;
   width: fit-content;
   max-width: 100%;
 }
@@ -592,29 +593,91 @@ form .default-button {
 }
 
 
-.ticket {
+.ticket, .bulletin {
   width: 100%;
-  max-width: 400px;
   position: relative;
-  margin: 20px 0;
-  text-align: center;
-  padding: 20px;
-  overflow: hidden;
+  text-align: left;
   font-size: 14px;
   background: linear-gradient(60deg, rgb(252, 252, 252) 40%, var(--white));
-
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(8, 120px);
+  align-items: center;
 }
 
-.ticket h3 {
-  margin: 20px auto;
-  line-height: 1.1em;
-  font-size: 20px;
-  max-width: 90%;
+.bulletin {
+  grid-template-columns: repeat(13, 120px);
 }
 
-.ticket p {
+.record-header {
+  width: 100%;
+  position: relative;
+  text-align: left;
+  font-size: 14px;
+  background: linear-gradient(60deg, rgb(200, 255, 220) 40%, rgb(200, 255, 252));
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(8, 120px);
+  border-radius: 8px;
+  align-items: center;
+  border: 1px solid var(--green);
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.record-header-bulletins {
+  width: 100%;
+  position: relative;
+  text-align: left;
+  font-size: 14px;
+  background: linear-gradient(60deg, rgb(200, 255, 253) 40%, rgb(200, 232, 255));
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(13, 120px);
+  border-radius: 8px;
+  align-items: center;
+  border-top: 1px solid rgba(63, 77, 202, 0.8);
+  border-right: 1px solid rgba(63, 77, 202, 0.8);
+  border-bottom: 1px solid rgba(63, 77, 202, 0.8);
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.record-header p, .record-header-bulletins p {
+  font-weight: bold;
+  font-size: 18px;
   cursor: default;
+  height: 100%;
+  max-height: 80px;
+  padding: 10px;
+  border-left: 1px solid var(--green);
+  overflow: hidden;
 }
+
+.record-header-bulletins p {
+  border-left: 1px solid rgba(63, 77, 202, 0.8);
+}
+
+.record-header p:nth-child(1) {
+   border-left: none;
+}
+
+.ticket p, .bulletin p {
+  font-size: 16px;
+  cursor: default;
+  padding: 10px;
+  border-left: 1px solid var(--green);
+  height: 100%;
+}
+
+.bulletin p {
+  border-left: 1px solid rgba(63, 77, 202, 0.8);
+
+}
+.ticket p:nth-child(1) {
+  border-left: none;
+}
+
 
 .cards {
   display: flex;
@@ -816,7 +879,9 @@ form .default-button {
 }
 
 .bulletin-box {
-  border: 2px solid rgba(63, 77, 202, 0.8);
+  border-top: 1px solid rgba(63, 77, 202, 0.8);
+  border-bottom: 1px solid rgba(63, 77, 202, 0.8);
+  border-right: 1px solid rgba(63, 77, 202, 0.8);
   border-radius: 8px;
   transition: transform .1s ease;
 }

@@ -4,7 +4,7 @@ import json
 from app import app
 from services.users.models.user_model import UserModel
 
-dbname = 'parkingcontroldb'
+dbname = 'singiliaparking'
 dbuser = 'pablo'
 password = 'jd3_Ljks2h'
 
@@ -25,6 +25,7 @@ class TestAuth(unittest.TestCase):
         cursor.close()
         con.close()
 
+
     def test_signup(self):
         # Define test data
         test_data = {
@@ -32,7 +33,7 @@ class TestAuth(unittest.TestCase):
             "name": "test",
             "email": "test@example.com",
             "password": "test_password",
-            "secret_code": 4578
+            "security_code": 4578
         }
 
         # Send a POST request to signup endpoint
@@ -43,6 +44,7 @@ class TestAuth(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data["name"], "test")
         self.assertEqual(data["email"], "test@example.com")
+
 
     def test_login_logout(self):
         # Define test user
@@ -67,6 +69,7 @@ class TestAuth(unittest.TestCase):
         response = self.client.get('/auth/logout')
         self.assertEqual(response.status_code, 302)  # Check for redirection
 
+
     def test_create_login_incorrect_password(self):
         # Define test user
         test_user = UserModel.create_user(role="EMPLOYEE", name="test", email="test@example.com", password="test_password")
@@ -82,6 +85,7 @@ class TestAuth(unittest.TestCase):
 
         # Assertions
         self.assertEqual(response.status_code, 500)
+
 
 if __name__ == '__main__':
     unittest.main()

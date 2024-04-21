@@ -122,7 +122,6 @@ def create_ticket():
     created_at = ticket_json.get('created_at', datetime.now().strftime("%Y-%m-%d %H:%M"))
 
     try:
-        
         ticket = TicketModel.create_ticket(
             responsible = responsible, 
             zone = zone,
@@ -134,7 +133,6 @@ def create_ticket():
         )
 
     except Exception as e:
-        print("create_ticket: ", e)
         return jsonify({'message': 'El ticket no pudo ser creado.'}), 400
 
 
@@ -212,7 +210,6 @@ def create_available_ticket():
     try:
         ticket = AvailableTicketModel.create_available_ticket(ticket_duration, float(ticket_price))
     except Exception as e:
-        print("create_available_ticket: ", e)
         flash('No se ha podido crear un nuevo modelo de ticket.', 'error')
         return redirect(url_for('tickets.available_tickets_page')), 301
     

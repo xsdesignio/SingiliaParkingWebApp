@@ -2,14 +2,17 @@ CREATE TYPE user_role AS ENUM ('ADMIN', 'MANAGER', 'EMPLOYEE');
 CREATE TYPE payment_method_type AS ENUM ('CASH', 'CARD');
 
 
-CREATE TABLE users(
+CREATE TABLE available_tickets(
     id SERIAL PRIMARY KEY NOT NULL,
-    role user_role NOT NULL,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    withheld DECIMAL(10, 2) NOT NULL DEFAULT 0,
-    associated_zone_id INTEGER REFERENCES zones(id),
+    duration VARCHAR(40) NOT NULL UNIQUE,
+    price DECIMAL(10, 2) NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE available_bulletins(
+    id SERIAL PRIMARY KEY NOT NULL,
+    duration VARCHAR(40) NOT NULL UNIQUE,
+    price DECIMAL(10, 2) NOT NULL UNIQUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -22,6 +25,19 @@ CREATE TABLE zones(
     bulletins INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+
+CREATE TABLE users(
+    id SERIAL PRIMARY KEY NOT NULL,
+    role user_role NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    withheld DECIMAL(10, 2) NOT NULL DEFAULT 0,
+    associated_zone_id INTEGER REFERENCES zones(id),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 
 
 CREATE TABLE tickets(
@@ -53,18 +69,4 @@ CREATE TABLE bulletins(
 );
 
 
-
-CREATE TABLE available_tickets(
-    id SERIAL PRIMARY KEY NOT NULL,
-    duration VARCHAR(40) NOT NULL UNIQUE,
-    price DECIMAL(10, 2) NOT NULL UNIQUE,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE available_bulletins(
-    id SERIAL PRIMARY KEY NOT NULL,
-    duration VARCHAR(40) NOT NULL UNIQUE,
-    price DECIMAL(10, 2) NOT NULL UNIQUE,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
 
