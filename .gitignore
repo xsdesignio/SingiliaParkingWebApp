@@ -1,6 +1,13 @@
 # Created by https://www.toptal.com/developers/gitignore/api/flask,python
 # Edit at https://www.toptal.com/developers/gitignore?templates=flask,python
 
+### Poetry ###
+poetry.lock
+pyproject.toml
+
+### Poetry ###
+setup_accounts.py
+
 ### Flask ###
 instance/*
 !instance/.gitignore

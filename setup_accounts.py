@@ -15,8 +15,8 @@ class setUpAccounts():
         data = {
             'role': 'ADMIN',
             'name': 'pablo',
-            'email': 'cortesrodriguezpablo3@gmail.com',
-            'password': '12345678',
+            'email': 'example@gmail.com',
+            'password': 'password',
             'security_code': security_code
         }
         headers = {
