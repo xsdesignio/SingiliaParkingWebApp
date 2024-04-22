@@ -5,8 +5,6 @@
 poetry.lock
 pyproject.toml
 
-### Poetry ###
-setup_accounts.py
 
 ### Flask ###
 instance/*
