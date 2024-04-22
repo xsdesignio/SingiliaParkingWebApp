@@ -61,10 +61,10 @@ def get_bulletin(id: str):
 
 
 
-@bulletins_bp.get('/get-bulletin-by-registration/<path:registration>')
+@bulletins_bp.get('/get-bulletins-by-registration/<path:registration>')
 @login_required
 def get_bulletin_by_registration(registration: str):
-    bulletins_json = BulletinModel.get_bulletins(registration = registration) or {}
+    bulletins_json = BulletinModel.get_bulletins(registration = registration) or []
     return jsonify(bulletins_json), 200
 
 

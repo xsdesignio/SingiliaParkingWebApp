@@ -160,3 +160,32 @@ class TestBulletins(unittest.TestCase):
 
         self.assertIsNotNone(bulletin)
         self.assertEqual(bulletin.paid, True)
+
+
+    def test_get_bulletins_by_registration(self):
+        created_at = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+        bulletins_data = {
+            'responsible_id': self.user_id,
+            'zone_name': 'Plaza Castilla',
+            'registration': '9999ABC',
+            'precept': "Se salta el tráfico",
+            'created_at': created_at
+        }
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        
+        
+        response = self.client.post('http://localhost:5000/bulletins/create', data=json.dumps(bulletins_data), headers=headers, follow_redirects=True)
+        
+        
+        self.assertEqual(response.status_code, 200)
+        registration = "9999ABC"
+        url = f'http://localhost:5000/bulletins/get-bulletins-by-registration/{registration}'
+        
+        response = self.client.get(url)
+        bulletins_found = response.json
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(bulletins_found) > 0)
+
