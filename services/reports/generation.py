@@ -49,7 +49,7 @@ def _create_content(data, user: User, zone: Zone, start_date, end_date) -> list:
     table_data = get_table(data)
     total_income = data["tickets"]["total_income"] + data["bulletins"]["total_income"]
     table_data.append([
-        f'{start_date.strftime("%d/%m/%Y")} - {end_date.strftime("%d/%m/%Y")}', zone.name, '', f"{total_income} €"
+        f'{start_date.strftime("%d/%m/%Y")} - {end_date.strftime("%d/%m/%Y")}', zone.name if zone else '', '', f"{total_income} €"
     ])
 
     table = Table(

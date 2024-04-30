@@ -32,19 +32,16 @@ class TestBulletins(unittest.TestCase):
 
 
     def tearDown(self):
-        """ 
         conn = get_connection()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM users WHERE name = 'test'")
 
-        cursor.execute("DELETE FROM tickets WHERE registration = '4567-ABG'")
-        cursor.execute("DELETE FROM tickets WHERE registration = '4567-SQW'")
-        cursor.execute("DELETE FROM users WHERE name = 'test'")
+        cursor.execute("DELETE FROM bulletins WHERE registration = '4567-ABG'")
+        cursor.execute("DELETE FROM bulletins WHERE registration = '4567-SQW'")
+        cursor.execute("DELETE FROM bulletins WHERE registration = '0000999'")
         
         conn.commit()
         cursor.close()
         conn.close() 
-        """
 
         self.client.get('http://localhost:5000/auth/logout')
         

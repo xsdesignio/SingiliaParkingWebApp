@@ -39,8 +39,11 @@
                         <div class="input-container">
                             <label for="zone_name">Seleccionar Zona: </label>
                             <select name="zone_name" value="Tickets">
+                                <option value="ALL" selected>
+                                    Todas
+                                </option>
                                 {% for zone in zones %}
-                                    <option value="{{ zone.name }}" selected>
+                                    <option value="{{ zone.name }}">
                                         {{ zone.name }}
                                     </option>
                                 {% endfor %}
