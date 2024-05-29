@@ -47,7 +47,7 @@ CREATE TABLE tickets(
     responsible_id INTEGER REFERENCES users(id),
     zone_id INTEGER REFERENCES zones(id),
     duration VARCHAR(60) NOT NULL,
-    registration VARCHAR(12),
+    registration VARCHAR(12) NOT NULL DEFAULT "-",
     price DECIMAL(10, 2) NOT NULL,
     payment_method payment_method_type NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -59,7 +59,7 @@ CREATE TABLE bulletins(
     responsible_id INTEGER REFERENCES users(id),
     zone_id INTEGER REFERENCES zones(id),
     duration VARCHAR(60),
-    registration VARCHAR(60),
+    registration VARCHAR(12) NOT NULL DEFAULT "-",
     price DECIMAL(10, 2),
     payment_method payment_method_type,
     paid BOOLEAN NOT NULL DEFAULT false,
