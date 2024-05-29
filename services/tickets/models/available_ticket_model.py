@@ -37,21 +37,24 @@ class AvailableTicketModel(BaseModel):
             available_ticket: AvailableTicket = AvailableTicket.from_dict(result)
             available_tickets.append(available_ticket.to_json())
         
-        return available_tickets
+        # Order result by duration minutes in ascending order
+        sorted_tickets: list = sorted(available_tickets, key=lambda ticket: ticket['duration_minutes'])
+
+        return sorted_tickets
     
     @classmethod
-    def create_available_ticket(cls, ticket_duration: str, ticket_price: float) -> AvailableTicket:
+    def create_available_ticket(cls, ticket_duration: str, ticket_duration_minutes: int, ticket_price: float) -> AvailableTicket:
         """
             Creates a new ticket and returns it
         """
         available_ticket: AvailableTicket
 
         query = '''
-                INSERT INTO available_tickets(duration, price) 
-                VALUES(%s, %s) 
+                INSERT INTO available_tickets(duration, duration_minutes, price) 
+                VALUES(%s, %s, %s) 
                 RETURNING *
             '''
-        values = (ticket_duration, ticket_price)
+        values = (ticket_duration, ticket_duration_minutes, ticket_price)
 
         try:
             conn = get_connection()
@@ -75,7 +78,7 @@ class AvailableTicketModel(BaseModel):
     
 
     @classmethod
-    def edit_available_ticket(cls, id: id, duration: str, price: int):
+    def edit_available_ticket(cls, id: id, duration: str, duration_minutes: int, price: float):
         """
             Edit the available_ticket with params id and returns it.
             Returns an exception if it is not found.
@@ -84,11 +87,11 @@ class AvailableTicketModel(BaseModel):
 
         query = '''
                 UPDATE available_tickets
-                SET duration = %s, price = %s
+                SET duration = %s, duration_minutes = %s, price = %s
                 WHERE id = %s
                 RETURNING *
             '''
-        values = (duration, price, id)
+        values = (duration, duration_minutes, price, id)
 
         try:
             conn = get_connection()

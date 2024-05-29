@@ -35,10 +35,9 @@ class Styles:
         return TableStyle([
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('PADDING', (0, 0), (-1, 0), 20),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 14),
-            ('BACKGROUND', (0, 0), (-1, -1), colors.toColor('#45a584')),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.toColor('#45a584')),
             ('GRID', (0, 0), (-1, -1), 0.5, colors.toColor('#00240a')),
             ('PADDING', (0, 0), (-1, -1), 10),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),

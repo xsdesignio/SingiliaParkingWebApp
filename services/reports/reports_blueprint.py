@@ -29,21 +29,24 @@ def generate_report():
     
     start_date = parse_date(request.form.get('start_date'), datetime.now() - timedelta(days=30))
     end_date = parse_date(request.form.get('end_date'), datetime.now())
-    user = UserModel.get_user_by_name(request.form.get('user_name'))
+    user = request.form.get('user_name') 
+    user = None if not user else UserModel.get_user_by_name(user)
 
     zone_name = request.form.get('zone_name')
     zone_name = zone_name if zone_name != "ALL" else None
-    zone = None
-    if zone_name:
-        zone = ZoneModel.get_zone_by_name(request.form.get('zone_name'))
+    zone = None if not zone_name else ZoneModel.get_zone_by_name(zone_name)
+
+
+    params = {'start_date': start_date, 'end_date': end_date}
+
+    if zone is not None:
+        params['zone'] = zone
+    if user is not None:
+        params['user'] = user
 
     data: dict = {}
-    if zone != None:
-        data["tickets"] = get_tickets_attributes_count(start_date=start_date, end_date=end_date, user=user, zone=zone)
-        data["bulletins"] = get_bulletins_attributes_count(start_date=start_date, end_date=end_date, user=user, zone=zone)
-    else:
-        data["tickets"] = get_tickets_attributes_count(start_date=start_date, end_date=end_date, user=user)
-        data["bulletins"] = get_bulletins_attributes_count(start_date=start_date, end_date=end_date, user=user)
+    data["tickets"] = get_tickets_attributes_count(**params)
+    data["bulletins"] = get_bulletins_attributes_count(**params)
     
     report_url = create_report(data, user, zone, start_date, end_date)
 

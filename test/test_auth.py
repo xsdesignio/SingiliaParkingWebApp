@@ -18,9 +18,9 @@ class TestAuth(unittest.TestCase):
     def tearDown(self):
         con = connect(dbname=dbname, user=dbuser, password=password)
         cursor = con.cursor()
-
+        """ 
         cursor.execute("DELETE FROM users WHERE name = 'test'")
-
+        """
         con.commit()
         cursor.close()
         con.close()

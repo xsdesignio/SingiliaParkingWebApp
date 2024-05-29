@@ -48,6 +48,8 @@ def _create_content(data, user: User, zone: Zone, start_date, end_date) -> list:
 
     table_data = get_table(data)
     total_income = data["tickets"]["total_income"] + data["bulletins"]["total_income"]
+    total_income_by_card = data["tickets"]["income_by_card"] + data["bulletins"]["income_by_card"]
+    total_income_by_cash = data["tickets"]["income_by_cash"] + data["bulletins"]["income_by_cash"]
     table_data.append([
         f'{start_date.strftime("%d/%m/%Y")} - {end_date.strftime("%d/%m/%Y")}', zone.name if zone else '', '', f"{total_income} €"
     ])
@@ -60,7 +62,11 @@ def _create_content(data, user: User, zone: Zone, start_date, end_date) -> list:
     table.setStyle(styles.table())
 
     table2 = Table(
-        [["SUMA TOTAL A INGRESAR", f"{total_income} €"]], 
+        [
+            ["SUMA TOTAL RECAUDADA", f"{total_income} €"], 
+            ["(Tarjeta)", f"{total_income_by_card} €"],
+            ["(Efectivo)", f"{total_income_by_cash} €"]
+        ], 
         colWidths=[400, 120], 
         rowHeights=32
     )
@@ -122,7 +128,3 @@ def create_report(data, user, zone, start_date, end_date):
     return report_path
 
 
-
-
-    
-    

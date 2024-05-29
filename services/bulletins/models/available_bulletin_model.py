@@ -39,18 +39,18 @@ class AvailableBulletinModel(BaseModel):
         return available_bulletin
     
     @classmethod
-    def create_available_bulletin(cls, bulletin_duration: str, bulletin_price: float) -> AvailableBulletin:
+    def create_available_bulletin(cls, bulletin_duration: str, bulletin_duration_minutes: int, bulletin_price: float) -> AvailableBulletin:
         """
             Creates a new bulletin and returns it
         """
         available_bulletin: AvailableBulletin
 
         query = '''
-                INSERT INTO available_bulletins(duration, price) 
-                VALUES(%s, %s) 
+                INSERT INTO available_bulletins(duration, duration_minutes, price) 
+                VALUES(%s, %s, %s) 
                 RETURNING *
             '''
-        values = (bulletin_duration, bulletin_price)
+        values = (bulletin_duration, bulletin_duration_minutes, bulletin_price)
 
         try:
             conn = get_connection()
@@ -74,7 +74,7 @@ class AvailableBulletinModel(BaseModel):
     
 
     @classmethod
-    def edit_available_bulletin(cls, id: id, duration: str, price: float | Decimal):
+    def edit_available_bulletin(cls, id: id, duration: str, duration_minutes: int, price: float | Decimal):
         """
             Edit the available_bulletin with params id and returns it.
             Returns an exception if it is not found.
@@ -83,11 +83,11 @@ class AvailableBulletinModel(BaseModel):
 
         query = '''
                 UPDATE available_bulletins
-                SET duration = %s, price = %s
+                SET duration = %s, duration_minutes = %s,price = %s
                 WHERE id = %s
                 RETURNING *
             '''
-        values = (duration, price, id)
+        values = (duration, duration_minutes, price, id)
 
         try:
             conn = get_connection()

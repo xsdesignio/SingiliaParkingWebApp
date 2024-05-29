@@ -5,6 +5,7 @@ CREATE TYPE payment_method_type AS ENUM ('CASH', 'CARD');
 CREATE TABLE available_tickets(
     id SERIAL PRIMARY KEY NOT NULL,
     duration VARCHAR(40) NOT NULL UNIQUE,
+    duration_minutes INTEGER NOT NULL DEFAULT 0,
     price DECIMAL(10, 2) NOT NULL UNIQUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -12,6 +13,7 @@ CREATE TABLE available_tickets(
 CREATE TABLE available_bulletins(
     id SERIAL PRIMARY KEY NOT NULL,
     duration VARCHAR(40) NOT NULL UNIQUE,
+    duration_minutes INTEGER NOT NULL DEFAULT 0,
     price DECIMAL(10, 2) NOT NULL UNIQUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -45,7 +47,7 @@ CREATE TABLE tickets(
     responsible_id INTEGER REFERENCES users(id),
     zone_id INTEGER REFERENCES zones(id),
     duration VARCHAR(60) NOT NULL,
-    registration VARCHAR(12) NOT NULL,
+    registration VARCHAR(12),
     price DECIMAL(10, 2) NOT NULL,
     payment_method payment_method_type NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -57,7 +59,7 @@ CREATE TABLE bulletins(
     responsible_id INTEGER REFERENCES users(id),
     zone_id INTEGER REFERENCES zones(id),
     duration VARCHAR(60),
-    registration VARCHAR(60) NOT NULL,
+    registration VARCHAR(60),
     price DECIMAL(10, 2),
     payment_method payment_method_type,
     paid BOOLEAN NOT NULL DEFAULT false,
@@ -68,5 +70,22 @@ CREATE TABLE bulletins(
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+
+CREATE TABLE dailySchedule(
+    id SERIAL PRIMARY KEY NOT NULL,
+    openTime TIME NOT NULL,
+    closeTime TIME NOT NULL
+);
+
+CREATE TABLE weekSchedule(
+    id SERIAL PRIMARY KEY NOT NULL,
+    monday INTEGER REFERENCES dailySchedule(id),
+    tuesday INTEGER REFERENCES dailySchedule(id),
+    wednesday INTEGER REFERENCES dailySchedule(id),
+    thursday INTEGER REFERENCES dailySchedule(id),
+    friday INTEGER REFERENCES dailySchedule(id),
+    saturday INTEGER REFERENCES dailySchedule(id),
+    sunday INTEGER REFERENCES dailySchedule(id)
+);
 
 

@@ -20,6 +20,45 @@ class BaseModel:
             return False
         
         return True
+    
+
+    @classmethod
+    def delete_elements(cls, table, **kwargs) -> list[dict]:
+        query = f'DELETE FROM { table } '
+        params = []
+
+        # Build the SQL query dynamically based on the provided parameters
+        if kwargs:
+            query += ' WHERE '
+
+            for index, (key, value) in enumerate(kwargs.items()):
+                if key == 'start_date':
+                    query += f'created_at >= %s'
+                elif key == 'end_date':
+                    query += f'created_at < %s'
+                    value += timedelta(days=1)
+                else:
+                    query += f'{key} = %s'
+
+                params.append(value)
+
+                if index < len(kwargs) - 1:
+                    query += ' AND '
+
+        query += " RETURNING *;"
+        
+        # Execute the query
+        try:
+            with get_connection() as conn:
+                cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+                cursor.execute(query, tuple(params))
+                result = cursor.fetchall()
+
+        except Exception as exception:
+            print("get_elements: ", exception)
+            return None
+        
+        return result
 
 
     @classmethod
@@ -42,7 +81,7 @@ class BaseModel:
 
     @classmethod
     def get_elements_from_start(cls, table: str, interval: Optional[tuple[int, int]] = None, **kwargs) -> list[dict]:
-        """Get a list with the elements of the table that match the provided parameters (kwargs). It starts from the first element in the table is ascending order. (so the first element shown if exists is the oldest one added, the one with id = 0)
+        """Get a list with the elements of the table that match the provided parameters (kwargs). It starts from the first element in the table in ascending order. (so the first element shown if exists is the oldest one added, the one with id = 0)
         
         Keyword arguments:
         table -- the name of the table to query

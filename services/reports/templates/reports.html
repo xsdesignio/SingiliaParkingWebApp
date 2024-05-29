@@ -28,6 +28,9 @@
                         <div class="input-container">
                             <label for="user_name">Seleccionar Usuario: </label>
                             <select name="user_name" value="Tickets">
+                                <option value="ALL" selected>
+                                    Todos
+                                </option>
                                 {% for user in users %}
                                     <option value="{{ user.name }}" selected>
                                         {{ user.name }}

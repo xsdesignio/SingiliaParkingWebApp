@@ -253,15 +253,16 @@ def create_available_bulletin():
     # get request infor from post form
     request_info = request.form
     bulletin_duration = request_info.get('duration')
+    bulletin_duration_minutes = request_info.get('duration_minutes')
     bulletin_price = Decimal(request_info.get('price'))
 
-    if bulletin_duration == None or bulletin_price == None:
+    if bulletin_duration == None or bulletin_price == None or bulletin_duration == None:
         flash('No se ha podido crear un nuevo modelo de boletín.', 'error')
         return redirect(url_for('bulletins.available_bulletins_page')), 301
     
     
     try:
-        bulletin = AvailableBulletinModel.create_available_bulletin(bulletin_duration, float(bulletin_price))
+        bulletin = AvailableBulletinModel.create_available_bulletin(bulletin_duration, bulletin_duration_minutes, float(bulletin_price))
     except Exception as e:
         flash('No se ha podido crear un nuevo modelo de boletín.', 'error')
         return redirect(url_for('bulletins.available_bulletins_page')), 301
@@ -298,6 +299,12 @@ def edit_available_bulletin(id):
     
     if bulletin_duration == '':
         bulletin_duration = available_bulletin.duration
+
+
+    bulletin_duration_minutes = request_info.get('duration_minutes', available_bulletin.duration_minutes)
+    
+    if bulletin_duration_minutes == '':
+        bulletin_duration_minutes = available_bulletin.duration_minutes
     
     bulletin_price = request_info.get('price')
     if bulletin_price == None or request_info.get('price') == '':
@@ -309,7 +316,7 @@ def edit_available_bulletin(id):
         flash('Ha ocurrido un error editando el modelo de boletín.', 'error')
         return redirect(url_for('bulletinss.available_bulletinss_page')), 301
 
-    edited_bulletin = AvailableBulletinModel.edit_available_bulletin(available_bulletin_id, bulletin_duration, bulletin_price);
+    edited_bulletin = AvailableBulletinModel.edit_available_bulletin(available_bulletin_id, bulletin_duration, bulletin_duration_minutes, bulletin_price);
 
     if edited_bulletin:
         flash('El modelo de boletín ha sido editado con éxito', 'success')

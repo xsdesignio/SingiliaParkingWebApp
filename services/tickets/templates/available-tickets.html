@@ -20,8 +20,12 @@
             <h2>Crear Nuevo Modelo de Ticket Disponible</h2>
             <form action="/tickets/available-tickets/create" method="post" class="general-form">
                 <div>
-                    <label for="duration">Duración:</label>
+                    <label for="duration">Duración (nombre):</label>
                     <input type="text" name="duration" id="duration" placeholder="ej: UNA HORA, HORA Y MEDIA">
+                </div>
+                <div>
+                    <label for="duration">Duración en minutos:</label>
+                    <input type="number" name="duration_minutes" id="duration_minutes" placeholder="30">
                 </div>
                 <div>
                     <label for="price">Precio en €:</label>
@@ -40,14 +44,18 @@
                 {% for ticket in available_tickets %}
                     <div class="available-ticket">
                         <p>Duración: <br/><b>{{ ticket.duration }}</b></p>
+                        <p>Duración(minutos): <br/><b>{{ ticket.duration_minutes }}</b></p>
                         <p>Precio: <br/><b>{{ ticket.price }} €</b></p>
                         <div>
                             <form action="/tickets/available-tickets/edit/{{ ticket.id }}" method="post">
                                 <label for="duration">Modificar duración:</label>
                                 <input type="text" name="duration" placeholder="ej: UNA HORA, HORA Y MEDIA">
+                                <label for="duration">Modificar Duración en minutos:</label>
+                                <input type="number" name="duration_minutes" placeholder="30">
                                 <label for="price">Modificar Precio: </label>
                                 <input type="number" step="0.01" name="price" placeholder="ej: 0.90">
                                 <input class="default-button" type="submit" value="Modificar">
+                                
                             </form>
                         </div>
                         <form action="/tickets/available-tickets/delete/{{ ticket.id }}" class="delete-form" method="post">
@@ -59,7 +67,6 @@
         </article>
     
     </section>
-
 
     <script src="{{ url_for('static', filename='/js/available_tickets.js') }}"></script>
 

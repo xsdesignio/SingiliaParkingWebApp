@@ -71,6 +71,37 @@ class TicketModel(BaseModel):
         return tickets
 
 
+
+    @classmethod
+    def delete_tickets(cls, **kwargs) -> list[dict]:
+        
+        result = cls.delete_tickets('tickets', **kwargs)
+
+        tickets: list[Ticket] = []
+
+        for ticket in result:
+            # Creating ticket object from database ticket data
+            responsible: User = UserModel.get_user(ticket["responsible_id"])
+                
+            zone: Zone = ZoneModel.get_zone(ticket["zone_id"])
+            payment_method: PaymentMethod = PaymentMethod.get_enum_value(ticket["payment_method"])
+
+            tickets.append(
+                Ticket(
+                    id = ticket["id"], 
+                    responsible = responsible,
+                    zone = zone,
+                    duration = ticket["duration"], 
+                    registration = ticket["registration"], 
+                    price = ticket["price"], 
+                    payment_method = payment_method, 
+                    created_at = ticket["created_at"]
+                ).to_json()
+            )
+        
+        return tickets
+    
+
     @classmethod
     def count_tickets(cls, **kwargs) -> int:
         return cls.count_elements('tickets', **kwargs)
@@ -93,7 +124,7 @@ class TicketModel(BaseModel):
         zone_tickets_amount = ZoneModel.count_ticket(zone.id)
 
         if(zone_tickets_amount < 0):
-            return None;
+            return None
     
         id = f"{zone.identifier}/{str(zone_tickets_amount).zfill(5)}"
 
@@ -156,58 +187,4 @@ class TicketModel(BaseModel):
             return None
 
         return deleted_ticket
-""" 
 
-    @classmethod
-    def pay_ticket(cls, ticket_id: int) -> Ticket:
-        updated_ticket: Ticket
-
-        try:
-            conn = get_connection()
-            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
-
-            ticket: Ticket = cls.get_ticket(ticket_id)
-
-            if ticket.paid:
-                raise Exception("El ticket introducido ya ha sido pagado")
-
-            query = '''
-                UPDATE tickets SET paid = true
-                WHERE id = %s
-                RETURNING *
-            '''
-
-
-            cursor.execute(query, (ticket_id,))
-            result = cursor.fetchone()
-
-            # Creating ticket object from database ticket data
-            responsible: User = UserModel.get_user(result["responsible_id"])
-            zone: Zone = ZoneModel.get_zone(result["zone_id"])
-            payment_method: PaymentMethod = PaymentMethod.get_enum_value(result["payment_method"])
-
-            ticket: Ticket = Ticket(
-                id = result["id"], 
-                responsible = responsible,
-                zone = zone,
-                duration = result["duration"], 
-                registration = result["registration"], 
-                price = result["price"], 
-                payment_method = payment_method, 
-                paid = result["paid"],
-                created_at = result["created_at"])
-            
-            conn.commit()
-
-            conn.close()
-            
-
-            return updated_ticket
-        
-        except Exception as exception:
-            print("pay_ticket: ", exception)
-            return None
-
- """
-
-    

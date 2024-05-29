@@ -39,7 +39,9 @@ def get_bulletins_attributes_count(start_date: datetime.datetime = None, end_dat
         "paid_amount": paid,
         "not_paid_amount": not_paid,
         "paid_by_cash": paid_by_cash,
+        "income_by_cash": Decimal("0.00"),
         "paid_by_card": paid_by_card,
+        "income_by_card": Decimal("0.00"),
         "data_by_duration": [],
         "total_income": Decimal("0.00"),
     }
@@ -66,12 +68,16 @@ def get_bulletins_attributes_count(start_date: datetime.datetime = None, end_dat
             "paid_amount": paid_by_card,
             "not_paid_amount": paid_by_cash,
             "paid_by_card": paid_by_card,
+            "income_by_card": paid_by_card * price,
             "paid_by_cash": paid_by_cash,
+            "income_by_cash": paid_by_cash * price,
             "total_income": paid * price,
         }
 
         bulletins_amount["data_by_duration"].append(data_by_duration_dict)
 
+        bulletins_amount["income_by_card"] += data_by_duration_dict["income_by_card"]
+        bulletins_amount["income_by_cash"] += data_by_duration_dict["income_by_cash"]
         bulletins_amount["total_income"] += data_by_duration_dict["total_income"]
 
 

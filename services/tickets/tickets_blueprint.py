@@ -152,35 +152,12 @@ def ensure_date_format(date: str) -> str:
         return "Invalid date format"
 
 
-""" @tickets_bp.post('/pay/<id>')
-@login_required
-def pay_ticket(id: int):
-    try:
-        ticket_id = int(id)
-
-        ticket = TicketModel.get_ticket(ticket_id)
-
-        if(ticket == None):
-            return jsonify({'message': "El ticket no existe"}), 400
-        
-        if(ticket.paid == True):
-            return jsonify({'message': "El ticket introducido ya ha sido pagado"}), 400
-         
-        TicketModel.pay_ticket(ticket_id)
-
-        return jsonify({'message': 'El ticket ha sido pagado con éxito'}), 200
-    
-    except Exception as exception:
-        print("pay_ticket: ", exception)
-        return jsonify({'message': exception.__str__()}), 400
- """
-
 
 """ ------------------------ AVAILABLE TICKETS ------------------------ """
 @tickets_bp.get('/available')
 @login_required
 def available_tickets():
-    available_tickets: list(AvailableTicket) = AvailableTicketModel.get_available_tickets()
+    available_tickets: list[AvailableTicket] = AvailableTicketModel.get_available_tickets()
     return jsonify(available_tickets)
 
 
@@ -188,7 +165,7 @@ def available_tickets():
 @tickets_bp.get('/available-tickets')
 @login_required
 def available_tickets_page():
-    available_tickets: list(AvailableTicket)
+    available_tickets: list[AvailableTicket]
     available_tickets = AvailableTicketModel.get_available_tickets()
     return render_template('available-tickets.html', available_tickets = available_tickets);
 
@@ -200,6 +177,7 @@ def create_available_ticket():
     # get request infor from post form
     request_info = request.form
     ticket_duration = request_info.get('duration')
+    ticket_duration_minutes = request_info.get('duration_minutes')
     ticket_price = Decimal(request_info.get('price'))
 
     if ticket_duration == None or ticket_price == None:
@@ -208,7 +186,7 @@ def create_available_ticket():
     
     
     try:
-        ticket = AvailableTicketModel.create_available_ticket(ticket_duration, float(ticket_price))
+        ticket = AvailableTicketModel.create_available_ticket(ticket_duration, ticket_duration_minutes, float(ticket_price))
     except Exception as e:
         flash('No se ha podido crear un nuevo modelo de ticket.', 'error')
         return redirect(url_for('tickets.available_tickets_page')), 301
@@ -224,18 +202,27 @@ def create_available_ticket():
 @role_required("ADMIN")
 @tickets_bp.post('/available-tickets/edit/<id>')
 def edit_available_ticket(id):
-    available_ticket_id = int(id)
-    request_info = request.form
-    ticket_duration = request_info.get('duration')
 
+    # Obtain the available based on url id
+    available_ticket_id = int(id)
     available_ticket = AvailableTicketModel.get_available_ticket(available_ticket_id)
 
+    request_info = request.form
 
+    # Checkind ticket duration for updating
     ticket_duration = request_info.get('duration', available_ticket.duration)
+
     if ticket_duration == '':
         ticket_duration = available_ticket.duration
 
+    # Checkind ticket duration minutes for updating
+    ticket_duration_minutes = request_info.get('duration_minutes', available_ticket.duration)
+
+    if ticket_duration_minutes == '':
+        ticket_duration_minutes = available_ticket.duration_minutes
+
     ticket_price = request_info.get('price')
+
     if ticket_price == None or request_info.get('price') == '':
         ticket_price = available_ticket.price
     else:
@@ -246,7 +233,7 @@ def edit_available_ticket(id):
         flash('Ha ocurrido un error editando el modelo de ticket.', 'error')
         return redirect(url_for('tickets.available_tickets_page')), 301
     
-    edited_ticket = AvailableTicketModel.edit_available_ticket(available_ticket_id, ticket_duration, ticket_price);
+    edited_ticket = AvailableTicketModel.edit_available_ticket(available_ticket_id, ticket_duration, ticket_duration_minutes, ticket_price);
 
     if edited_ticket:
         flash('El modelo de ticket ha sido editado con éxito', 'success')

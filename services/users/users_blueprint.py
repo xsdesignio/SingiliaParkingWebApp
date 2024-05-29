@@ -10,12 +10,9 @@ from datetime import datetime, timedelta
 from services.tickets.models.ticket_model import TicketModel
 from services.tickets.controllers.tickets_controller import get_tickets_attributes_count
 from services.bulletins.controllers.bulletins_controller import get_bulletins_attributes_count
-from services.bulletins.models.bulletin_model import BulletinModel
 from services.zones.models.zone_model import ZoneModel
 from services.users.entities.user import User
-from services.utils.reports.generation import create_report_for_user 
 
-import os
 
 
 users_bp = Blueprint('users', __name__, url_prefix='/users', template_folder='./templates')

@@ -5,7 +5,7 @@
 
 /* Define the colors here */
 :root {
-  --primary: #376e2e;
+  --primary: #6ddf91;
   --white: #ffffff;
   --black: #000000;
   --dark_green: #1c4528;
@@ -39,7 +39,7 @@ body {
 
 .container {
   display: grid;
-  grid-template-columns: 160px 6fr;
+  grid-template-columns: 200px 6fr;
   grid-template-rows: 1fr 9fr;
   grid-template-areas:
     "menu content"
@@ -81,7 +81,7 @@ nav ul {
   list-style: none;
   padding: 0;
   width: 100%;
-  margin: 0;
+  margin: 20px 0 0 0;
 }
 
 nav ul li {
@@ -90,14 +90,17 @@ nav ul li {
 }
 
 nav a {
-  display: inline-block;
+  display: block;
   width: 94%;
   height: fit-content;
   text-decoration: none;
   color: var(--dark_green);
-  padding: 8px 16px;
+  padding: 12px 20px;
   margin: 0;
-  text-align: left;
+  display: grid;
+  grid-template-columns: 30px auto;
+  align-items: center;
+  justify-items: flex-start;
   border-top-right-radius: 24px;
   border-bottom-right-radius: 24px;
   cursor: pointer;
@@ -455,7 +458,7 @@ form .default-button {
   border: 1px solid #45a583b9;
   background-color: white;
   padding: 40px 28px;
-  overflow: scroll;
+  overflow: auto;
 }
 
 
@@ -566,6 +569,15 @@ form .default-button {
 }
 
 
+.extension-input-container {
+  margin: 10px 0;
+}
+
+.extension-input-container select {
+  background-color: var(--light_green);
+  color: var(--dark_green);
+}
+
 .input-container {
   margin: 10px 0;
 }
@@ -601,12 +613,12 @@ form .default-button {
   background: linear-gradient(60deg, rgb(252, 252, 252) 40%, var(--white));
   display: grid;
   gap: 20px;
-  grid-template-columns: repeat(8, 120px);
+  grid-template-columns: repeat(8, 140px);
   align-items: center;
 }
 
 .bulletin {
-  grid-template-columns: repeat(13, 120px);
+  grid-template-columns: repeat(13, 140px);
 }
 
 .record-header {
@@ -617,7 +629,7 @@ form .default-button {
   background: linear-gradient(60deg, rgb(200, 255, 220) 40%, rgb(200, 255, 252));
   display: grid;
   gap: 20px;
-  grid-template-columns: repeat(8, 120px);
+  grid-template-columns: repeat(8, 140px);
   border-radius: 8px;
   align-items: center;
   border: 1px solid var(--green);
@@ -633,7 +645,7 @@ form .default-button {
   background: linear-gradient(60deg, rgb(200, 255, 253) 40%, rgb(200, 232, 255));
   display: grid;
   gap: 20px;
-  grid-template-columns: repeat(13, 120px);
+  grid-template-columns: repeat(13, 140px);
   border-radius: 8px;
   align-items: center;
   border-top: 1px solid rgba(63, 77, 202, 0.8);
@@ -954,43 +966,56 @@ form .default-button {
   margin: 20px 0;
 }
 
-/* 
-.color-picker-wrapper {
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 2px 4px #09954886;
-  background-color: #ffffff;
-  display: flex;
-  margin-top: 16px;
-  align-items: center;
-  gap: 12px;
+
+.schedule-section {
+  margin: 40px auto;
+}
+
+.schedule-section hr {
+  background-color: var(--green);
+}
+
+.schedule-wrapper {
   display: grid;
-  grid-template-columns: 1fr auto;
-  place-items: space-between;
+  grid-template-columns: repeat(7, auto);
+  gap: 20px;
+  align-items: center;
+}
+
+.schedule-wrapper > div {
+  padding: 20px;
+  width: fit-content;
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid var(--green);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.schedule-form {
+  padding: 10px;
+  width: fit-content;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;  
+  border-radius: 8px;
+  border: 1px solid var(--light_green)
+}
+
+.schedule-form button {
+  box-sizing: border-box;
+  padding: 10px 20px;
+  border: 1px solid var(--green);
+  width: 100%;
+  margin: 10px 0 0 0;
+  border-radius: 8px;
+}
+
+.shedule-save-button-wrapper {
+  grid-column: span 7;
+  display: grid;
+  place-items: center;
   width: 100%;
 }
 
-.color-picker-wrapper label {
-  display: block;
-  font-size: 16px;
-  color: #333;
-}
-
-.color-picker {
-  padding: 0 !important;
-  margin: 0 !important;
-  border: none !important;
-  border-radius: 16px !important;
-  overflow: hidden;
-  width: 60px !important;
-  height: 60px;
-  cursor: pointer;
-  outline: none;
-  box-shadow: 0 2px 4px #09954886;
-  transition: transform 0.3s ease;
-}
-
-.color-picker:focus {
-  transform: scale(1.2);
-} 
-*/

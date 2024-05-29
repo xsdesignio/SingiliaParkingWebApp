@@ -36,9 +36,9 @@ class TestTickets(unittest.TestCase):
 
         conn = get_connection()
         cursor = conn.cursor()
-
+        """ 
         cursor.execute("DELETE FROM tickets WHERE registration = '4567-ABG'")
-        cursor.execute("DELETE FROM tickets WHERE registration = '4567-SQW'")
+        cursor.execute("DELETE FROM tickets WHERE registration = '4567-SQW'") """
         conn.commit()
         cursor.close()
         conn.close() 
