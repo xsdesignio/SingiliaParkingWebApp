@@ -21,6 +21,7 @@ class TestAuth(unittest.TestCase):
         cursor = con.cursor()
          
         cursor.execute("DELETE FROM users WHERE email = 'test@test.com'")
+        cursor.execute("DELETE FROM users WHERE email = 'test@example.com'")
         
         con.commit()
         cursor.close()

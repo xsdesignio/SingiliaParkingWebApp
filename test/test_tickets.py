@@ -17,16 +17,25 @@ class TestTickets(unittest.TestCase):
         app.testing = True
         self.client = app.test_client()
 
-
+       
         # This user is created because
+        signup_data = {
+            "role": "ADMIN",
+            "name": "test",
+            "email": "test@test.com",
+            "password": "test_password",
+            "security_code": 4578
+        }
+
         login_data = {
-            'email': 'test@gmail.com',
-            'password': '12345678',
+            "email": "test@test.com",
+            "password": "test_password",
         }
         headers = {
             'Content-Type': 'application/json'
         }
             
+        signup = self.client.post('http://localhost:5000/auth/signup', data=json.dumps(signup_data), headers=headers)
         login_request = self.client.post('http://localhost:5000/auth/login', data=json.dumps(login_data), headers=headers)
 
         loggedin_user = json.loads(login_request.data)
@@ -40,6 +49,7 @@ class TestTickets(unittest.TestCase):
         # Delete registrations used during the test
         cursor.execute("DELETE FROM tickets WHERE registration = '4567-ABG'")
         cursor.execute("DELETE FROM tickets WHERE registration = '4567-SQW'")
+        cursor.execute("DELETE FROM users WHERE email = 'test@test.com'")
         conn.commit()
         cursor.close()
         conn.close() 

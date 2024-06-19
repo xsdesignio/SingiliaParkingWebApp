@@ -18,15 +18,18 @@ class TestBulletins(unittest.TestCase):
 
 
         # This user is created because
-        login_data = {
-            'email': 'test@gmail.com',
-            'password': '12345678',
+        signup_data = {
+            "role": "ADMIN",
+            "name": "test",
+            "email": "test@test.com",
+            "password": "test_password",
+            "security_code": 4578
         }
         headers = {
             'Content-Type': 'application/json'
         }
             
-        login_request = self.client.post('http://localhost:5000/auth/login', data=json.dumps(login_data), headers=headers)
+        login_request = self.client.post('http://localhost:5000/auth/signup', data=json.dumps(signup_data), headers=headers)
 
         loggedin_user = json.loads(login_request.data)
         self.user_id = loggedin_user["id"]
@@ -39,6 +42,7 @@ class TestBulletins(unittest.TestCase):
         cursor.execute("DELETE FROM bulletins WHERE registration = '4567-ABG'")
         cursor.execute("DELETE FROM bulletins WHERE registration = '4567-SQW'")
         cursor.execute("DELETE FROM bulletins WHERE registration = '0000999'")
+        cursor.execute("DELETE FROM users WHERE email = 'test@test.com'")
         
         conn.commit()
         cursor.close()

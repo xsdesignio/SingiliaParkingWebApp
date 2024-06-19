@@ -13,16 +13,25 @@ class TestSchedule(unittest.TestCase):
         app.testing = True
         self.client = app.test_client()
 
-        # Login the user and store the user_id
+        # Login the user and store the user_id# This user is created because
+        signup_data = {
+            "role": "ADMIN",
+            "name": "test",
+            "email": "test@test.com",
+            "password": "test_password",
+            "security_code": 4578
+        }
         login_data = {
-            'email': 'test@gmail.com',
-            'password': '12345678',
+            "email": "test@test.com",
+            "password": "test_password",
         }
         headers = {
             'Content-Type': 'application/json'
         }
             
-        login_request = self.client.post('/auth/login', data=json.dumps(login_data), headers=headers)
+        signup = self.client.post('http://localhost:5000/auth/signup', data=json.dumps(signup_data), headers=headers)
+
+        login_request = self.client.post('http://localhost:5000/auth/login', data=json.dumps(login_data), headers=headers)
 
         self.assertEqual(login_request.status_code, 200, "Login request failed")
 
@@ -35,6 +44,12 @@ class TestSchedule(unittest.TestCase):
 
     def tearDown(self):
         # Close the database connection
+        
+        conn = get_connection()
+        cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+        cursor.execute("DELETE FROM users WHERE email = 'test@test.com'")
+        cursor.close()
+        conn.close()
         self.reset_database()
 
     def reset_database(self):
