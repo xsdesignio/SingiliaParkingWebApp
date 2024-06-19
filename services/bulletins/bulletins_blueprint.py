@@ -64,7 +64,9 @@ def get_bulletin(id: str):
 @bulletins_bp.get('/get-bulletins-by-registration/<path:registration>')
 @login_required
 def get_bulletin_by_registration(registration: str):
-    bulletins_json = BulletinModel.get_bulletins(registration = registration) or []
+    
+    bulletins_json = BulletinModel.get_similar_bulletins(registration = registration) or []
+
     return jsonify(bulletins_json), 200
 
 
@@ -259,7 +261,6 @@ def create_available_bulletin():
     if bulletin_duration == None or bulletin_price == None or bulletin_duration == None:
         flash('No se ha podido crear un nuevo modelo de boletín.', 'error')
         return redirect(url_for('bulletins.available_bulletins_page')), 301
-    
     
     try:
         bulletin = AvailableBulletinModel.create_available_bulletin(bulletin_duration, bulletin_duration_minutes, float(bulletin_price))

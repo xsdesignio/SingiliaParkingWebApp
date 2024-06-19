@@ -1,4 +1,4 @@
-from services.export.file_extensions import FileExtensions
+from services.export.controllers.file_extensions import FileExtensions
 from services.tickets.entities.ticket import Ticket
 from services.tickets.models.ticket_model import TicketModel
 from services.bulletins.entities.bulletin import Bulletin
@@ -20,15 +20,17 @@ def export_tickets(tickets: list, extension: FileExtensions) -> str:
 
     frame = pandas.DataFrame(tickets)
     path: str
-
-    if extension == FileExtensions.XLSX:
-        file_name = "tickets.xlsx"
-        path = f'static/exports/{file_name}'
-        frame.to_excel(path)
-    else:
-        file_name = "tickets.csv"
-        path = f'static/exports/{file_name}'
-        frame.to_csv(path)
+    try:
+        if extension == FileExtensions.XLSX:
+            file_name = "tickets.xlsx"
+            path = f'static/exports/{file_name}'
+            frame.to_excel(path)
+        else:
+            file_name = "tickets.csv"
+            path = f'static/exports/{file_name}'
+            frame.to_csv(path)
+    except Exception as e:
+        raise Exception(f"Failed to export tickets: {str(e)}")
     
     return path
 
@@ -41,17 +43,19 @@ def export_bulletins(bulletins: list, extension: FileExtensions) -> str :
     argument: extension - extension and format for the fyle
     Return: return_description
     """
-
     frame = pandas.DataFrame(bulletins)
     path: str
 
-    if extension == FileExtensions.XLSX:
-        file_name = "bulletins.xlsx"
-        path = f'static/exports/{file_name}'
-        frame.to_excel(path)
-    else:
-        file_name = "bulletins.csv"
-        path = f'static/exports/{file_name}'
-        frame.to_csv(path)
+    try:
+        if extension == FileExtensions.XLSX:
+            file_name = "bulletins.xlsx"
+            path = f'static/exports/{file_name}'
+            frame.to_excel(path)
+        else:
+            file_name = "bulletins.csv"
+            path = f'static/exports/{file_name}'
+            frame.to_csv(path)
+    except Exception as e:
+        raise Exception(f"Failed to export bulletins: {str(e)}")
     
     return path

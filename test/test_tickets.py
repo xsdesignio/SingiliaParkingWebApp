@@ -5,6 +5,7 @@ import json
 
 from app import app
 from services.tickets.models.ticket_model import TicketModel
+from services.tickets.models.available_ticket_model import AvailableTicketModel
 from services.tickets.entities.ticket import Ticket
 
 
@@ -36,9 +37,9 @@ class TestTickets(unittest.TestCase):
 
         conn = get_connection()
         cursor = conn.cursor()
-        """ 
+        # Delete registrations used during the test
         cursor.execute("DELETE FROM tickets WHERE registration = '4567-ABG'")
-        cursor.execute("DELETE FROM tickets WHERE registration = '4567-SQW'") """
+        cursor.execute("DELETE FROM tickets WHERE registration = '4567-SQW'")
         conn.commit()
         cursor.close()
         conn.close() 
@@ -48,76 +49,54 @@ class TestTickets(unittest.TestCase):
         
         
 
-    def test_create_ticket(self):
+    def test_create_all_available_tickets(self):
 
         created_at = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-        ticket_data = {
-            'registration': '4567-ABG',
-            'duration': "MEDIA HORA",
-            'price': 0.70,
-            'payment_method': 'CASH',
-            'zone': 'Plaza Castilla',
-        }
+        available_tickets = AvailableTicketModel.get_available_tickets()
         
-        headers = {
-            'Content-Type': 'application/json'
-        }
-        
+        for available_ticket in available_tickets:
+            ticket_data = {
+                'registration': '4567-ABG',
+                'duration': available_ticket["duration"],
+                # Converting price to string because Decimal is not serializable
+                'price': str(available_ticket["price"]), 
+                'payment_method': 'CASH',
+                'zone': 'Plaza Castilla',
+            }
+            
+            headers = {
+                'Content-Type': 'application/json'
+            }
+            
 
-        # Creating the ticket without the responsible_id and created_at
-        response = self.client.post('http://localhost:5000/tickets/create', data=json.dumps(ticket_data), headers=headers, follow_redirects=True)
-        
-        self.assertEqual(response.status_code, 200)
-        
-        response_data = json.loads(response.data)
-        id = response_data["id"]
+            # Creating the ticket without the responsible_id and created_at
+            response = self.client.post('http://localhost:5000/tickets/create', data=json.dumps(ticket_data), headers=headers, follow_redirects=True)
+            
+            self.assertEqual(response.status_code, 200)
+            
+            response_data = json.loads(response.data)
+            id = response_data["id"]
 
-        ticket: Ticket = TicketModel.get_ticket(id)
+            ticket: Ticket = TicketModel.get_ticket(id)
 
-        self.assertIsNotNone(ticket)
-        self.assertEqual(ticket.registration, "4567-ABG")
-        self.assertEqual(ticket.duration, "MEDIA HORA")
-        self.assertEqual(ticket.price, Decimal('0.70'))
-        self.assertEqual(ticket.payment_method, PaymentMethod.CASH)
-        self.assertEqual(ticket.zone.name, "Plaza Castilla")
-        self.assertEqual(ticket.created_at.strftime("%Y-%m-%d %H:%M"), created_at)
-
-        # Creating the ticket giving the responsible_id and created_at
-
-        ticket_data_2 = {
-            'responsible_id': self.user_id,
-            'registration': '4567-SQW',
-            'duration': "MEDIA HORA",
-            'price': 0.70,
-            'payment_method': 'CARD',
-            'zone': 'Plaza Castilla',
-            'created_at': created_at
-        }
-
-        response_2 = self.client.post('http://localhost:5000/tickets/create', data=json.dumps(ticket_data_2), headers=headers, follow_redirects=True)
-        
-        self.assertEqual(response.status_code, 200)
-        
-        response_data = json.loads(response_2.data)
-        id = response_data["id"]
-
-        ticket: Ticket = TicketModel.get_ticket(id)
-
-        self.assertIsNotNone(ticket)
-        self.assertEqual(ticket.registration, "4567-SQW")
-        self.assertEqual(ticket.duration, "MEDIA HORA")
-        self.assertEqual(ticket.price, Decimal('0.70'))
-        self.assertEqual(ticket.payment_method, PaymentMethod.CARD)
-        self.assertEqual(ticket.zone.name, "Plaza Castilla")
-        self.assertEqual(ticket.created_at.strftime("%Y-%m-%d %H:%M"), created_at)
+            self.assertIsNotNone(ticket)
+            self.assertEqual(ticket.registration, "4567-ABG")
+            self.assertEqual(ticket.duration, available_ticket["duration"])
+            self.assertEqual(ticket.price, Decimal(available_ticket["price"]))
+            self.assertEqual(ticket.payment_method, PaymentMethod.CASH)
+            self.assertEqual(ticket.zone.name, "Plaza Castilla")
+            self.assertEqual(ticket.created_at.strftime("%Y-%m-%d %H:%M"), created_at)
 
     def test_create_incorrect_ticket(self):
         ticket_data = {
             'registration': '4567-ABG',
             'duration': "MEDIA HORA",
             'price': 0.70,
-        }
+            # 'payment_method': 'CASH',
+            # 'zone': 'Plaza Castilla',
+        } # payment_method and zone are required
+
         headers = {
             'Content-Type': 'application/json'
         }

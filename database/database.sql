@@ -22,7 +22,7 @@ CREATE TABLE available_bulletins(
 CREATE TABLE zones(
     id SERIAL PRIMARY KEY NOT NULL,
     name VARCHAR(100) NOT NULL UNIQUE,
-    identifier VARCHAR(2) DEFAULT 'AA' NOT NULL UNIQUE,
+    identifier VARCHAR(2) DEFAULT 'AA' NOT NULL UNIQUE, 
     tickets INTEGER NOT NULL DEFAULT 0,
     bulletins INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -71,11 +71,34 @@ CREATE TABLE bulletins(
 );
 
 
-CREATE TABLE dailySchedule(
+-- SCHEDULE
+
+/* 
+CREATE TABLE openSpan (
     id SERIAL PRIMARY KEY NOT NULL,
     openTime TIME NOT NULL,
     closeTime TIME NOT NULL
+); */
+
+/* 
+CREATE TABLE dailyOpenTimes(
+    id SERIAL PRIMARY KEY NOT NULL,
+    dailyScheduleId INTEGER REFERENCES dailySchedule(id) NOT NULL,
+    openSpanId INTEGER REFERENCES openSpan(id) NOT NULL,
 );
+ */
+ 
+ 
+CREATE TYPE openSpan AS (
+    openTime TIME,
+    closeTime TIME
+);
+
+CREATE TABLE dailySchedule(
+    id SERIAL PRIMARY KEY NOT NULL,
+    openSpans openSpan[]
+);
+
 
 CREATE TABLE weekSchedule(
     id SERIAL PRIMARY KEY NOT NULL,

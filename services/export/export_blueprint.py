@@ -1,8 +1,5 @@
 from flask import Blueprint, render_template, request, after_this_request, send_file
 from auth.controllers.login import login_required, role_required
-from services.export.export_data import export_tickets
-from services.export.export_data import export_bulletins
-from services.export.file_extensions import FileExtensions
 from services.users.entities.user import User
 from services.utils.data_management import parse_date
 from datetime import datetime, timedelta
@@ -14,7 +11,11 @@ from services.tickets.models.ticket_model import TicketModel
 from services.bulletins.entities.bulletin import Bulletin
 from services.bulletins.models.bulletin_model import BulletinModel
 from database.base_model import BaseModel
-import os
+
+from .controllers.export_data import export_tickets, export_bulletins
+from .controllers.file_extensions import FileExtensions
+
+import os, sys
 
 export_bp = Blueprint('export', __name__, url_prefix='/export', template_folder='./templates')
 
@@ -37,14 +38,17 @@ def export_tickets_from_db():
     data: dict = request.form
 
     params = get_params()
+    delete_elements = data.get("delete", False)
+    
+    tickets: list
+    if delete_elements:
+        tickets = BaseModel.delete_elements('tickets', **params)
+    else: 
+        tickets = BaseModel.get_elements('tickets', None, **params)
 
-    tickets: list = BaseModel.delete_elements('tickets', **params)
-
-
-    print(len(tickets))
     extension = data.get("extension", "csv")
     
-    if(extension == "xlsx"):
+    if extension == "xlsx":
         extension = FileExtensions.XLSX
     else:
         extension = FileExtensions.CSV
@@ -68,10 +72,16 @@ def export_bulletins_from_db():
 
     params = get_params()
     
-    bulletins: list[Bulletin] = BaseModel.delete_elements('bulletins', **params)
+    delete_elements = data.get("delete", False)
+
+    bulletins: list
+    if delete_elements:
+        bulletins = BaseModel.delete_elements('bulletins', **params)
+    else: 
+        bulletins = BaseModel.get_elements('bulletins', None, **params)
 
     extension = data.get("extension", "csv")
-    if(extension == "xlsx"):
+    if extension == "xlsx":
         extension = FileExtensions.XLSX
     else:
         extension = FileExtensions.CSV

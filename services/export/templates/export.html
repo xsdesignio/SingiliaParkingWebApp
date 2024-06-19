@@ -2,7 +2,6 @@
 
 {% block title %} Exportar Datos {% endblock %}
 
-
 {% block content %}
     <div class="page-title">
         <h1>Exportar Datos</h1>
@@ -13,7 +12,7 @@
         <article class="max-width--600">
             <h2>Exportar Tickets de la base de datos</h2>
             <p><b>¡Precaución!</b> Los tickets desaparecerán de la base de datos</p>
-            <form class="general-form" action="/export/export-database-tickets" method="POST">
+            <form class="general-form" action="/export/export-database-tickets" method="POST" id="tickets-form">
                 <div class="two-columns-flex">
                     <div class="input-container">
                         <label for="start_date">Fecha de inicio: </label>
@@ -34,7 +33,7 @@
                                 Todos
                             </option>
                             {% for user in users %}
-                                <option value="{{ user.name }}" selected>
+                                <option value="{{ user.name }}">
                                     {{ user.name }}
                                 </option>
                             {% endfor %}
@@ -63,69 +62,190 @@
                         </select>
                     </div>
                 </div>
+                <div class="extension-delete-option">
+                    <label for="delete">¿Eliminar Tickets de la Base de Datos?</label>
+                    <input type="checkbox" id="delete-tickets" name="delete">
+                </div>
 
                 <input class="default-button" type="submit" value="Exportar Tickets">
             </form>
-    </article>
+        </article>
     
 
-    <article class="max-width--600">
-        <h2>Exportar Boletines de la base de datos</h2>
-        <p><b>¡Precaución!</b> Los boletines desaparecerán de la base de datos</p>
-        <form class="general-form" action="/export/export-database-bulletins" method="POST">
-            <div class="two-columns-flex">
-                <div class="input-container">
-                    <label for="start_date">Fecha de inicio: </label>
-                    <input type="date" name="start_date" required>
+        <article class="max-width--600">
+            <h2>Exportar Boletines de la base de datos</h2>
+            <p><b>¡Precaución!</b> Los boletines desaparecerán de la base de datos</p>
+            <form class="general-form" action="/export/export-database-bulletins" method="POST" id="bulletins-form">
+                <div class="two-columns-flex">
+                    <div class="input-container">
+                        <label for="start_date">Fecha de inicio: </label>
+                        <input type="date" name="start_date" required>
+                    </div>
+                        
+                    <div class="input-container">
+                        <label for="end_date">Fecha de fin: </label>
+                        <input type="date" name="end_date" required>
+                    </div>
                 </div>
-                    
-                <div class="input-container">
-                    <label for="end_date">Fecha de fin: </label>
-                    <input type="date" name="end_date" required>
-                </div>
-            </div>
-            <div class="two-columns-flex">
-                <div class="input-container">
-                    <label for="user_name">Seleccionar Usuario: </label>
-                    <select name="user_name" value="Tickets">
-                        <option value="ALL" selected>
-                            Todos
-                        </option>
-                        {% for user in users %}
-                            <option value="{{ user.name }}" selected>
-                                {{ user.name }}
+                <div class="two-columns-flex">
+                    <div class="input-container">
+                        <label for="user_name">Seleccionar Usuario: </label>
+                        <select name="user_name" value="Tickets">
+                            <option value="ALL" selected>
+                                Todos
                             </option>
-                        {% endfor %}
-                    </select>
-                </div>
-                    
-                <div class="input-container">
-                    <label for="zone_name">Seleccionar Zona: </label>
-                    <select name="zone_name" value="Tickets">
-                        <option value="ALL" selected>
-                            Todas
-                        </option>
-                        {% for zone in zones %}
-                            <option value="{{ zone.name }}">
-                                {{ zone.name }}
+                            {% for user in users %}
+                                <option value="{{ user.name }}">
+                                    {{ user.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                        
+                    <div class="input-container">
+                        <label for="zone_name">Seleccionar Zona: </label>
+                        <select name="zone_name" value="Tickets">
+                            <option value="ALL" selected>
+                                Todas
                             </option>
-                        {% endfor %}
-                    </select>   
+                            {% for zone in zones %}
+                                <option value="{{ zone.name }}">
+                                    {{ zone.name }}
+                                </option>
+                            {% endfor %}
+                        </select>   
+                    </div>
+                    
+                    <div class="extension-input-container">
+                        <label for="extension">Extensión de Archivo</label>
+                        <select id="extension" name="extension">
+                            <option value="csv">Csv</option>
+                            <option value="xlsx" selected>Xlsx (Excel)</option>
+                        </select>
+                    </div>
                 </div>
-                
-                <div class="extension-input-container">
-                    <label for="extension">Extensión de Archivo</label>
-                    <select id="extension" name="extension">
-                        <option value="csv">Csv</option>
-                        <option value="xlsx" selected>Xlsx (Excel)</option>
-                    </select>
+
+
+                <div class="extension-delete-option">
+                    <label for="delete">¿Eliminar Boletines de la Base de Datos?</label>
+                    <input type="checkbox" id="delete-bulletins" name="delete">
                 </div>
+
+                <input class="default-button" type="submit" value="Exportar Boletines">
+            </form>
+        </article>
+    </section>
+
+    <!-- Modal HTML -->
+    <div id="confirmationModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p>¿Está seguro que desea eliminar los datos seleccionados de la base de datos?</p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;"> 
+                <button id="confirmButton" class="default-button">Confirmar</button>
+                <button id="cancelButton" class="default-button">Cancelar</button>
             </div>
+        </div>
+    </div>
 
-            <input class="default-button" type="submit" value="Exportar Boletines">
-        </form>
-</article>
+    <!-- Add your JavaScript here -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteTicketsCheckbox = document.getElementById('delete-tickets');
+            const deleteBulletinsCheckbox = document.getElementById('delete-bulletins');
+            const ticketsForm = document.getElementById('tickets-form');
+            const bulletinsForm = document.getElementById('bulletins-form');
 
+            const modal = document.getElementById('confirmationModal');
+            const confirmButton = document.getElementById('confirmButton');
+            const cancelButton = document.getElementById('cancelButton');
+            const closeButton = document.querySelector('.modal .close');
 
-</section>
+            let formToSubmit = null;
+
+            function showModal(form) {
+                formToSubmit = form;
+                modal.style.display = 'block';
+            }
+
+            function hideModal() {
+                modal.style.display = 'none';
+                formToSubmit = null;
+            }
+
+            confirmButton.addEventListener('click', function() {
+                if (formToSubmit) {
+                    formToSubmit.submit();
+                }
+                hideModal();
+            });
+
+            cancelButton.addEventListener('click', hideModal);
+            closeButton.addEventListener('click', hideModal);
+            
+            window.addEventListener('click', function(event) {
+                if (event.target == modal) {
+                    hideModal();
+                }
+            });
+
+            ticketsForm.addEventListener('submit', function(event) {
+                if (deleteTicketsCheckbox.checked) {
+                    event.preventDefault();
+                    showModal(ticketsForm);
+                }
+            });
+
+            bulletinsForm.addEventListener('submit', function(event) {
+                if (deleteBulletinsCheckbox.checked) {
+                    event.preventDefault();
+                    showModal(bulletinsForm);
+                }
+            });
+        });
+    </script>
+
+    <!-- Add CSS for modal -->
+    <style>
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            padding-top: 100px; 
+            left: 0;
+            top: 0;
+            width: 320px; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4); 
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .default-button {
+            margin: 10px;
+        }
+    </style>
 {% endblock %}

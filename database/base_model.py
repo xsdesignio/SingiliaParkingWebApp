@@ -23,6 +23,28 @@ class BaseModel:
     
 
     @classmethod
+    def update_element(cls, table, id, data):
+        """
+            Helper method for other functions
+        """
+
+
+        keys = data.keys()
+        values = [data[key] for key in keys]
+        set_clause = ", ".join([f"{key} = %s" for key in keys])
+        query = f"UPDATE {table} SET {set_clause} WHERE id = %s"
+
+        try:
+            conn = get_connection()
+            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+            cursor.execute(query, values + [id])
+            conn.commit()
+            conn.close()
+        except Exception as exception:
+            print("update_element: ", exception)
+    
+
+    @classmethod
     def delete_elements(cls, table, **kwargs) -> list[dict]:
         query = f'DELETE FROM { table } '
         params = []
@@ -53,9 +75,10 @@ class BaseModel:
                 cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
                 cursor.execute(query, tuple(params))
                 result = cursor.fetchall()
+                print(len(result))
 
         except Exception as exception:
-            print("get_elements: ", exception)
+            print("delete_elements: ", exception)
             return None
         
         return result
@@ -149,9 +172,8 @@ class BaseModel:
         Return: the list with the elements
         """
 
-
-        if interval is None:
-            interval = (0, 50)
+        # if interval is None:
+        #    interval = (0, 50)
 
         
         query = f'SELECT * FROM { table }'

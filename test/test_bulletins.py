@@ -5,6 +5,7 @@ import json
 
 from app import app
 from services.bulletins.models.bulletin_model import BulletinModel
+from services.bulletins.models.available_bulletin_model import AvailableBulletinModel
 from services.bulletins.entities.bulletin import Bulletin
 
 from database.db_connection import get_connection
@@ -34,11 +35,11 @@ class TestBulletins(unittest.TestCase):
     def tearDown(self):
         conn = get_connection()
         cursor = conn.cursor()
-        """ 
+        
         cursor.execute("DELETE FROM bulletins WHERE registration = '4567-ABG'")
         cursor.execute("DELETE FROM bulletins WHERE registration = '4567-SQW'")
         cursor.execute("DELETE FROM bulletins WHERE registration = '0000999'")
-         """
+        
         conn.commit()
         cursor.close()
         conn.close() 
@@ -62,7 +63,6 @@ class TestBulletins(unittest.TestCase):
         
         
         response = self.client.post('http://localhost:5000/bulletins/create', data=json.dumps(bulletins_data), headers=headers, follow_redirects=True)
-        
         
         self.assertEqual(response.status_code, 200)
         
@@ -110,79 +110,82 @@ class TestBulletins(unittest.TestCase):
     def test_pay_bulletin(self):
         created_at = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-        bulletins_data = {
-            'responsible_id': self.user_id,
-            'zone_name': 'Plaza Castilla',
-            'registration': '4567-ABG',
-            'precept': "Se salta el tráfico",
-            'brand': 'Toyota',
-            'model': 'C-3',
-            'color': 'rojo',
-            'created_at': created_at
-        }
-        headers = {
-            'Content-Type': 'application/json'
-        }
-        
-        
-        response = self.client.post('http://localhost:5000/bulletins/create', data=json.dumps(bulletins_data), headers=headers, follow_redirects=True)
+        available_bulletins = AvailableBulletinModel.get_available_bulletins()
+
+        for available_bulletin in available_bulletins:
+            
+            bulletins_data = {
+                'responsible_id': self.user_id,
+                'zone_name': 'Plaza Castilla',
+                'registration': '4567-ABG',
+                'precept': "Se salta el tráfico",
+                'created_at': created_at
+            }
+            headers = {
+                'Content-Type': 'application/json'
+            }
+            
+            
+            response = self.client.post('http://localhost:5000/bulletins/create', data=json.dumps(bulletins_data), headers=headers, follow_redirects=True)
+            
+
+            self.assertEqual(response.status_code, 200)
+            
+            response_data = json.loads(response.data)
+            id = response_data["id"]
+
+            bulletin: Bulletin = BulletinModel.get_bulletin(id)
+
+            self.assertIsNotNone(bulletin)
+            self.assertEqual(bulletin.paid, False)
+
+            # Construct form data for payment
+            payment_data = {
+                'payment_method': 'CASH',
+                'price': str(available_bulletin["price"]),
+                'duration': available_bulletin["duration"]
+            }
         
 
-        self.assertEqual(response.status_code, 200)
-        
-        response_data = json.loads(response.data)
-        id = response_data["id"]
+            url = f'http://localhost:5000/bulletins/pay/{id}'
+            
+            response = self.client.post(url, data=payment_data, headers= {
+                    'Content-Type': 'multipart/form-data', 
+                })
+            self.assertEqual(response.status_code, 200)
 
-        bulletin: Bulletin = BulletinModel.get_bulletin(id)
+            bulletin = BulletinModel.get_bulletin(id)
 
-        self.assertIsNotNone(bulletin)
-        self.assertEqual(bulletin.paid, False)
-
-        # Construct form data for payment
-        payment_data = {
-            'payment_method': 'CASH',
-            'price': '0.70',
-            'duration': 'MEDIA HORA'
-        }
-    
-
-        url = f'http://localhost:5000/bulletins/pay/{id}'
-        
-        response = self.client.post(url, data=payment_data, headers= {
-                'Content-Type': 'multipart/form-data', 
-            })
-        self.assertEqual(response.status_code, 200)
-
-        bulletin = BulletinModel.get_bulletin(id)
-
-        self.assertIsNotNone(bulletin)
-        self.assertEqual(bulletin.paid, True)
+            self.assertIsNotNone(bulletin)
+            self.assertEqual(bulletin.paid, True)
+            self.assertEqual(bulletin.duration, available_bulletin["duration"])
+            self.assertEqual(str(bulletin.price), str(available_bulletin["price"]))
 
 
-    def test_get_bulletins_by_registration(self):
-        created_at = datetime.now().strftime("%Y-%m-%d %H:%M")
+        def test_get_bulletins_by_registration(self):
+            created_at = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-        bulletins_data = {
-            'responsible_id': self.user_id,
-            'zone_name': 'Plaza Castilla',
-            'registration': '9999ABC',
-            'precept': "Se salta el tráfico",
-            'created_at': created_at
-        }
-        headers = {
-            'Content-Type': 'application/json'
-        }
-        
-        
-        response = self.client.post('http://localhost:5000/bulletins/create', data=json.dumps(bulletins_data), headers=headers, follow_redirects=True)
-        
-        
-        self.assertEqual(response.status_code, 200)
-        registration = "9999ABC"
-        url = f'http://localhost:5000/bulletins/get-bulletins-by-registration/{registration}'
-        
-        response = self.client.get(url)
-        bulletins_found = response.json
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(len(bulletins_found) > 0)
+            bulletins_data = {
+                'responsible_id': self.user_id,
+                'zone_name': 'Plaza Castilla',
+                'registration': '9999ABC',
+                'precept': "Se salta el tráfico",
+                'created_at': created_at
+            }
+            headers = {
+                'Content-Type': 'application/json'
+            }
+            
+            
+            response = self.client.post('http://localhost:5000/bulletins/create', data=json.dumps(bulletins_data), headers=headers, follow_redirects=True)
+            
+            
+            self.assertEqual(response.status_code, 200)
+            registration = "9999ABC"
+            url = f'http://localhost:5000/bulletins/get-bulletins-by-registration/{registration}'
+            
+            response = self.client.get(url)
+            bulletins_found = response.json
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(len(bulletins_found) > 0)
 

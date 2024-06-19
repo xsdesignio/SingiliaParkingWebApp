@@ -94,39 +94,3 @@ def get_available_ticket_attributes_count(duration, price, query_dict):
         "total_income": count_by_duration * price,
     }
 
-
-"""
-It returns something like:
-{
-    'tickets_amount': 309, 
-    'paid_by_card': 49, 
-    'income_by_cash': Decimal('8.00')
-    'paid_by_cash': 260, 
-    'income_by_cash': Decimal('16.00')
-    'data_by_duration': [
-        {
-            'duration': 'DOS HORAS', 
-            'price': Decimal('2.20'), 
-            'amount': 4, 
-            'paid_by_card': 2, 
-            'income_by_card': Decimal('3.20')
-            'paid_by_cash': 2, 
-            'income_by_cash': Decimal('4.00')
-            'total_income': Decimal('7.20')
-        }, 
-        {
-            'duration': 'UNA HORA Y MEDIA', 
-            'price': Decimal('1.80'), 
-            'amount': 18, 
-            'paid_by_card': 3, 
-            'income_by_cash': Decimal('4.00')
-            'paid_by_cash': 15, 
-            'income_by_cash': Decimal('4.00')
-            'total_income': Decimal('25.20')
-        },  
-        ...
-    ], 
-    'total_income': Decimal('235.30')
-}
-    """
-

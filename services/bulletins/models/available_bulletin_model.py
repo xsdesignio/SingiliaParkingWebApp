@@ -8,20 +8,6 @@ from database.base_model import BaseModel
 
 
 class AvailableBulletinModel(BaseModel):
-    @classmethod
-    def get_available_bulletins(cls) -> list[dict]:
-        """
-            Returns a list of available bulletins
-        """
-        db_results = cls.get_elements('available_bulletins')
-        
-        available_bulletins: list[AvailableBulletin] = []
-
-        for result in db_results:
-            available_bulletin: AvailableBulletin = AvailableBulletin.from_dict(result)
-            available_bulletins.append(available_bulletin.to_json())
-        
-        return available_bulletins
     
     @classmethod
     def get_available_bulletin(cls, id) -> AvailableBulletin:
@@ -37,6 +23,26 @@ class AvailableBulletinModel(BaseModel):
         
         available_bulletin = AvailableBulletin.from_dict(db_result)
         return available_bulletin
+    
+
+    @classmethod
+    def get_available_bulletins(cls) -> list[dict]:
+        """
+            Returns a list of available bulletins
+        """
+        db_results = cls.get_elements('available_bulletins')
+        
+        available_bulletins: list[AvailableBulletin] = []
+
+        for result in db_results:
+            available_bulletin: AvailableBulletin = AvailableBulletin.from_dict(result)
+            available_bulletins.append(available_bulletin.to_json())
+        
+        # Order result by duration minutes in ascending order
+        sorted_list: list = sorted(available_bulletins, key = lambda bulletin: bulletin['duration_minutes'])
+        
+        return sorted_list
+    
     
     @classmethod
     def create_available_bulletin(cls, bulletin_duration: str, bulletin_duration_minutes: int, bulletin_price: float) -> AvailableBulletin:

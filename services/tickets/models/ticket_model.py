@@ -42,7 +42,7 @@ class TicketModel(BaseModel):
     
 
     @classmethod
-    def get_tickets(cls, interval: tuple = None, **kwargs) -> list[dict]:
+    def get_tickets(cls, interval: tuple = (0, 50), **kwargs) -> list[dict]:
         
         result = cls.get_elements('tickets', interval, **kwargs)
 

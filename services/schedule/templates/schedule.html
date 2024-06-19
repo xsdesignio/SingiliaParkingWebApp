@@ -7,28 +7,33 @@
 <div class="page-title">
     <h1>Administrar Horario</h1>
 </div>
-
 <section class="schedule-section">
     <h2>Horario</h2>
     <div class="schedule-wrapper">
         {% for day, schedule in schedule.items() %}
-        <div>
-            <h3>{{ day.capitalize() }}</h3>
-            <hr size="2px"/>
-            {% if schedule %}
-                {% if schedule["openTime"] %}
-                    <p>Apertura: <br/><b>{{ schedule["openTime"].strftime('%H:%M') }} h</b></p>
-                {% endif %}
-                {% if schedule["closeTime"] %}
-                    <p>Cierre: <br/><b>{{ schedule["closeTime"].strftime('%H:%M') }} h</b></p>
-                {% endif %}
+            <div>
+                <h3>{{ day.capitalize() }} </h3>
+                <hr size="2px"/>
+                {% if schedule and schedule.openSpans and schedule.openSpans|length > 0 %}
+                    {% for openSpan in schedule.openSpans %}
+                        <p>
+                            {% if openSpan.openTime %}
+                                Apertura: <b>{{ openSpan.openTime.strftime('%H:%M') }} h</b><br/>
+                            {% endif %}
+                            {% if openSpan.closeTime %}
+                                Cierre: <b>{{ openSpan.closeTime.strftime('%H:%M') }} h</b>
+                            {% endif %}
+                        </p>
+                    {% endfor %}
+                
                 {% else %}
                     <p>Cerrado</p>
-            {% endif %}
-        </div>
+                {% endif %}
+            </div>
         {% endfor %}
     </div>
 </section>
+
 <section class="schedule-section">
     <h3 style="margin-bottom: 20px;">Modificar Horario</h3>
     <p style="margin-bottom: 40px;">Actualizar de uno en uno</p>
@@ -36,7 +41,7 @@
     <div class="schedule-wrapper">
         {% set dayIndex = 0 %}
         {% for day, schedule in schedule.items() %}
-            <form method="POST" action="{{ url_for('schedule.set_schedule_for_day', week_day=loop.index0) }}"
+            <form method="POST" action="{{ url_for('schedule.add_open_span_to_week_day', week_day=loop.index0) }}"
                 class="schedule-form">
                 <h4>{{ day.capitalize() }}</h4>
                 <hr size="2px"/>
@@ -44,8 +49,8 @@
                 <input type="time" name="openTime" value="{{ schedule.openTime if schedule else '' }}" step="900">
                 <label>Cierre:</label>
                 <input type="time" name="closeTime" value="{{ schedule.closeTime if schedule else '' }}" step="900">
-                <button type="submit" class="default-button">Actualizar</button>
-                <button type="button" class="default-button" onclick="setClosed('{{ loop.index0 }}')">Cerrar</button>
+                <button type="submit" class="default-button">Añadir Tramo</button>
+                <button type="button" class="default-button" onclick="setClosed('{{ loop.index0 }}')">Borrar último tramo</button>
             </form>
 
             {% set dayIndex = dayIndex + 1 %}
@@ -54,13 +59,13 @@
 
 </section>
 
+
 <script>
     function setClosed(day) {
-        console.log("Hola")
         const form = document.createElement('form');
         form.style.display = 'none';
         form.method = 'POST';
-        form.action = `/schedule/set/${day}/`;
+        form.action = `/schedule/remove/${day}/`;
         document.body.appendChild(form);
         form.submit();
     }

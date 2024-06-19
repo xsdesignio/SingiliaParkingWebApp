@@ -54,6 +54,7 @@ class AvailableTicketModel(BaseModel):
                 VALUES(%s, %s, %s) 
                 RETURNING *
             '''
+        
         values = (ticket_duration, ticket_duration_minutes, ticket_price)
 
         try:

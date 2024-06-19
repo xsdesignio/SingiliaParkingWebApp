@@ -2,9 +2,14 @@ from dataclasses import dataclass
 from time import time
 
 
+
+
 @dataclass
-class ScheduleDay:
-    id: int
+class OpenSpan:
+    """
+        Does not contain an id because is represented
+        in the database as a type
+    """
     openTime: time 
     closeTime: time 
 
@@ -14,17 +19,28 @@ class ScheduleDay:
             "closeTime": self.closeTime.strftime('%H:%M') if self.closeTime else None
         }
 
+@dataclass
+class DailySchedule:
+    id: int
+    openSpans: list[OpenSpan]
+
+
+    def to_dict(self):
+        return {
+            "openSpans": [openSpan.to_dict() for openSpan in self.openSpans]
+        }
+
 
 @dataclass 
 class ScheduleWeek:
     # id is not needed as there is just one ScheduleWeek object shared along the app
-    monday: ScheduleDay
-    tuesday: ScheduleDay
-    wednesday: ScheduleDay
-    thursday: ScheduleDay
-    friday: ScheduleDay
-    saturday: ScheduleDay
-    sunday: ScheduleDay
+    monday: DailySchedule
+    tuesday: DailySchedule
+    wednesday: DailySchedule
+    thursday: DailySchedule
+    friday: DailySchedule
+    saturday: DailySchedule
+    sunday: DailySchedule
 
     def to_dict(self):
         return {

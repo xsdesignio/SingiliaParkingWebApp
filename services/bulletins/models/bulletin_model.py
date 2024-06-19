@@ -14,7 +14,7 @@ from database.db_connection import get_connection
 
 class BulletinModel(BaseModel):
     @classmethod
-    def get_bulletins(cls, interval: tuple= None, **kwargs) -> list[dict]:
+    def get_bulletins(cls, interval: tuple= (0, 50), **kwargs) -> list[dict]:
         result = cls.get_elements("bulletins", interval, **kwargs)
         bulletins: list[Bulletin] = []
 
@@ -41,6 +41,72 @@ class BulletinModel(BaseModel):
                     color = bulletin.get("color")
                 ).to_json()
             )
+
+        return bulletins
+
+    @classmethod
+    def get_similar_bulletins(cls, registration: str) -> list[dict]:
+
+        # Return a maximum of 50 elements
+        interval: tuple= (0, 50)
+
+        if registration is None or len(registration) == 0:
+            return []
+        
+        """  if len(registration) < 3:
+            return cls.get_bulletins(interval, **kwargs)
+        """
+        
+        bulletins: list[Bulletin] = []
+        
+        limit = interval[1] - interval[0]
+        offset = interval[0]
+        
+        query = f'''
+                SELECT * FROM bulletins 
+                WHERE registration LIKE %s
+                AND paid = 'false'
+                LIMIT %s OFFSET %s 
+            '''
+
+        values = (f'%{registration}%', limit, offset)
+
+        try:
+            conn = get_connection()
+            cursor = conn.cursor(cursor_factory=extras.RealDictCursor)
+            cursor.execute(query, values)
+
+            result = cursor.fetchall()
+
+            for bulletin in result:
+                # Creating bulletins object from database bulletins data
+                responsible: User = UserModel.get_user(bulletin["responsible_id"])
+                zone: Zone = ZoneModel.get_zone(bulletin["zone_id"])
+                payment_method: PaymentMethod = PaymentMethod.get_enum_value(bulletin["payment_method"])
+
+                bulletins.append(
+                    Bulletin(
+                        id = bulletin["id"],
+                        responsible = responsible,
+                        zone = zone,
+                        duration = bulletin.get("duration"),
+                        registration = bulletin["registration"],
+                        precept = bulletin["precept"],
+                        price = bulletin.get("price"),
+                        payment_method = payment_method,
+                        paid = bulletin.get("paid"),
+                        created_at = bulletin["created_at"],
+                        brand = bulletin.get("brand"),
+                        model = bulletin.get("model"),
+                        color = bulletin.get("color")
+                    ).to_json()
+                )
+            cursor.close()
+            conn.close()
+            
+        except Exception as exception:
+            print(exception)
+            return None
 
         return bulletins
 

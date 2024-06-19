@@ -4,7 +4,7 @@ from auth.controllers.login import role_required
 from services.bulletins.controllers.bulletins_controller import get_bulletins_attributes_count
 from services.zones.entities.zone import Zone
 from services.zones.models.zone_model import ZoneModel
-from .generation import create_report
+from .controllers.generation import create_report
 from services.tickets.controllers.tickets_controller import get_tickets_attributes_count
 from services.users.models.user_model import UserModel
 from services.utils.data_management import parse_date

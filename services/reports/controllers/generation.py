@@ -2,17 +2,22 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.platypus import Table
-from .styles import Styles
 from services.users.entities import User
 from services.zones.entities import Zone
 
+from .styles import Styles
 from .utils import translate
 
 
 def _get_report_path_and_title(subject, start_date, end_date, folder='reports'):
     formatted_start = start_date.strftime("%Y-%m-%d")
     formatted_end = end_date.strftime("%Y-%m-%d")
-    file_name = f"{subject.name.replace(' ', '-')}-{formatted_start}-{formatted_end}.pdf"
+
+    file_name: str
+    if subject:
+        file_name = f"{subject.name.replace(' ', '-')}-{formatted_start}-{formatted_end}.pdf"
+    else:
+        file_name = f"Controladores-{formatted_start}-{formatted_end}.pdf"
     path = f'static/{folder}/{file_name}'
     title = f'reporte-{translate(subject.__class__.__name__)}-{file_name}'
     return path, title
@@ -41,7 +46,7 @@ def _create_content(data, user: User, zone: Zone, start_date, end_date) -> list:
     Return: return_description
     """
     styles = Styles()
-    title = f'CONTROLADOR: {user.id} {user.name}'
+    title = f'CONTROLADOR: {user.id} {user.name}' if user else 'TODOS LOS CONTROLADORES'
     content = []
     content.append(Paragraph(title, styles.title()))
     content.append(Spacer(1, 10))
@@ -73,11 +78,19 @@ def _create_content(data, user: User, zone: Zone, start_date, end_date) -> list:
     table2.setStyle(styles.table2())
 
 
-    subtitle = f"""
-    El controlador: {user.name} nº {user.id} ha ingresado el importe 
-    de { total_income } € en concepto de recaudación zona S.M.E.R, en la
-    c/c 2103 3042 20 0030001171, de unicaja, adjuntándose justificante 
-    de abono en cuenta"""
+    subtitle: str
+    if user:
+        subtitle = f"""
+            El controlador: {user.name} nº {user.id} ha ingresado el importe 
+            de { total_income } € en concepto de recaudación zona S.M.E.R, en la
+            c/c 2103 3042 20 0030001171, de unicaja, adjuntándose justificante 
+            de abono en cuenta""" 
+    else: 
+        subtitle = f"""
+            El conjunto de Controladores ha ingresado el importe total 
+            de { total_income } € en concepto de recaudación zona S.M.E.R, en la
+            c/c 2103 3042 20 0030001171, de unicaja, adjuntándose justificante 
+            de abono en cuenta"""
 
     table3 = Table(
         [["Firma del controlador", "Observaciones"],
